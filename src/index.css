@@ -1,0 +1,109 @@
+/* src/index.css */
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+#screen {
+  background: ('C:\Users\adars\OneDrive\Desktop\skyvoo\src\assets\skyvoo-bg.webp')
+}
+
+.filter-section input[type="radio"]:checked {
+  accent-color: white;
+  border: 1px solid black;
+}
+
+.fare-filter-section input[type="radio"]:checked {
+  accent-color: black;
+
+}
+
+@font-face {
+  font-family: "ltwave";
+  src: url("./assets/fonts/lt_wave/LTWave-Medium.otf") format("truetype");
+}
+
+
+.primary-font {
+  font-family: "ltwave";
+}
+
+.secondary-font {
+  font-family: "Poppins", sans-serif;
+}
+
+@keyframes planeLanding {
+  0% {
+    transform: translateX(500px) translateY(-300px) scale(0.2);
+    opacity: 0;
+  }
+
+  /* 50% {
+    transform: translateX(150px) translateY(-100px) scale(0.7);
+    opacity: 0.7;
+  } */
+
+  100% {
+    transform: translateX(0) translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes planeLandin2 {
+  0% {
+    transform: translateX(500px) scale(0.2);
+    opacity: 0;
+  }
+
+  /* 50% {
+    transform: translateX(150px) translateY(-100px) scale(0.7);
+    opacity: 0.7;
+  } */
+
+  100% {
+    transform: translateX(0) translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.plane {
+  position: absolute;
+  width: 100%;
+  left: 300px;
+  bottom: -60px;
+  animation: planeLandin2 2s ease-out forwards;
+}
+
+/* custom CSS */
+.ribbon {
+  clip-path: polygon(0 0, 98% 0, 95% 50%, 98% 100%, 0 100%);
+  background-image: linear-gradient(to right, rgba(160, 14, 18, 0.6) 0%, rgb(143 3 6) 100%);
+  background-size: 200% 100%;
+  background-position: left;
+}
+
+
+@keyframes ribbonExpand {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
+.animate-ribbon {
+  animation: ribbonExpand 1.5s linear forwards;
+}
