@@ -1,33 +1,31 @@
-import React, { useState } from 'react'
-import { MoveUpRight} from 'lucide-react';
+import React, { useState } from 'react';
+import StickerStack from './StickerStack'
+import MoveUpRightArrow from "../assets/imgs/vectors/MoveUpRightArrow.svg";
 
 function PromotionalCard() {
 
-    const [selectedImage, setSelectedImage] = useState(0);
-    const imgs = ['offer', 'offer2', 'offer3'];
+  return (
+    <div className="relative overflow-visible grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 pt-10 md:pt-20">
+      {/* Promo Card */}
+      <div className="md:col-span-3 cursor-pointer mb-8 md:mb-[100px] relative -left-[50px]">
+        <div className="relative">
+          <StickerStack />
 
-    const handleImageShift = () => {
-        if (selectedImage === imgs.length - 1) {
-            setSelectedImage(-1)
-        }
-        setSelectedImage(prevSelectedImage => prevSelectedImage + 1);
-    };
-
-
-    return (
-        <div className="grid grid-cols-12 gap-8 pt-40">
-            <div className="col-span-3 cursor-pointer" onClick={() => { handleImageShift() }}>
-                <div className="bg-[#D9D9D9] rounded-2xl shadow-lg p-3">
-                    <div className='relative'>
-                        <img src={`./src/assets/imgs/${imgs[selectedImage]}.jpg`} className="bg-gray-100 w-full h-full object-contain rounded-lg" alt="Special offer" />
-                        <div className="absolute top-2 right-2 bg-black text-white p-1 rounded-full flex items-center justify-center">
-                             <img src="./src/assets/imgs/vectors/MoveUpRightArrow.svg" alt="arrow" className="w-3 h-3" />
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
-    )
+      </div>
+
+
+
+      {/* Plane Image */}
+      <div className="md:col-span-9">
+        <img
+          src="/src/assets/imgs/plane.png"
+          className="plane w-[80%] sm:w-[90%] md:w-[100%] h-auto"
+          alt="Plane"
+        />
+      </div>
+    </div>
+  );
 }
 
-export default PromotionalCard
+export default PromotionalCard;
