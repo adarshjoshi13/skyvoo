@@ -75,7 +75,7 @@ function BookingForm() {
                     ))}
 
                     <Field>
-                        <div className="relative secondary-font font-medium w-full sm:w-auto">
+                        <div className="relative secondary-font font-semibold w-full sm:w-auto">
                             <Select
                                 value={classType}
                                 onChange={setClassType}
@@ -89,7 +89,7 @@ function BookingForm() {
                                 <option className="py-2 px-4 text-gray-600">First Class</option>
                             </Select>
                             <ChevronDownIcon
-                                className="pointer-events-none font-extrabold text-black absolute top-2 right-3 size-5 fill-gray-600 filter contrast-125"
+                                className="pointer-events-none font-bold text-black absolute top-2 right-3 size-5 fill-gray-600 filter contrast-125"
                                 aria-hidden="true"
                             />
                         </div>

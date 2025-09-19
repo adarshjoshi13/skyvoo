@@ -40,7 +40,7 @@ const Header = ({ onOpen }) => {
                 {/* Log In Button (desktop) */}
                 <button
                     onClick={onOpen}
-                    className="hidden md:inline-block secondary-font px-4 sm:px-6 py-2 font-medium bg-black text-white rounded-full hover:bg-gray-800 transition"
+                    className="cursor-pointer hidden md:inline-block secondary-font px-4 sm:px-6 py-2 font-medium bg-black text-white rounded-full hover:bg-gray-800 transition"
                 >
                     Log In
                 </button>
