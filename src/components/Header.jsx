@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
-
+import { useNavigate } from 'react-router-dom';
+import Logo from '@/assets/imgs/logo.png'
 const Header = ({ onOpen }) => {
+   
+    const navigate = useNavigate();
     const [mobileOpen, setMobileOpen] = useState(false);
 
     const navItems = [
@@ -19,8 +22,9 @@ const Header = ({ onOpen }) => {
                 {/* Logo */}
                 <div className="flex items-center">
                     <img
-                        src="./src/assets/imgs/logo.png"
-                        className="h-10 sm:h-12 md:h-16 w-auto"
+                        onClick={() => navigate('/')}
+                        src={Logo}
+                        className="cursor-pointer h-10 sm:h-12 md:h-16 w-auto"
                         alt="SkyVoo Logo"
                     />
                 </div>

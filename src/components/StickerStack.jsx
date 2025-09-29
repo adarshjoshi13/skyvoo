@@ -1,8 +1,8 @@
 import React, { useState, useRef } from "react";
-import offer3 from "../assets/imgs/offer3.jpg";
-import offer2 from "../assets/imgs/offer2.jpg";
-import offer1 from "../assets/imgs/offer.jpg";
-import MoveUpRightArrow from "../assets/imgs/vectors/MoveUpRightArrow.svg";
+import offer3 from "@/assets/imgs/offer3.jpg";
+import offer2 from "@/assets/imgs/offer2.jpg";
+import offer1 from "@/assets/imgs/offer.jpg";
+import MoveUpRightArrow from "@/assets/vectors/MoveUpRightArrow.svg";
 
 const images = [offer1, offer2, offer3];
 

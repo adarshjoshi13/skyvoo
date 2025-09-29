@@ -1,202 +1,672 @@
-// src/pages/FlightResults.jsx
-import { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import FlightCard from '../components/FlightCard';
+import React, { useState } from 'react';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import FlightResultsHeader from '../components/FlightResults/FlightResultsHeader';
+import Filters from '../components/FlightResults/Filters';
+import SignInModal from '../components/SignInModal';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { X } from 'lucide-react';
+import GrayFadedBg from '@/assets/imgs/grayfadedbg.png'
+import AirlineLogo from '@/assets/imgs/airlinelogo.png'
+import RipSide from '@/assets/imgs/ripSide.png'
+import Stopwatch from '@/assets/vectors/stopwatch.svg'
+import Lock from '@/assets/vectors/lock.svg'
+import FlightDetails from '../components/FlightResults/FlightDetails'
 
-// Mock data for demonstration
-const mockFlights = [
-    {
-        id: 1,
-        airline: 'SkyVoo Airlines',
-        flightNumber: 'SV101',
-        departure: { time: '08:00 AM', airport: 'JFK' },
-        arrival: { time: '11:00 AM', airport: 'LAX' },
-        duration: '6h 00m',
-        price: 2999,
-        stops: 0
-    },
-    {
-        id: 2,
-        airline: 'Global Airways',
-        flightNumber: 'GA205',
-        departure: { time: '10:30 AM', airport: 'JFK' },
-        arrival: { time: '02:45 PM', airport: 'LAX' },
-        duration: '5h 15m',
-        price: 4349,
-        stops: 1
-    },
-    {
-        id: 3,
-        airline: 'Oceanic Airlines',
-        flightNumber: 'OA307',
-        departure: { time: '01:15 PM', airport: 'JFK' },
-        arrival: { time: '04:30 PM', airport: 'LAX' },
-        duration: '6h 15m',
-        price: 5279,
-        stops: 0
-    },
-    {
-        id: 4,
-        airline: 'Continental',
-        flightNumber: 'CT409',
-        departure: { time: '05:45 PM', airport: 'JFK' },
-        arrival: { time: '09:00 PM', airport: 'LAX' },
-        duration: '6h 15m',
-        price: 3119,
-        stops: 1
-    },
-];
+export default function FlightResults() {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedSort, setSelectedSort] = useState('CHEAPEST');
+    const [isSwapping, setIsSwapping] = useState(false);
+    const [rotation, setRotation] = useState(0);
+    const [selectedFlightId, setSelectedFlightId] = useState(null);
 
-const FlightResults = () => {
-    const [searchParams] = useSearchParams();
-    const navigate = useNavigate();
-    const [flights, setFlights] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [filters, setFilters] = useState({
-        sortBy: 'price',
-        maxStops: 2,
-        minPrice: 0,
-        maxPrice: 4000
+    const [flightSearchInfo, setFlightSearchInfo] = useState({
+        from: '',
+        to: '',
+        depart: null,
+        return: null,
+        traveller: 1,
     });
 
-    useEffect(() => {
-        // Simulate API call
-        setLoading(true);
-        const timer = setTimeout(() => {
-            // In a real app, you would fetch from an actual API
-            // For demo purposes, we're using mock data
-            setFlights(mockFlights);
-            setLoading(false);
-        }, 1000);
+    const [travellers, setTravellers] = useState({
+        adults: 1,
+        children: 0,
+        infants: 0,
+        classType: 'Economy/Premium Economy',
+    });
 
-        return () => clearTimeout(timer);
-    }, [searchParams]);
+    const [showTravellerBox, setShowTravellerBox] = useState(false);
 
-    const handleFilterChange = (e) => {
-        const { name, value } = e.target;
-        setFilters(prev => ({ ...prev, [name]: value }));
+    const handleFlightInputChange = (field, value) => {
+        setFlightSearchInfo(prev => ({ ...prev, [field]: value }));
     };
 
-    const filteredFlights = flights.filter(flight => {
-        return flight.stops <= filters.maxStops &&
-            flight.price >= filters.minPrice &&
-            flight.price <= filters.maxPrice;
-    }).sort((a, b) => {
-        if (filters.sortBy === 'price') return a.price - b.price;
-        if (filters.sortBy === 'duration') {
-            const aDuration = parseInt(a.duration);
-            const bDuration = parseInt(b.duration);
-            return aDuration - bDuration;
+    const handleSwap = () => {
+        setRotation(prevRotation => prevRotation + 180);
+        setIsSwapping(prev => !prev);
+
+        setFlightSearchInfo(prev => ({
+            ...prev,
+            from: prev.to,
+            to: prev.from,
+        }));
+    };
+
+    const searchFlightResults = () => {
+        navigate('/search-results');
+    };
+
+    const validateTravellers = () => {
+        // Interpret '>9' as 10, '>6' as 7 for validation and totals
+        const adultsVal = travellers.adults === '>9' ? 10 : travellers.adults;
+        const childrenVal = travellers.children === '>6' ? 7 : travellers.children;
+        const infantsVal = travellers.infants === '>6' ? 7 : travellers.infants;
+
+        // 1️⃣ At least one adult
+        if (adultsVal < 1) {
+            alert('Please select at least one adult.');
+            return false;
         }
-        return 0;
-    });
+
+        // 2️⃣ Infants cannot exceed adults
+        if (infantsVal > adultsVal) {
+            alert('Infants cannot exceed the number of adults.');
+            return false;
+        }
+
+        // 3️⃣ Optional overall cap (adjust if needed)
+        const total = adultsVal + childrenVal + infantsVal;
+        if (total > 20) {
+            alert('Total passengers cannot exceed 20.');
+            return false;
+        }
+
+        return true;
+    };
+
+    // Sample flight data
+    const flights = [
+        {
+            id: 1,
+            airline: 'Vistara',
+            flightNumber: 'UK 850',
+            departure: { time: '00:45', city: 'New Delhi' },
+            arrival: { time: '03:45', city: 'Mumbai' },
+            duration: '2h 50m',
+            stops: 'Non Stop',
+            price: 7500,
+            departure_info: '1hr 30m before departure',
+            highlighted: true,
+        },
+        {
+            id: 2,
+            airline: 'Vistara',
+            flightNumber: 'UK 860',
+            departure: { time: '00:45', city: 'New Delhi' },
+            arrival: { time: '03:45', city: 'Mumbai' },
+            duration: '2h 50m',
+            stops: '2 Stops',
+            price: 7500,
+            departure_info: '1hr 30m before departure'
+        },
+        {
+            id: 3,
+            airline: 'Vistara',
+            flightNumber: 'UK 870',
+            departure: { time: '00:45', city: 'New Delhi' },
+            arrival: { time: '03:45', city: 'Mumbai' },
+            duration: '2h 50m',
+            stops: '2 Stops',
+            price: 7500,
+            departure_info: '1hr 30m before departure',
+            highlighted: true
+        },
+        {
+            id: 4,
+            airline: 'Vistara',
+            flightNumber: 'UK 880',
+            departure: { time: '00:45', city: 'New Delhi' },
+            arrival: { time: '03:45', city: 'Mumbai' },
+            duration: '2h 50m',
+            stops: '2 Stops',
+            price: 7500,
+            departure_info: '1hr 30m before departure'
+        }
+    ];
 
     return (
-        <div className="min-h-screen">
-            <Navbar />
+        <>
+            {isModalOpen && <SignInModal onClose={() => setIsModalOpen(false)} />}
 
-            <div className="container mx-auto px-4 py-8">
-                <button
-                    onClick={() => navigate('/')}
-                    className="flex items-center text-blue-600 mb-6 cursor-pointer"
+            <div className="relative min-h-screen bg-gray-100">
+
+                <img
+                    className="absolute right-0 z-1 max-w-full h-auto object-cover"
+                    src={GrayFadedBg}
+                    alt="gray faded background"
+                />
+                <FlightResultsHeader onOpen={() => setIsModalOpen(true)} />
+
+                {/* Search Header */}
+                <div className="relative bg-[#78080B] text-white px-4 py-5 z-999"
+                    style={{ boxShadow: ' 0px 4px 4px 0px rgba(0, 0, 0, 0.25)' }}
                 >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>x``
-                    Back to Search
-                </button>
 
-                <div className="mb-6">
-                    <h1 className="text-3xl font-bold text-gray-900">
-                        Flights from {searchParams.get('from')} to {searchParams.get('to')}
-                    </h1>   
-                    <p className="text-gray-600">
-                        {searchParams.get('depart')} • {searchParams.get('travelers')} Travelers    
-                        {searchParams.get('return') && ` • Return: ${searchParams.get('return')}`}
-                    </p>
-                </div>
+                    <div className="max-w-7xl mx-auto flex items-center justify-between">
+                        {/* Main Search Grid */}
+                        <div className="grid grid-cols-13 gap-4 sm:gap-6 items-end secondary-font font-semibold">
 
-                <div className="flex flex-col md:flex-row gap-6">
-                    {/* Filters sidebar */}
-                    <div className="md:w-1/4">
-                        <div className="bg-white rounded-lg shadow p-4 mb-4">
-                            <h2 className="font-semibold text-lg mb-4">Filters</h2>
-
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Sort by</label>
-                                <select
-                                    name="sortBy"
-                                    value={filters.sortBy}
-                                    onChange={handleFilterChange}
-                                    className="w-full p-2 border border-gray-300 rounded-md"
-                                >
-                                    <option value="price">Price (Low to High)</option>
-                                    <option value="duration">Duration (Shortest)</option>
-                                </select>
+                            {/* From */}
+                            <div className="col-span-12 sm:col-span-2">
+                                <label className="block text-base">From</label>
+                                <input
+                                    type="text"
+                                    placeholder="Origin"
+                                    value={flightSearchInfo.from}
+                                    onChange={(e) => handleFlightInputChange('from', e.target.value)}
+                                    className="w-full font-medium text-lg border-b border-white text-white placeholder-white focus:outline-none"
+                                />
                             </div>
 
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Max Stops</label>
-                                <select
-                                    name="maxStops"
-                                    value={filters.maxStops}
-                                    onChange={handleFilterChange}
-                                    className="w-full p-2 border border-gray-300 rounded-md"
+                            {/* Swap */}
+                            <div className="col-span-12 sm:col-span-1 flex justify-center my-2 sm:my-0">
+                                <button
+                                    onClick={handleSwap}
+                                    className="cursor-pointer p-2 rounded-full transition-transform duration-300"
                                 >
-                                    <option value={0}>Non-stop</option>
-                                    <option value={1}>1 stop max</option>
-                                    <option value={2}>Any number of stops</option>
-                                </select>
+                                    <div
+                                        className="relative w-6 h-6 transition-transform duration-500"
+                                        style={{ transform: `rotate(${rotation}deg)` }}
+                                    >
+                                        <svg className="absolute top-0 left-0 w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor" style={{ transform: 'translate(4px,-4px) rotate(90deg)' }}>
+                                            <path d="M22 16.21v-1.895L14 8V4a2 2 0 0 0-4 0v4.105L2 14.42v1.789l8-2.526V18l-2 3h6l-2-3v-4.316L22 16.21z" />
+                                        </svg>
+                                        <svg className="absolute top-0 left-0 w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor" style={{ transform: 'translate(4px,10px) rotate(-90deg)' }}>
+                                            <path d="M22 16.21v-1.895L14 8V4a2 2 0 0 0-4 0v4.105L2 14.42v1.789l8-2.526V18l-2 3h6l-2-3v-4.316L22 16.21z" />
+                                        </svg>
+                                    </div>
+                                </button>
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
-                                <div className="flex space-x-2">
-                                    <input
-                                        type="number"
-                                        name="minPrice"
-                                        placeholder="Min"
-                                        value={filters.minPrice}
-                                        onChange={handleFilterChange}
-                                        className="w-full p-2 border border-gray-300 rounded-md"
-                                    />
-                                    <input
-                                        type="number"
-                                        name="maxPrice"
-                                        placeholder="Max"
-                                        value={filters.maxPrice}
-                                        onChange={handleFilterChange}
-                                        className="w-full p-2 border border-gray-300 rounded-md"
-                                    />
+                            {/* To */}
+                            <div className="col-span-12 sm:col-span-2">
+                                <label className="block text-base">To</label>
+                                <input
+                                    type="text"
+                                    placeholder="Destination"
+                                    value={flightSearchInfo.to}
+                                    onChange={(e) => handleFlightInputChange('to', e.target.value)}
+                                    className="w-full text-lg font-medium border-b border-white text-white focus:outline-none placeholder-white"
+                                />
+                            </div>
+
+                            {/* Depart & Return */}
+                            {[
+                                { label: 'Depart', key: 'depart' },
+                                { label: 'Return', key: 'return' },
+                            ].map(({ label, key }) => (
+                                <div key={key} className="col-span-12 sm:col-span-2 flex items-center gap-3">
+                                    <div className="flex flex-col">
+                                        <div className='flex justify-between items-center'>
+                                            <label className="text-base text-white flex items-center gap-2">{label}</label>
+                                            {key === 'return' && (
+                                                <div
+                                                    className='bg-[#0a223d] rounded-full w-4 h-4 flex justify-center items-center cursor-pointer hover:bg-[#12345a]'
+                                                    onClick={() => handleFlightInputChange('return', null)}
+                                                >
+                                                    <X className='h-3 w-3 text-white' />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <DatePicker
+                                            selected={flightSearchInfo[key]}
+                                            onChange={(date) => handleFlightInputChange(key, date)}
+                                            minDate={new Date()}
+                                            monthsShown={2} // shows 2 months side by side
+                                            placeholderText={`Select ${label}`}
+                                            className="w-full font-medium text-lg text-white border-b border-white focus:outline-none placeholder-white"
+                                        />
+                                    </div>
                                 </div>
+                            ))}
+
+                            {/* Traveler */}
+                            <div className="col-span-12 sm:col-span-2 relative">
+                                <label className="block text-base">Travelers & Class</label>
+
+                                <div
+                                    onClick={() => setShowTravellerBox(!showTravellerBox)}
+                                    className="cursor-pointer border-b border-white text-white font-medium text-lg flex justify-between items-center"
+                                >
+                                    <span className="truncate whitespace-nowrap overflow-hidden text-ellipsis">
+                                        {(() => {
+                                            // Helper to convert a value that may be ">n" to a number
+                                            const toNumber = v => (typeof v === 'string' && v.startsWith('>') ? parseInt(v.slice(1), 10) : v);
+
+                                            const total =
+                                                toNumber(travellers.adults) +
+                                                toNumber(travellers.children) +
+                                                toNumber(travellers.infants);
+
+                                            return `${total} Traveller${total > 1 ? 's' : ''} • ${travellers.classType}`;
+                                        })()}
+                                    </span>
+                                </div>
+
+                                {showTravellerBox && (
+                                    <div className="absolute right-0 z-999 mt-2 w-[45rem] bg-white rounded-md shadow-lg px-6 py-5 space-y-6 text-black ">
+                                        {/* ADULTS */}
+                                        <div className="flex flex-col">
+                                            <p className="font-semibold text-gray-800 text-base">
+                                                ADULTS (12y+) <br /> <span className='text-sm font-medium'> on the day of travel </span>
+                                            </p>
+                                            <div className="flex justify-between items-center mt-2">
+                                                <div className="flex border rounded-md overflow-hidden">
+                                                    {Array.from({ length: 9 }).map((_, i) => (
+                                                        <div
+                                                            key={i}
+                                                            onClick={() =>
+                                                                setTravellers(t => ({ ...t, adults: i + 1 }))
+                                                            }
+                                                            className={`px-3 py-2 text-sm cursor-pointer border-r last:border-r-0
+                 ${travellers.adults === i + 1 ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}
+              `}
+                                                        >
+                                                            {i + 1}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div
+                                                    onClick={() =>
+                                                        setTravellers(t => ({ ...t, adults: '>9' }))
+                                                    }
+                                                    className={`px-4 py-2 text-sm cursor-pointer border rounded-md
+             ${travellers.adults === '>9' ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}
+          `}
+                                                >
+                                                    &gt;9
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* CHILDREN & INFANTS side by side */}
+                                        <div className="flex flex-col">
+                                            <div className="flex justify-between items-start gap-6">
+                                                {/* Children */}
+                                                <div className='flex flex-col'>
+                                                    <p className="font-semibold text-gray-800 text-base">
+                                                        CHILDREN (2y - 12y) <br /> <span className='text-sm font-medium'>on the day of travel</span>
+                                                    </p>
+                                                    <div className='flex justify-between items-start mt-2'>
+                                                        <div className="flex border rounded-md overflow-hidden">
+                                                            {Array.from({ length: 6 }).map((_, i) => (
+                                                                <div
+                                                                    key={i}
+                                                                    onClick={() =>
+                                                                        setTravellers(t => ({ ...t, children: i }))
+                                                                    }
+                                                                    className={`px-3 py-2 text-sm cursor-pointer border-r last:border-r-0
+                 ${travellers.children === i ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}
+              `}
+                                                                >
+                                                                    {i}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                        <div
+                                                            onClick={() => setTravellers(t => ({ ...t, children: '>6' }))
+                                                            }
+                                                            className={`ml-4 px-4 py-2 text-sm cursor-pointer border rounded-md ${travellers.children === '>6' ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}`} >
+                                                            &gt;6
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                                {/* Infants */}
+                                                <div className='flex flex-col items-start'>
+                                                    <p className="font-semibold text-gray-800 text-base">
+                                                        INFANTS (below 2y) <br />  <span className='text-sm font-medium'> on the day of travel </span>
+                                                    </p>
+
+                                                    <div className='flex justify-between items-start mt-2'>
+                                                        <div className="mr-4 flex border rounded-md overflow-hidden">
+                                                            {Array.from({ length: 6 }).map((_, i) => (
+                                                                <div
+                                                                    key={i}
+                                                                    onClick={() =>
+                                                                        setTravellers(t => ({ ...t, infants: i }))
+                                                                    }
+                                                                    className={`px-3 py-2 text-sm cursor-pointer border-r last:border-r-0
+                 ${travellers.infants === i ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}
+              `}
+                                                                >
+                                                                    {i}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                        <div
+                                                            onClick={() =>
+                                                                setTravellers(t => ({ ...t, infants: '>6' }))
+                                                            }
+                                                            className={`px-4 py-2 text-sm cursor-pointer border rounded-md
+             ${travellers.infants === '>6' ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}
+          `}
+                                                        >
+                                                            &gt;6
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        {/* Divider */}
+                                        <hr className="border-gray-200" />
+
+                                        {/* CLASS SELECTOR */}
+                                        <div>
+                                            <p className="font-semibold text-gray-800 mb-3 uppercase tracking-wide text-base">
+                                                Choose Travel Class
+                                            </p>
+                                            <div className="flex flex-wrap gap-2">
+                                                {['Economy/Premium Economy', 'Premium Economy', 'Business', 'First Class']
+                                                    .map(cls => (
+                                                        <button
+                                                            key={cls}
+                                                            onClick={() => setTravellers(t => ({ ...t, classType: cls }))}
+                                                            className={`px-3 py-1.5 rounded-md text-sm font-medium border transition-colors 
+                ${travellers.classType === cls
+                                                                    ? 'bg-[#78080B] text-white'
+                                                                    : 'border-gray-300 text-gray-700 hover:bg-gray-100'}
+              `}
+                                                        >
+                                                            {cls}
+                                                        </button>
+                                                    ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Search Button */}
+                                        <div className="col-span-12 sm:col-span-2 flex justify-center bg-[#78080B] rounded-sm p-1">
+                                            <button onClick={validateTravellers} className='btn'>
+                                                <span className="button-text text-white secondary-font">D O N E</span>
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                )}
+
                             </div>
+
+                            {/* Search Button */}
+                            <div className="col-span-12 sm:col-span-2 flex justify-center relative">
+                                <a href="#" id='ModifySearchButton'>
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                    MODIFY SEARCH</a>
+                            </div>
+
                         </div>
                     </div>
 
-                    {/* Results list */}
-                    <div className="md:w-3/4">
-                        {loading ? (
-                            <div className="flex justify-center items-center h-64">
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                            </div>
-                        ) : filteredFlights.length > 0 ? (
-                            <div className="space-y-4">
-                                {filteredFlights.map(flight => (
-                                    <FlightCard key={flight.id} flight={flight} />
+                    {/* Fare Type */}
+                    <div className="filter-section max-w-7xl mx-auto mt-4 font-medium">
+                        <div className="flex items-center justify-start space-x-6">
+                            {/* Label */}
+                            <span className="text-base">Fare Type</span>
+
+                            {/* Options */}
+                            <div className="flex flex-row space-x-6 rounded-xl glass-card">
+                                {[
+                                    { value: 'regular', label: 'Regular', checked: true },
+                                    { value: 'student', label: 'Student' },
+                                    { value: 'senior', label: 'Senior Citizen' },
+                                    { value: 'armed', label: 'Armed Forces' },
+                                    { value: 'doctor', label: 'Doctor and Nurses' },
+                                ].map(({ value, label, checked }, i) => (
+                                    <div
+                                        key={value}
+                                        className={`p-2 border-white border-solid ${i !== 0 ? 'border-l-1' : ''}`}
+                                    >
+                                        <label className="flex items-center space-x-1">
+                                            <input
+                                                type="radio"
+                                                name="fareType"
+                                                value={value}
+                                                defaultChecked={checked}
+                                                className="mr-2 text-red-600 focus:ring-0"
+                                            />
+                                            <span>{label}</span>
+                                        </label>
+                                    </div>
                                 ))}
                             </div>
-                        ) : (
-                            <div className="bg-white rounded-lg shadow p-8 text-center">
-                                <h3 className="text-xl font-semibold text-gray-900 mb-2">No flights found</h3>
-                                <p className="text-gray-600">Try adjusting your filters to see more results.</p>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                {/* Main Content */}
+                <div className="relative max-w-7xl mx-auto px-4 py-6 z-50">
+                    <div className="flex gap-6">
+                        {/* Filters Sidebar */}
+                        <Filters />
+
+                        {/* Results Area */}
+                        <div className="flex-1">
+                            {/* Sorting Options */}
+                            <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+                                <h2 className="text-xl font-bold mb-4">Flights from New Delhi to Mumbai</h2>
+                                <div className="flex space-x-4">
+                                    <button
+                                        className={`px-4 py-2 rounded ${selectedSort === 'CHEAPEST' ? 'bg-red-100 text-red-600 border border-red-200' : 'bg-gray-100'}`}
+                                        onClick={() => setSelectedSort('CHEAPEST')}
+                                    >
+                                        <div className="text-sm font-medium">CHEAPEST</div>
+                                        <div className="text-xs">₹ 5,500 • 2h 50m</div>
+                                    </button>
+                                    <button
+                                        className={`px-4 py-2 rounded ${selectedSort === 'NON_STOP_FIRST' ? 'bg-red-100 text-red-600 border border-red-200' : 'bg-gray-100'}`}
+                                        onClick={() => setSelectedSort('NON_STOP_FIRST')}
+                                    >
+                                        <div className="text-sm font-medium">NON STOP FIRST</div>
+                                        <div className="text-xs">₹ 5,500 • 2h 50m</div>
+                                    </button>
+                                    <button
+                                        className={`px-4 py-2 rounded ${selectedSort === 'YOU_MAY_PREFER' ? 'bg-red-100 text-red-600 border border-red-200' : 'bg-gray-100'}`}
+                                        onClick={() => setSelectedSort('YOU_MAY_PREFER')}
+                                    >
+                                        <div className="text-sm font-medium">YOU MAY PREFER</div>
+                                        <div className="text-xs">₹ 7,500 • 2h 50m</div>
+                                    </button>
+                                    <button className="px-4 py-2 bg-gray-100 rounded">
+                                        <div className="text-sm font-medium">Other</div>
+                                        <div className="text-xs">Sort</div>
+                                    </button>
+                                </div>
                             </div>
-                        )}
+
+                            {/* Flight Results */}
+                            <div className="space-y-4">
+                                {flights.map((flight) => (
+                                    <div
+                                        key={flight.id}
+                                        className={`rounded-2xl`}
+                                    >
+
+                                        <div className={`py-4 relative bg-cover bg-center rounded-2xl shadow-sm hover:shadow-md transition-shadow secondary-font  ${flight.highlighted ? "" : ""}`}
+                                            style={{ backgroundImage: "url('/src/assets/imgs/flightresultsbg.jpg')" }}
+                                        >
+                                            <img
+                                                className="absolute -right-[0.370rem] top-1/2 -translate-y-1/2 h-[90%] hidden lg:block"
+                                                src={RipSide}
+                                                alt="ribbon side"
+                                            />
+                                            {/* ---- Top Row ---- */}
+                                            <div className="flex items-center justify-between text-sm font-medium">
+                                                {/* Left section */}
+                                                <div className='pl-5 pr-40 relative' style={{ position: 'relative' }}>
+                                                    <div
+                                                        style={{
+                                                            position: 'absolute',
+                                                            top: 0,
+                                                            left: 0,
+                                                            width: '100%',
+                                                            height: '100%',
+                                                            background: 'linear-gradient(90deg, rgba(196,36,36,0.5) 0%, rgba(255,255,255,0.5) 100%)',
+                                                            pointerEvents: 'none', // ensures text is clickable/selectable
+                                                            zIndex: 0,
+                                                        }}
+                                                    />
+                                                    {/* Content */}
+                                                    <div style={{ position: 'relative', zIndex: 1 }}>
+                                                        <p className='text-xs'>Free Seat With VISA Card*</p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Right section with gradient */}
+                                                <div className="pr-5 flex items-center px-3 py-1 rounded">
+                                                    <img src={Stopwatch} alt="stopwatch" className="w-4 h-4 mr-2" />
+                                                    <span className="text-gray-800 font-medium">96% on Time</span>
+                                                </div>
+                                            </div>
+
+                                            {/* ---- Main Row ---- */}
+                                            <div className="py-5 px-3 flex items-center justify-between space-x-6">
+                                                {/* Airline info */}
+                                                <div className="flex items-center space-x-4">
+                                                    <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
+                                                        <img src={AirlineLogo} alt="airline logo" />
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-semibold">{flight.airline}</div>
+                                                        <div className="text-sm text-gray-500">{flight.flightNumber}</div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Departure */}
+                                                <div className="text-center">
+                                                    <div className="text-2xl font-bold">{flight.departure.time}</div>
+                                                    <div className="text-sm text-gray-500">{flight.departure.city}</div>
+                                                </div>
+
+                                                {/* Flight duration and stops */}
+                                                <div className="flex flex-col items-center font-semibold">
+                                                    <div className="text-sm text-gray-500 mb-2">{flight.duration}</div>
+                                                    <div className="relative w-24 h-0.5 bg-[#920000]">
+                                                        <div className="absolute right-0 top-0 w-2 h-2 bg-[#920000] rounded-full transform -translate-y-1/2"></div>
+                                                    </div>
+                                                    <div className="text-sm text-gray-500 mt-2">{flight.stops}</div>
+                                                </div>
+
+                                                {/* Arrival */}
+                                                <div className="text-center">
+                                                    <div className="text-2xl font-bold">{flight.arrival.time}</div>
+                                                    <div className="text-sm text-gray-500">{flight.arrival.city}</div>
+                                                </div>
+
+                                                {/* Price */}
+                                                <div className="text-right">
+                                                    <div className="text-2xl font-bold">₹ {flight.price.toLocaleString()}</div>
+                                                    <div className="text-sm text-gray-500">Per Adult</div>
+                                                </div>
+
+                                                {/* Button */}
+                                                <button className="bg-[#811919] hover:bg-[#741111] text-white px-4 py-1 rounded-full font-medium text-sm">
+                                                    VIEW PRICES
+                                                </button>
+                                            </div>
+
+
+                                            {/* ---- Mid Bottom Row ---- */}
+                                            <div className="flex items-center justify-between text-sm font-medium">
+                                                {/* Left section */}
+                                                <div className="pr-5 flex items-center px-3 py-1 rounded">
+                                                    <span className="text-[#811919] font-semibold">Add Compare More +</span>
+                                                </div>
+
+                                                {/* Right section with gradient */}
+                                                <div className='pr-25 relative rounded-full' style={{ position: 'relative' }}>
+                                                    <div className='rounded-full'
+                                                        style={{
+                                                            position: 'absolute',
+                                                            top: 0,
+                                                            left: 0,
+                                                            width: '100%',
+                                                            height: '100%',
+                                                            background: 'linear-gradient(90deg, rgba(153 150 150) 0%, rgba(255,255,255,0.5) 100%)',
+                                                            pointerEvents: 'none',
+                                                            zIndex: 0,
+                                                        }}
+                                                    />
+
+                                                    {/* Content */}
+                                                    <div className='flex flex-row' style={{ position: 'relative', zIndex: 1 }}>
+                                                        <img src={Lock} alt="LOCK" className='px-2' />
+                                                        <p className='text-xs'>Lock this price starting from ₹ 413</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* ---- Bottom Row ---- */}
+                                            <div className="flex items-center justify-between text-sm font-medium">
+                                                {/* Left section */}
+                                                <div className='pl-5 pr-55 relative' style={{ position: 'relative' }}>
+                                                    <div
+                                                        style={{
+                                                            position: 'absolute',
+                                                            top: 0,
+                                                            left: 0,
+                                                            width: '100%',
+                                                            height: '100%',
+                                                            background: 'linear-gradient(90deg, #949494ff 0%, rgba(255,255,255,0.5) 100%)',
+                                                            pointerEvents: 'none', // ensures text is clickable/selectable
+                                                            zIndex: 0,
+                                                        }}
+                                                    />
+                                                    {/* Content */}
+                                                    <div style={{ position: 'relative', zIndex: 1 }} className='flex flex-row items-center'>
+                                                        <div className='bg-[#720E0E] w-2 h-2 rounded-full mr-2'></div>
+                                                        <p className='text-xs'>FLAT ₹177 OFF using  MMTSUPER</p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Right section with gradient */}
+                                                <div className="pr-5 flex items-center px-3 py-1 rounded">
+                                                    <button className="text-[#811919] hover:underline text-sm"
+                                                        onClick={() =>
+                                                            setSelectedFlightId(
+                                                                selectedFlightId === flight.id ? null : flight.id
+                                                            )
+                                                        }
+                                                    >
+                                                        {selectedFlightId === flight.id ? "Hide" : "View"} Flight Details
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* ---- Slide-Down Details ---- */}
+                                        <div
+                                            className={`mt-5 overflow-hidden transition-[max-height] duration-900 ease-in-out ${selectedFlightId === flight.id ? "max-h-96" : "max-h-0"
+                                                }`}
+                                        >
+                                            {selectedFlightId === flight.id && (
+                                                <FlightDetails flight={flight} />
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div >
+        </>
     );
-};
-
-export default FlightResults;
+}

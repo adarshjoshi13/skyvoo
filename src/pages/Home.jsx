@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import PromotionalCard from '../components/PromotionalCard';
 import BookingForm from '../components/BookingForm';
 import SignInModal from '../components/SignInModal';
+import GrayFadedBg from '@/assets/imgs/grayfadedbg.png'
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,8 +18,8 @@ export default function Home() {
         <div className="relative min-h-[80vh] bg-white bg-cover bg-center">
           <img
             className="absolute right-0 z-10 max-w-full h-auto object-cover"
-            src="./src/assets/imgs/try.png"
-            alt=""
+            src={GrayFadedBg}
+            alt="gray faded bg"
           />
 
           <Header onOpen={() => setIsModalOpen(true)} />

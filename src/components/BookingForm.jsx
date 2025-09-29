@@ -3,17 +3,50 @@ import { CirclePlus, Calendar } from 'lucide-react';
 import { Field, Select } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import clsx from 'clsx';
+import { useNavigate } from 'react-router-dom';
+import DatePicker from 'react-datepicker';
+import Plane from '@/assets/vectors/Plane.svg';
+import Bed from '@/assets/vectors/Bed.svg';
+import Car from '@/assets/vectors/Car.svg';
+import Mic from '@/assets/vectors/Mic.svg';
+import FlyingPlane from '@/assets/vectors/FlyingPlane.svg';
+import Person from '@/assets/vectors/Person.svg';
+import RipSide from '@/assets/imgs/ripSide.png';
+import 'react-datepicker/dist/react-datepicker.css';
 
 function BookingForm() {
+
+    const navigate = useNavigate();
     const [tripType, setTripType] = useState('oneWay');
     const [fareType, setFareType] = useState('regular');
     const [classType, setClassType] = useState('Coach');
     const [isSwapping, setIsSwapping] = useState(false);
     const [rotation, setRotation] = useState(0);
+    const [flightSearchInfo, setFlightSearchInfo] = useState({
+        from: '',
+        to: '',
+        depart: null,
+        return: null,
+        traveller: 1,
+    });
+
+    const handleFlightInputChange = (field, value) => {
+        setFlightSearchInfo(prev => ({ ...prev, [field]: value }));
+    };
 
     const handleSwap = () => {
         setRotation(prevRotation => prevRotation + 180);
-        setIsSwapping(!isSwapping);
+        setIsSwapping(prev => !prev);
+
+        setFlightSearchInfo(prev => ({
+            ...prev,
+            from: prev.to,
+            to: prev.from,
+        }));
+    };
+
+    const searchFlightResults = () => {
+        navigate('/search-results');
     };
 
     return (
@@ -23,7 +56,7 @@ function BookingForm() {
         >
             <img
                 className="absolute -right-2 top-1/2 -translate-y-1/2 h-[77%] hidden lg:block"
-                src="./src/assets/imgs/ripSide.png"
+                src={RipSide}
                 alt="ribbon side"
             />
 
@@ -31,27 +64,28 @@ function BookingForm() {
                 {/* Tab Navigation */}
                 <div className="flex flex-wrap sm:flex-nowrap items-center space-x-2 sm:space-x-3 mb-4 text-black text-lg font-semibold">
                     <button className="secondary-font flex items-center space-x-1 bg-[#D9D9D9] rounded-md px-3 sm:px-4 py-1 cursor-pointer text-black border-2 border-black">
-                        <img src="./src/assets/imgs/vectors/Plane.svg" alt="plane" className="w-5 h-5" />
+                        <img src={Plane} alt="plane" className="w-5 h-5" />
                         <span className='ml-1'>Flights</span>
                     </button>
 
                     <button className="secondary-font flex items-center space-x-1 rounded-md px-3 sm:px-4 py-1 cursor-pointer border-2 border-transparent hover:bg-[#D9D9D9] hover:border-black hover:text-black">
-                        <img src="./src/assets/imgs/vectors/Bed.svg" alt="bed" className="w-6 h-6 sm:w-7 sm:h-7" />
+                        <img src={Bed} alt="bed" className="w-6 h-6 sm:w-7 sm:h-7" />
+
                         <span className='ml-1'>Hotels</span>
                     </button>
 
                     <button className="secondary-font flex items-center space-x-1 rounded-md px-3 sm:px-4 py-1 cursor-pointer border-2 border-transparent hover:bg-[#D9D9D9] hover:border-black hover:text-black">
-                        <img src="./src/assets/imgs/vectors/Car.svg" alt="car" className="w-6 h-6 sm:w-7 sm:h-7" />
+                        <img src={Car} alt="car" className="w-6 h-6 sm:w-7 sm:h-7" />
                         <span className='ml-1'>Cabs</span>
                     </button>
 
                     <button className="secondary-font flex items-center text-black font-medium cursor-pointer px-3 sm:px-4 py-2 border-2 border-transparent hover:text-gray-500 ml-auto">
-                        <img src="./src/assets/imgs/vectors/Mic.svg" alt="mic" className="w-5 h-5" />
+                        <img src={Mic} alt="mic" className="w-5 h-5" />
                         <span className='ml-1'>Customer Support</span>
                     </button>
                 </div>
 
-                <div className='mb-3 grid grid-cols-12 gap-8 '> <div className="col-span-8 flex items-center relative" style={{ right: "40px" }} > <div className=" h-4 relative ribbon animate-ribbon mr-2"></div> <img src="./src/assets/imgs/vectors/FlyingPlane.svg" alt="" /> </div> </div>
+                <div className='mb-3 grid grid-cols-12 gap-8 '> <div className="col-span-8 flex items-center relative" style={{ right: "40px" }} > <div className=" h-4 relative ribbon animate-ribbon mr-2"></div> <img src={FlyingPlane} alt="flyingplane" /> </div> </div>
 
                 {/* Trip Type Selection */}
                 <div className="flex filter-section flex-wrap gap-2 sm:gap-4 mb-4 text-lg secondary-font font-semibold">
@@ -106,6 +140,8 @@ function BookingForm() {
                             <input
                                 type="text"
                                 placeholder="Origin"
+                                value={flightSearchInfo.from}
+                                onChange={(e) => handleFlightInputChange('from', e.target.value)}
                                 className="w-full text-xl border-b text-[#525252] border-gray-400 focus:outline-none placeholder-gray-400"
                             />
                         </div>
@@ -136,37 +172,63 @@ function BookingForm() {
                             <input
                                 type="text"
                                 placeholder="Destination"
+                                value={flightSearchInfo.to}
+                                onChange={(e) => handleFlightInputChange('to', e.target.value)}
                                 className="w-full text-xl text-[#525252] border-b border-gray-400 focus:outline-none placeholder-gray-400"
                             />
                         </div>
 
                         {/* Depart & Return */}
-                        {['Depart', 'Return'].map((label, idx) => (
-                            <div key={label} className="col-span-12 sm:col-span-2 flex items-center gap-3">
-                                <div className='flex items-center'>
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        {[{ label: 'Depart', key: 'depart' }, { label: 'Return', key: 'return' }].map(({ label, key }) => (
+                            <div key={key} className="col-span-12 sm:col-span-2 flex items-center gap-3">
+                                <div className="flex items-center">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="w-6 h-6 text-gray-600"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                        />
                                     </svg>
                                 </div>
-                                <div className="flex flex-col">
+                                <div className="flex flex-col w-full">
                                     <label className="block text-lg text-gray-700 flex items-center gap-2">{label}</label>
-                                    <input type="text" placeholder="Date" className="w-full text-xl text-[#525252] border-b border-gray-400 focus:outline-none placeholder-gray-400" />
+                                    <DatePicker
+                                        selected={flightSearchInfo[key]}
+                                        onChange={(date) => handleFlightInputChange(key, date)}
+                                        minDate={new Date()}
+                                        monthsShown={2} // shows 2 months side by side
+                                        placeholderText={`Date`}
+                                        className="w-full text-xl text-[#525252] border-b border-gray-400 focus:outline-none placeholder-gray-400"
+                                    />
                                 </div>
                             </div>
                         ))}
-
                         {/* Traveler */}
                         <div className="col-span-12 sm:col-span-2 flex items-center gap-3">
-                            <img src="./src/assets/imgs/vectors/Person.svg" alt="traveler" className="w-6 h-6" />
+                            <img src={Person} alt="traveler" className="w-6 h-6" />
                             <div className="flex flex-col">
                                 <label className="block text-lg text-gray-700 flex items-center gap-2">Traveler</label>
-                                <input type="number" min="1" placeholder="1" className="w-16 text-xl border text-[#525252] border-gray-400 rounded-md text-center focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none[appearance:textfield]" />
+                                <input
+                                    type="number"
+                                    min="1"
+                                    placeholder="1"
+                                    value={flightSearchInfo.traveller}
+                                    onChange={(e) => handleFlightInputChange('traveller', e.target.value)}
+                                    className="w-16 text-xl border text-[#525252] border-gray-400 rounded-md text-center focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none[appearance:textfield]"
+                                />
                             </div>
                         </div>
 
                         {/* Search Button */}
                         <div className="col-span-12 sm:col-span-1 flex justify-center">
-                            <button className="bg-black hover:bg-gray-800 text-white p-4 rounded-xl transition flex items-center justify-center">
+                            <button className="cursor-pointer bg-black hover:bg-gray-800 text-white p-4 rounded-xl transition flex items-center justify-center" onClick={() => { searchFlightResults() }}>
                                 <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                                     <circle cx="11" cy="11" r="8" />
                                     <path d="m21 21-4.3-4.3" />

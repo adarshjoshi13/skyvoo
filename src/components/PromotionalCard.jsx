@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import StickerStack from './StickerStack'
-import MoveUpRightArrow from "../assets/imgs/vectors/MoveUpRightArrow.svg";
+import MoveUpRightArrow from "@/assets/vectors/MoveUpRightArrow.svg";
 
 function PromotionalCard() {
 
