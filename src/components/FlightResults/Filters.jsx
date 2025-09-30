@@ -257,7 +257,7 @@ function Filters() {
                         onClick={() => setDeparture("Early Morning")}
                         className="cursor-pointer text-center flex flex-col items-center"
                     >
-                        <div className={`w-10 h-10 rounded-full p-2 flex items-center justify-center mb-2 transition-colors duration-200 ${departure === "Early Morning" ? "bg-[#78080B]" : "bg-red-100"}`}>
+                        <div className={`w-10 h-10 rounded-full p-2 flex items-center justify-center mb-2 transition-colors duration-200  ${departure === "Early Morning" ? "bg-[#78080B]" : "border-[#B5B5B5] border-2 border-solid"}`}>
                             <img
                                 src={Sunrise}
                                 alt="sunrise img"
@@ -274,7 +274,7 @@ function Filters() {
                         onClick={() => setDeparture("Morning")}
                         className="cursor-pointer text-center flex flex-col items-center"
                     >
-                        <div className={`w-10 h-10 rounded-full p-2 flex items-center justify-center mb-2 transition-colors duration-200 ${departure === "Morning" ? "bg-[#78080B]" : "bg-red-100"}`}>
+                        <div className={`w-10 h-10 rounded-full p-2 flex items-center justify-center mb-2 transition-colors duration-200  ${departure === "Morning" ? "bg-[#78080B]" : "border-[#B5B5B5] border-2 border-solid"}`}>
                             <img
                                 src={Sunnyday}
                                 alt="sunnyday img"
@@ -291,7 +291,7 @@ function Filters() {
                         onClick={() => setDeparture("Afternoon")}
                         className="cursor-pointer text-center flex flex-col items-center"
                     >
-                        <div className={`w-10 h-10 rounded-full p-2 flex items-center justify-center mb-2 transition-colors duration-200 ${departure === "Afternoon" ? "bg-[#78080B]" : "bg-red-100"}`}>
+                        <div className={`w-10 h-10 rounded-full p-2 flex items-center justify-center mb-2 transition-colors duration-200  ${departure === "Afternoon" ? "bg-[#78080B]" : "border-[#B5B5B5] border-2 border-solid"}`}>
                             <img
                                 src={Afternoon}
                                 alt="afternoon img"
@@ -308,7 +308,7 @@ function Filters() {
                         onClick={() => setDeparture("Night")}
                         className="cursor-pointer text-center flex flex-col items-center"
                     >
-                        <div className={`w-10 h-10 rounded-full p-2 flex items-center justify-center mb-2 transition-colors duration-200 ${departure === "Night" ? "bg-[#78080B]" : "bg-red-100"}`}>
+                        <div className={`w-10 h-10 rounded-full p-2 flex items-center justify-center mb-2 transition-colors duration-200  ${departure === "Night" ? "bg-[#78080B]" : "border-[#B5B5B5] border-2 border-solid"}`}>
                             <img
                                 src={Night}
                                 alt="night img"
@@ -330,7 +330,7 @@ function Filters() {
 
                     {/* Early Morning */}
                     <div onClick={() => setArrival("Early Morning")} className="cursor-pointer text-center flex flex-col items-center mx-3" >
-                        <div className={`w-10 h-10 rounded-full p-2 flex items-center justify-center mb-2 transition-colors duration-200 ${arrival === "Early Morning" ? "bg-[#78080B]" : "bg-red-100"}`}>
+                        <div className={`w-10 h-10 rounded-full p-2 flex items-center justify-center mb-2 transition-colors duration-200  ${arrival === "Early Morning" ? "bg-[#78080B]" : "border-[#B5B5B5] border-2 border-solid"}`}>
                             <img
                                 src={Sunrise}
                                 alt="sunrise img"
@@ -344,7 +344,7 @@ function Filters() {
 
                     {/* Night */}
                     <div onClick={() => setArrival("Night")} className="cursor-pointer text-center flex flex-col items-center mx-3" >
-                        <div className={`w-10 h-10 rounded-full p-2 flex items-center justify-center mb-2 transition-colors duration-200 ${arrival === "Night" ? "bg-[#78080B]" : "bg-red-100"}`}>
+                        <div className={`w-10 h-10 rounded-full p-2 flex items-center justify-center mb-2 transition-colors duration-200  ${arrival === "Night" ? "bg-[#78080B]" : "border-[#B5B5B5] border-2 border-solid"}`}>
                             <img
                                 src={Night}
                                 alt="night img"

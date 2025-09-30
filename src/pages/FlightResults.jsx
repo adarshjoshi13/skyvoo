@@ -58,6 +58,7 @@ export default function FlightResults() {
 
     const validateTravellers = () => {
         // Interpret '>9' as 10, '>6' as 7 for validation and totals
+        setShowTravellerBox(!showTravellerBox)
         const adultsVal = travellers.adults === '>9' ? 10 : travellers.adults;
         const childrenVal = travellers.children === '>6' ? 7 : travellers.children;
         const infantsVal = travellers.infants === '>6' ? 7 : travellers.infants;
@@ -85,54 +86,140 @@ export default function FlightResults() {
     };
 
     // Sample flight data
+    // Sample flight data
     const flights = [
         {
             id: 1,
-            airline: 'Vistara',
-            flightNumber: 'UK 850',
-            departure: { time: '00:45', city: 'New Delhi' },
-            arrival: { time: '03:45', city: 'Mumbai' },
-            duration: '2h 50m',
-            stops: 'Non Stop',
+            airline: "Vistara",
+            flightNumber: "UK 850",
+            departure: {
+                time: "00:45",
+                city: "New Delhi",
+                date: "15",
+                day: "Mon",
+                month: "Oct"
+            },
+            arrival: {
+                time: "03:45",
+                city: "Mumbai",
+                date: "15",
+                day: "Mon",
+                month: "Oct"
+            },
+            duration: "2h 50m",
+            stops: "Non Stop",
             price: 7500,
-            departure_info: '1hr 30m before departure',
+            departure_info: "1hr 30m before departure",
             highlighted: true,
+            fareSummary: {
+                base: "₹6,200",
+                taxes: "₹1,300",
+                total: "₹7,500",
+            },
+            cancellation:
+                "Full refund if cancelled at least 24 hours before departure. 50% refund within 24 hours of departure.",
+            dateChange:
+                "Date changes allowed up to 2 hours before departure with a ₹2,000 fee plus fare difference.",
         },
         {
             id: 2,
-            airline: 'Vistara',
-            flightNumber: 'UK 860',
-            departure: { time: '00:45', city: 'New Delhi' },
-            arrival: { time: '03:45', city: 'Mumbai' },
-            duration: '2h 50m',
-            stops: '2 Stops',
-            price: 7500,
-            departure_info: '1hr 30m before departure'
+            airline: "Vistara",
+            flightNumber: "UK 860",
+            departure: {
+                time: "05:20",
+                city: "New Delhi",
+                date: "15",
+                day: "Mon",
+                month: "Oct"
+            },
+            arrival: {
+                time: "08:15",
+                city: "Mumbai",
+                date: "15",
+                day: "Mon",
+                month: "Oct"
+            },
+            duration: "2h 55m",
+            stops: "2 Stops",
+            price: 6800,
+            departure_info: "1hr 30m before departure",
+            fareSummary: {
+                base: "₹5,600",
+                taxes: "₹1,200",
+                total: "₹6,800",
+            },
+            cancellation:
+                "Free cancellation up to 48 hours before departure. After that, ₹1,000 fee applies.",
+            dateChange:
+                "Change allowed up to 4 hours before departure with ₹1,500 fee plus fare difference.",
         },
         {
             id: 3,
-            airline: 'Vistara',
-            flightNumber: 'UK 870',
-            departure: { time: '00:45', city: 'New Delhi' },
-            arrival: { time: '03:45', city: 'Mumbai' },
-            duration: '2h 50m',
-            stops: '2 Stops',
-            price: 7500,
-            departure_info: '1hr 30m before departure',
-            highlighted: true
+            airline: "Vistara",
+            flightNumber: "UK 870",
+            departure: {
+                time: "11:00",
+                city: "New Delhi",
+                date: "15",
+                day: "Mon",
+                month: "Oct"
+            },
+            arrival: {
+                time: "14:00",
+                city: "Mumbai",
+                date: "15",
+                day: "Mon",
+                month: "Oct"
+            },
+            duration: "3h 00m",
+            stops: "2 Stops",
+            price: 7200,
+            departure_info: "1hr 30m before departure",
+            highlighted: true,
+            fareSummary: {
+                base: "₹6,000",
+                taxes: "₹1,200",
+                total: "₹7,200",
+            },
+            cancellation:
+                "Full refund if cancelled at least 24 hours before departure. 50% refund within 24 hours.",
+            dateChange:
+                "Date change allowed until 3 hours before departure with ₹1,800 fee plus fare difference.",
         },
         {
             id: 4,
-            airline: 'Vistara',
-            flightNumber: 'UK 880',
-            departure: { time: '00:45', city: 'New Delhi' },
-            arrival: { time: '03:45', city: 'Mumbai' },
-            duration: '2h 50m',
-            stops: '2 Stops',
-            price: 7500,
-            departure_info: '1hr 30m before departure'
-        }
+            airline: "Vistara",
+            flightNumber: "UK 880",
+            departure: {
+                time: "18:30",
+                city: "New Delhi",
+                date: "15",
+                day: "Mon",
+                month: "Oct"
+            },
+            arrival: {
+                time: "21:20",
+                city: "Mumbai",
+                date: "15",
+                day: "Mon",
+                month: "Oct"
+            },
+            duration: "2h 50m",
+            stops: "2 Stops",
+            price: 6900,
+            departure_info: "1hr 30m before departure",
+            fareSummary: {
+                base: "₹5,700",
+                taxes: "₹1,200",
+                total: "₹6,900",
+            },
+            cancellation:
+                "Cancel up to 24 hours before departure for a ₹1,000 fee. No refund after that.",
+            dateChange:
+                "Date change allowed up to 1 hour before departure with ₹2,000 fee plus fare difference.",
+        },
     ];
+
 
     return (
         <>
@@ -389,9 +476,9 @@ export default function FlightResults() {
                                         </div>
 
                                         {/* Search Button */}
-                                        <div className="col-span-12 sm:col-span-2 flex justify-center bg-[#78080B] rounded-sm p-1">
-                                            <button onClick={validateTravellers} className='btn'>
-                                                <span className="button-text text-white secondary-font">D O N E</span>
+                                        <div onClick={validateTravellers} className="cursor-pointer col-span-12 sm:col-span-2 flex justify-center bg-[#78080B] rounded-sm p-1">
+                                            <button className='btn '>
+                                                <span className="cursor-pointer button-text text-white secondary-font">D O N E</span>
                                             </button>
                                         </div>
 
@@ -500,10 +587,9 @@ export default function FlightResults() {
                                     >
 
                                         <div className={`py-4 relative bg-cover bg-center rounded-2xl shadow-sm hover:shadow-md transition-shadow secondary-font  ${flight.highlighted ? "" : ""}`}
-                                            style={{ backgroundImage: "url('/src/assets/imgs/flightresultsbg.jpg')" }}
-                                        >
+                                            style={{ backgroundImage: "url('/src/assets/imgs/flightresultsbg.jpg')", boxShadow: "-3px 4px 20px -2px rgba(0, 0, 0, 0.25)" }}>
                                             <img
-                                                className="absolute -right-[0.370rem] top-1/2 -translate-y-1/2 h-[90%] hidden lg:block"
+                                                className="absolute -right-[0.330rem] top-1/2 -translate-y-1/2 h-[90%] hidden lg:block"
                                                 src={RipSide}
                                                 alt="ribbon side"
                                             />
@@ -592,14 +678,14 @@ export default function FlightResults() {
 
                                                 {/* Right section with gradient */}
                                                 <div className='pr-25 relative rounded-full' style={{ position: 'relative' }}>
-                                                    <div className='rounded-full'
+                                                    <div className='rounded-l-full'
                                                         style={{
                                                             position: 'absolute',
                                                             top: 0,
                                                             left: 0,
                                                             width: '100%',
                                                             height: '100%',
-                                                            background: 'linear-gradient(90deg, rgba(153 150 150) 0%, rgba(255,255,255,0.5) 100%)',
+                                                            background: 'linear-gradient(90deg, rgba(205 205 205) 0%, rgba(255,255,255,0.5) 100%)',
                                                             pointerEvents: 'none',
                                                             zIndex: 0,
                                                         }}
@@ -624,7 +710,7 @@ export default function FlightResults() {
                                                             left: 0,
                                                             width: '100%',
                                                             height: '100%',
-                                                            background: 'linear-gradient(90deg, #949494ff 0%, rgba(255,255,255,0.5) 100%)',
+                                                            background: 'linear-gradient(90deg, rgba(205 205 205) 0%, rgba(255,255,255,0.5) 100%)',
                                                             pointerEvents: 'none', // ensures text is clickable/selectable
                                                             zIndex: 0,
                                                         }}
@@ -638,7 +724,7 @@ export default function FlightResults() {
 
                                                 {/* Right section with gradient */}
                                                 <div className="pr-5 flex items-center px-3 py-1 rounded">
-                                                    <button className="text-[#811919] hover:underline text-sm"
+                                                    <button className="text-[#811919] cursor-pointer hover:underline text-sm"
                                                         onClick={() =>
                                                             setSelectedFlightId(
                                                                 selectedFlightId === flight.id ? null : flight.id
