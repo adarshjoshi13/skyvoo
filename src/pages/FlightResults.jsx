@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import FlightResultsHeader from '../components/FlightResults/FlightResultsHeader';
 import Filters from '../components/FlightResults/Filters';
+import FlightPriceDetailsModal from '../components/FlightResults/FlightPriceDetailsModal';
 import SignInModal from '../components/SignInModal';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -10,11 +11,16 @@ import GrayFadedBg from '@/assets/imgs/grayfadedbg.png'
 import AirlineLogo from '@/assets/imgs/airlinelogo.png'
 import RipSide from '@/assets/imgs/ripSide.png'
 import Stopwatch from '@/assets/vectors/stopwatch.svg'
+import Cheapest from '@/assets/vectors/Cheapest.svg'
+import Nonstop from '@/assets/vectors/Nonstop.svg'
+import Other from '@/assets/vectors/Other.svg'
+import Preference from '@/assets/vectors/Preference.svg'
 import Lock from '@/assets/vectors/lock.svg'
 import FlightDetails from '../components/FlightResults/FlightDetails'
 
 export default function FlightResults() {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isFlightDetailsModalOpen, setIsFlightDetailsModalOpen] = useState(false);
+    const [isSignInModal, setIsSignInModal] = useState(false);
     const [selectedSort, setSelectedSort] = useState('CHEAPEST');
     const [isSwapping, setIsSwapping] = useState(false);
     const [rotation, setRotation] = useState(0);
@@ -52,10 +58,6 @@ export default function FlightResults() {
         }));
     };
 
-    const searchFlightResults = () => {
-        navigate('/search-results');
-    };
-
     const validateTravellers = () => {
         // Interpret '>9' as 10, '>6' as 7 for validation and totals
         setShowTravellerBox(!showTravellerBox)
@@ -85,7 +87,6 @@ export default function FlightResults() {
         return true;
     };
 
-    // Sample flight data
     // Sample flight data
     const flights = [
         {
@@ -223,8 +224,8 @@ export default function FlightResults() {
 
     return (
         <>
-            {isModalOpen && <SignInModal onClose={() => setIsModalOpen(false)} />}
-
+            {isFlightDetailsModalOpen && <FlightPriceDetailsModal onClose={() => setIsFlightDetailsModalOpen(false)} />}
+            {isSignInModal && <SignInModal onClose={() => setIsSignInModal(false)} />}
             <div className="relative min-h-screen bg-gray-100">
 
                 <img
@@ -232,7 +233,7 @@ export default function FlightResults() {
                     src={GrayFadedBg}
                     alt="gray faded background"
                 />
-                <FlightResultsHeader onOpen={() => setIsModalOpen(true)} />
+                <FlightResultsHeader onOpen={() => setIsSignInModal(true)} />
 
                 {/* Search Header */}
                 <div className="relative bg-[#78080B] text-white px-4 py-5 z-999"
@@ -506,20 +507,20 @@ export default function FlightResults() {
                             {/* Label */}
                             <span className="text-base">Fare Type</span>
 
-                            {/* Options */}
-                            <div className="flex flex-row space-x-6 rounded-xl glass-card">
+                            {/* Glass effect wrapper */}
+                            <div className="flex flex-row space-x-6 rounded-xl glasseffect px-4 ">
                                 {[
-                                    { value: 'regular', label: 'Regular', checked: true },
-                                    { value: 'student', label: 'Student' },
-                                    { value: 'senior', label: 'Senior Citizen' },
-                                    { value: 'armed', label: 'Armed Forces' },
-                                    { value: 'doctor', label: 'Doctor and Nurses' },
+                                    { value: "regular", label: "Regular", checked: true },
+                                    { value: "student", label: "Student" },
+                                    { value: "senior", label: "Senior Citizen" },
+                                    { value: "armed", label: "Armed Forces" },
+                                    { value: "doctor", label: "Doctor and Nurses" },
                                 ].map(({ value, label, checked }, i) => (
                                     <div
                                         key={value}
-                                        className={`p-2 border-white border-solid ${i !== 0 ? 'border-l-1' : ''}`}
+                                        className={`${i !== 0 ? "border-l border-white" : ""}`}
                                     >
-                                        <label className="flex items-center space-x-1">
+                                        <label className="flex py-2 ml-2 items-center space-x-1 cursor-pointer">
                                             <input
                                                 type="radio"
                                                 name="fareType"
@@ -532,8 +533,9 @@ export default function FlightResults() {
                                     </div>
                                 ))}
                             </div>
-
                         </div>
+
+
                     </div>
 
                 </div>
@@ -547,36 +549,71 @@ export default function FlightResults() {
                         {/* Results Area */}
                         <div className="flex-1">
                             {/* Sorting Options */}
-                            <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
-                                <h2 className="text-xl font-bold mb-4">Flights from New Delhi to Mumbai</h2>
-                                <div className="flex space-x-4">
+                            <div className="glasseffect rounded-lg shadow-sm p-4 mb-4 secondary-font">
+                                <div className="grid grid-cols-4 gap-4">
                                     <button
-                                        className={`px-4 py-2 rounded ${selectedSort === 'CHEAPEST' ? 'bg-red-100 text-red-600 border border-red-200' : 'bg-gray-100'}`}
+                                        className={`cursor-pointer px-4 py-2 rounded flex items-center justify-start ${selectedSort === 'CHEAPEST' ? 'bg-white ' : 'bg-gray-100'}`}
+                                        style={{ boxShadow: "3px 1px 4px 0px rgba(0, 0, 0, 0.25)" }}
                                         onClick={() => setSelectedSort('CHEAPEST')}
                                     >
-                                        <div className="text-sm font-medium">CHEAPEST</div>
-                                        <div className="text-xs">₹ 5,500 • 2h 50m</div>
+                                        <div className='mr-4 border-1 border-solid border-[#A8A8A8] bg-[#D9D9D9] p-1 rounded-md'>
+                                            <img src={Cheapest} alt="cheapest" />
+                                        </div>
+                                        <div className='text-start'>
+                                            <div className="text-base font-medium">CHEAPEST</div>
+                                            <div className="text-xs">₹ 5,500 | 2h 50m</div>
+                                        </div>
                                     </button>
+
                                     <button
-                                        className={`px-4 py-2 rounded ${selectedSort === 'NON_STOP_FIRST' ? 'bg-red-100 text-red-600 border border-red-200' : 'bg-gray-100'}`}
-                                        onClick={() => setSelectedSort('NON_STOP_FIRST')}
+                                        className={`cursor-pointer px-4 py-2 rounded flex items-center justify-start ${selectedSort === 'CHEAPEST' ? 'bg-white ' : 'bg-gray-100'}`}
+                                        style={{ boxShadow: "3px 1px 4px 0px rgba(0, 0, 0, 0.25)" }}
+                                        onClick={() => setSelectedSort('CHEAPEST')}
                                     >
-                                        <div className="text-sm font-medium">NON STOP FIRST</div>
-                                        <div className="text-xs">₹ 5,500 • 2h 50m</div>
+                                        <div className='mr-3 border-1 border-solid border-[#A8A8A8] bg-[#D9D9D9] p-1 rounded-md'>
+                                            <img src={Nonstop} alt="Nonstop" />
+                                        </div>
+                                        <div className='text-start'>
+                                            <div className="text-base font-medium">NON STOP FIRST</div>
+                                            <div className="text-xs">₹ 9,900 | 02h 20m</div>
+                                        </div>
                                     </button>
+
                                     <button
-                                        className={`px-4 py-2 rounded ${selectedSort === 'YOU_MAY_PREFER' ? 'bg-red-100 text-red-600 border border-red-200' : 'bg-gray-100'}`}
-                                        onClick={() => setSelectedSort('YOU_MAY_PREFER')}
+                                        className={`cursor-pointer px-4 py-2 rounded flex items-center justify-start ${selectedSort === 'CHEAPEST' ? 'bg-white ' : 'bg-gray-100'}`}
+                                        style={{ boxShadow: "3px 1px 4px 0px rgba(0, 0, 0, 0.25)" }}
+                                        onClick={() => setSelectedSort('CHEAPEST')}
                                     >
-                                        <div className="text-sm font-medium">YOU MAY PREFER</div>
-                                        <div className="text-xs">₹ 7,500 • 2h 50m</div>
+                                        <div className='mr-4 border-1 border-solid border-[#A8A8A8] bg-[#D9D9D9] p-1 rounded-md'>
+                                            <img src={Preference} alt="Preference" />
+                                        </div>
+                                        <div className='text-start'>
+                                            <div className="text-lg font-medium">BEST PICK</div>
+                                            <div className="text-xs">₹ 7,900 | 01 h 20m</div>
+                                        </div>
                                     </button>
-                                    <button className="px-4 py-2 bg-gray-100 rounded">
-                                        <div className="text-sm font-medium">Other</div>
-                                        <div className="text-xs">Sort</div>
+
+                                    <button
+                                        className={`cursor-pointer px-4 py-2 rounded flex items-center justify-start ${selectedSort === 'CHEAPEST' ? 'bg-white ' : 'bg-gray-100'}`}
+                                        style={{ boxShadow: "3px 1px 4px 0px rgba(0, 0, 0, 0.25)" }}
+                                        onClick={() => setSelectedSort('CHEAPEST')}
+                                    >
+                                        <div className='mr-4 border-1 border-solid border-[#A8A8A8] bg-[#D9D9D9] p-1 rounded-md'>
+                                            <img src={Other} alt="Other" />
+                                        </div>
+                                        <div className='text-start'>
+                                            <div className="text-lg font-medium">OTHER</div>
+                                            <div className="text-xs">Sort</div>
+                                        </div>
                                     </button>
+
                                 </div>
+
+                                <h2 className="text-xl font-bold mb-4 mt-4">
+                                    Flights from New Delhi to Mumbai
+                                </h2>
                             </div>
+
 
                             {/* Flight Results */}
                             <div className="space-y-4">
@@ -663,7 +700,7 @@ export default function FlightResults() {
                                                 </div>
 
                                                 {/* Button */}
-                                                <button className="bg-[#811919] hover:bg-[#741111] text-white px-4 py-1 rounded-full font-medium text-sm">
+                                                <button className="bg-[#811919] hover:bg-[#741111] text-white px-4 py-1 rounded-full font-medium text-sm" onClick={() => setIsFlightDetailsModalOpen(true)}>
                                                     VIEW PRICES
                                                 </button>
                                             </div>

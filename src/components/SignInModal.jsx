@@ -4,7 +4,7 @@ import { Mail, LockKeyhole, Eye, LogOut } from 'lucide-react';
 export default function SignInModal({ onClose }) {
     return (
         <div
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-9999"
             onClick={onClose}
             style={{ animation: 'fadeIn 0.3s ease-out forwards' }}
         >
