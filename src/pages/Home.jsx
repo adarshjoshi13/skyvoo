@@ -5,7 +5,7 @@ import PromotionalCard from '../components/PromotionalCard';
 import BookingForm from '../components/BookingForm';
 import SignInModal from '../components/SignInModal';
 import GrayFadedBg from '@/assets/imgs/grayfadedbg.png'
-import BookingBg from '@/assets/imgs/bookingbg.png'
+import BookingBg from '@/assets/imgs/bookingbg.png';
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
