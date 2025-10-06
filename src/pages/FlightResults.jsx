@@ -17,6 +17,7 @@ import Other from '@/assets/vectors/Other.svg'
 import Preference from '@/assets/vectors/Preference.svg'
 import Lock from '@/assets/vectors/lock.svg'
 import FlightDetails from '../components/FlightResults/FlightDetails'
+import BookingFlightFormBg from "@/assets/imgs/bookingForm.png";
 
 export default function FlightResults() {
     const [compareFlight, setCompareFlight] = useState(null);
@@ -224,7 +225,6 @@ export default function FlightResults() {
         },
     ];
 
-    console.log(selectedFlights, 'show me this')
     return (
         <>
             {selectedFlights.length > 0 && (
@@ -684,7 +684,7 @@ export default function FlightResults() {
                                     >
 
                                         <div className={`py-4 relative bg-cover bg-center rounded-2xl shadow-sm hover:shadow-md transition-shadow secondary-font  ${flight.highlighted ? "" : ""}`}
-                                            style={{ backgroundImage: "url('/src/assets/imgs/flightresultsbg.jpg')", boxShadow: "-3px 4px 20px -2px rgba(0, 0, 0, 0.25)" }}>
+                                            style={{ backgroundImage: `url(${BookingFlightFormBg})`, boxShadow: "-3px 4px 20px -2px rgba(0, 0, 0, 0.25)" }}>
                                             <img
                                                 className="absolute -right-[0.330rem] top-1/2 -translate-y-1/2 h-[90%] hidden lg:block"
                                                 src={RipSide}

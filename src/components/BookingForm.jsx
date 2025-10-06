@@ -12,6 +12,7 @@ import Mic from '@/assets/vectors/Mic.svg';
 import FlyingPlane from '@/assets/vectors/FlyingPlane.svg';
 import Person from '@/assets/vectors/Person.svg';
 import RipSide from '@/assets/imgs/ripSide.png';
+import BookingFlightFormBg from "@/assets/imgs/bookingForm.png";
 import 'react-datepicker/dist/react-datepicker.css';
 
 function BookingForm() {
@@ -52,7 +53,7 @@ function BookingForm() {
     return (
         <div
             className="relative grid grid-cols-12 gap-8 bg-no-repeat bg-cover bg-center rounded-[45px] shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
-            style={{ backgroundImage: "url('/src/assets/imgs/bookingForm.png')" }}
+            style={{ backgroundImage: `url(${BookingFlightFormBg})` }}
         >
             <img
                 className="absolute -right-2 top-1/2 -translate-y-1/2 h-[77%] hidden lg:block"
