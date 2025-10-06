@@ -53,7 +53,7 @@ export default function Home() {
 
         {/* Booking Section */}
         <div
-          className="py-12 sm:py-16 bg-cover bg-center"
+          className="py-12 sm:py-16 bg-cover bg-center MEOW"
           style={{ backgroundImage: `url(${BookingBg})` }}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

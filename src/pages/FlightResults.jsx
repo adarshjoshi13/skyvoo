@@ -224,20 +224,48 @@ export default function FlightResults() {
         },
     ];
 
-
+    console.log(selectedFlights, 'show me this')
     return (
         <>
             {selectedFlights.length > 0 && (
-                <div className="fixed bottom-5 right-5 w-72 bg-white shadow-lg rounded-lg p-4 z-50 border border-gray-200">
-                    <h4 className="font-semibold mb-2">Selected Flights</h4>
-                    <ul className="space-y-1 max-h-40 overflow-y-auto">
+                <div className="fixed bottom-20 right-5 w-90 bg-white shadow-lg rounded-lg overflow-hidden z-9999 border border-gray-200 secondary-font">
+                    {/* Header */}
+                    <div className="bg-[#0A2B4E] text-white px-4 py-2 flex justify-between items-center">
+                        <h4 className="font-semibold">Selected flights</h4>
+                        <button className="text-white cursor-pointer">—</button> {/* collapse toggle */}
+                    </div>
+
+                    {/* Flight list */}
+                    <ul className="divide-y divide-gray-200 max-h-48 overflow-y-auto">
                         {selectedFlights.map(f => (
-                            <li key={f.id} className="flex justify-between items-center">
-                                <span>{f.airline} ({f.flightNumber})</span>
+                            <li
+                                key={f.id}
+                                className="flex items-center justify-between px-4 py-3"
+                            >
+                                {/* Left side: Logo + Airline */}
+                                <div className="flex items-center space-x-2">
+                                    <img
+                                        src={f.logoUrl || AirlineLogo}
+                                        alt={f.airline}
+                                        className="w-6 h-6 rounded"
+                                    />
+                                    <span className="font-medium text-gray-800">{f.airline}</span>
+                                </div>
+
+                                {/* Middle: Times + Progress */}
+                                <div className="flex items-center ">
+                                    <div className="text-sm font-medium mr-4">{f.departure.time}</div>
+                                    <div className="h-1 w-16 bg-green-400 mx-auto my-1 rounded" />
+                                    <div className="text-sm font-medium ml-4">{f.arrival.time}</div>
+                                </div>
+
+                                {/* Remove button */}
                                 <button
-                                    className="text-red-500 font-bold ml-2"
+                                    className="text-gray-400 hover:text-red-500 ml-3"
                                     onClick={() =>
-                                        setSelectedFlights(prev => prev.filter(flight => flight.id !== f.id))
+                                        setSelectedFlights(prev =>
+                                            prev.filter(flight => flight.id !== f.id)
+                                        )
                                     }
                                 >
                                     ✕
@@ -245,8 +273,16 @@ export default function FlightResults() {
                             </li>
                         ))}
                     </ul>
+
+                    {/* Footer button */}
+                    <div className="p-3 bg-[#0A2B4E] border-t border-gray-200 flex justify-end">
+                        <button className="w-[60%] bg-blue-600 text-white font-bold py-2 rounded-full shadow hover:bg-blue-700 transition-colors">
+                            COMPARE FLIGHTS
+                        </button>
+                    </div>
                 </div>
             )}
+
 
             {isFlightDetailsModalOpen && <FlightPriceDetailsModal onClose={() => setIsFlightDetailsModalOpen(false)} />}
             {isSignInModal && <SignInModal onClose={() => setIsSignInModal(false)} />}
@@ -733,25 +769,38 @@ export default function FlightResults() {
                                             {/* ---- Mid Bottom Row ---- */}
                                             <div className="flex items-center justify-between text-sm font-medium">
                                                 {/* Left section */}
-                                                <div className="pr-5 flex items-center px-3 py-1 rounded">
-                                                    <span
-                                                        className={`text-[#811919] font-semibold cursor-pointer ${selectedFlights.some(f => f.id === flight.id) ? "underline" : ""
-                                                            }`}
-                                                        onClick={() => {
-                                                            if (selectedFlights.some(f => f.id === flight.id)) {
-                                                                // Remove flight if already selected
-                                                                setSelectedFlights(prev => prev.filter(f => f.id !== flight.id));
-                                                            } else if (selectedFlights.length < 3) {
-                                                                // Add flight if less than 3 selected
-                                                                setSelectedFlights(prev => [...prev, flight]);
-                                                            } else {
-                                                                alert("You can only select up to 3 flights to compare.");
-                                                            }
-                                                        }}
-                                                    >
-                                                        {selectedFlights.some(f => f.id === flight.id) ? "Added to Compare" : "Add Compare More +"}
-                                                    </span>
+                                                <div className="ml-2 pr-3 flex items-center px-3 py-1 rounded hover:bg-red-200 transition-colors duration-300 ease-in-out">
+                                                    {selectedFlights.some(f => f.id === flight.id) ? (
+                                                        // When flight is selected → show "Added" + remove button
+                                                        <span className="flex items-center">
+                                                            <span>Added</span>
+                                                            <span
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation(); // prevent parent click
+                                                                    setSelectedFlights(prev => prev.filter(f => f.id !== flight.id));
+                                                                }}
+                                                                className="ml-2 text-[#910E0E] font-bold w-4 h-4 rounded-full flex items-center justify-center cursor-pointer"
+                                                            >
+                                                                <X size={12} strokeWidth={3} />
+                                                            </span>
+                                                        </span>
+                                                    ) : (
+                                                        // When flight is not selected → show add text
+                                                        <span
+                                                            className="text-[#811919] font-semibold cursor-pointer"
+                                                            onClick={() => {
+                                                                if (selectedFlights.length < 3) {
+                                                                    setSelectedFlights(prev => [...prev, flight]);
+                                                                } else {
+                                                                    alert("You can only select up to 3 flights to compare.");
+                                                                }
+                                                            }}
+                                                        >
+                                                            Add Compare More +
+                                                        </span>
+                                                    )}
                                                 </div>
+
 
 
 

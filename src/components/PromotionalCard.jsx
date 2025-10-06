@@ -21,7 +21,7 @@ function PromotionalCard() {
         <img
           src="/src/assets/imgs/plane.png"
           className="plane w-[80%] sm:w-[90%] md:w-[100%] h-auto"
-          alt="Plane"
+          alt="Plane MEOW"
         />
       </div>
     </div>

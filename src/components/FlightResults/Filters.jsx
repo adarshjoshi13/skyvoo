@@ -36,7 +36,7 @@ const AircraftSize = [
 
 function Filters() {
     const [showAll, setShowAll] = useState(false);
-    const [selected, setSelected] = useState(['Non Stop']); // start with first checked
+    const [selected, setSelected] = useState(['Non Stop']);
     const [departure, setDeparture] = useState(null);
     const [arrival, setArrival] = useState(null);
 
@@ -103,13 +103,18 @@ function Filters() {
         setSelected((prev) => prev.filter((f) => f !== label));
     };
 
+    const clearAllFilters = () => {
+        setSelected([]);
+    };
+
+
     return (
         <div className="w-80 bg-[#D5D5D5] rounded-lg shadow-sm px-6 pb-6 pt-3 h-fit filters"
             style={{ boxShadow: '0px 3px 22.3px 10px rgba(0, 0, 0, 0.2), 0px 4px 6.1px 4px rgba(0, 0, 0, 0.25)' }}
         >
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold secondary-font">Applied Filters</h3>
-                <button className="text-[#78080B] text-sm font-medium">CLEAR ALL</button>
+                <button className="cursor-pointer text-[#78080B] text-sm font-medium hover:underline" onClick={clearAllFilters}>CLEAR ALL</button>
             </div>
 
             {/* Applied Filter Tags */}
