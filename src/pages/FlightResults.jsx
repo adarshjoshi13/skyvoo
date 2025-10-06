@@ -20,7 +20,6 @@ import FlightDetails from '../components/FlightResults/FlightDetails'
 import BookingFlightFormBg from "@/assets/imgs/bookingForm.png";
 
 export default function FlightResults() {
-    const [compareFlight, setCompareFlight] = useState(null);
     const [selectedFlights, setSelectedFlights] = useState([]);
 
     const [isFlightDetailsModalOpen, setIsFlightDetailsModalOpen] = useState(false);
@@ -372,7 +371,7 @@ export default function FlightResults() {
                                             minDate={new Date()}
                                             monthsShown={2} // shows 2 months side by side
                                             placeholderText={`Select ${label}`}
-                                            className="w-full font-medium text-lg text-white border-b border-white focus:outline-none placeholder-white"
+                                            className="w-full font-medium text-lg text-white border-b border-white focus:outline-none placeholder-white z-5"
                                         />
                                     </div>
                                 </div>
