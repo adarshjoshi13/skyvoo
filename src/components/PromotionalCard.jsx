@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import StickerStack from './StickerStack'
 import MoveUpRightArrow from "@/assets/vectors/MoveUpRightArrow.svg";
+import Plane from '@/assets/imgs/plane.png'
 
 function PromotionalCard() {
 
@@ -19,7 +20,7 @@ function PromotionalCard() {
       {/* Plane Image */}
       <div className="md:col-span-9">
         <img
-          src="/src/assets/imgs/plane.png"
+          src={Plane}
           className="plane w-[80%] sm:w-[90%] md:w-[100%] h-auto"
           alt="Plane MEOW"
         />
