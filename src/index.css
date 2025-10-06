@@ -78,3 +78,8 @@ body {
 .animate-ribbon {
   animation: ribbonExpand 1.5s linear forwards;
 }
+
+
+.c {
+    z-index: 9999 !important;
+}

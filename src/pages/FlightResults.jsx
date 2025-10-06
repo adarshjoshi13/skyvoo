@@ -371,7 +371,8 @@ export default function FlightResults() {
                                             minDate={new Date()}
                                             monthsShown={2} // shows 2 months side by side
                                             placeholderText={`Select ${label}`}
-                                            className="w-full font-medium text-lg text-white border-b border-white focus:outline-none placeholder-white z-5"
+                                            className="w-full font-medium text-lg text-white border-b border-white focus:outline-none placeholder-white react-datepicker-popper"
+
                                         />
                                     </div>
                                 </div>
@@ -381,9 +382,7 @@ export default function FlightResults() {
                             <div className="col-span-12 sm:col-span-2 relative">
                                 <label className="block text-base">Travelers & Class</label>
 
-                                <div
-                                    onClick={() => setShowTravellerBox(!showTravellerBox)}
-                                    className="cursor-pointer border-b border-white text-white font-medium text-lg flex justify-between items-center"
+                                <div onClick={() => setShowTravellerBox(!showTravellerBox)} className="cursor-pointer border-b border-white text-white font-medium text-lg flex justify-between items-center"
                                 >
                                     <span className="truncate whitespace-nowrap overflow-hidden text-ellipsis">
                                         {(() => {
@@ -567,7 +566,7 @@ export default function FlightResults() {
                             <span className="text-base">Fare Type</span>
 
                             {/* Glass effect wrapper */}
-                            <div className="flex flex-row space-x-6 rounded-xl glasseffect px-4 ">
+                            <div className="flex flex-row space-x-6 rounded-xl filterglasseffect px-4 ">
                                 {[
                                     { value: "regular", label: "Regular", checked: true },
                                     { value: "student", label: "Student" },
@@ -677,12 +676,9 @@ export default function FlightResults() {
                             {/* Flight Results */}
                             <div className="space-y-4">
                                 {flights.map((flight) => (
-                                    <div
-                                        key={flight.id}
-                                        className={`rounded-2xl`}
-                                    >
+                                    <div key={flight.id} className={`rounded-2xl`}>
 
-                                        <div className={`py-4 relative bg-cover bg-center rounded-2xl shadow-sm hover:shadow-md transition-shadow secondary-font  ${flight.highlighted ? "" : ""}`}
+                                        <div className={`py-4 relative bg-cover bg-center rounded-xl shadow-sm hover:shadow-md transition-shadow secondary-font  ${flight.highlighted ? "" : ""}`}
                                             style={{ backgroundImage: `url(${BookingFlightFormBg})`, boxShadow: "-3px 4px 20px -2px rgba(0, 0, 0, 0.25)" }}>
                                             <img
                                                 className="absolute -right-[0.330rem] top-1/2 -translate-y-1/2 h-[90%] hidden lg:block"
@@ -740,8 +736,7 @@ export default function FlightResults() {
                                                 {/* Flight duration and stops */}
                                                 <div className="flex flex-col items-center font-semibold">
                                                     <div className="text-sm text-gray-500 mb-2">{flight.duration}</div>
-                                                    <div className="relative w-24 h-0.5 bg-[#920000]">
-                                                        <div className="absolute right-0 top-0 w-2 h-2 bg-[#920000] rounded-full transform -translate-y-1/2"></div>
+                                                    <div className="relative w-24 h-0.5 rounded-xl bg-[#920000]">
                                                     </div>
                                                     <div className="text-sm text-gray-500 mt-2">{flight.stops}</div>
                                                 </div>
