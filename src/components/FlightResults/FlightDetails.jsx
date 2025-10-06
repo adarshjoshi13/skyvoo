@@ -5,7 +5,8 @@ const FlightDetails = ({ flight }) => {
     const [activeTab, setActiveTab] = useState("details");
 
     return (
-        <div className="bg-white px-6 py-4 shadow-xl secondary-font">
+        <div
+            className="bg-white px-6 py-4 secondary-font">
             {/* Top Row Buttons */}
             <div className="flex mb-2">
                 <div

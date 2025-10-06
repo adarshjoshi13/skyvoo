@@ -861,8 +861,7 @@ export default function FlightResults() {
 
                                         {/* ---- Slide-Down Details ---- */}
                                         <div
-                                            className={`mt-5 overflow-hidden transition-[max-height] duration-900 ease-in-out ${selectedFlightId === flight.id ? "max-h-96" : "max-h-0"
-                                                }`}
+                                            className={`shadow-2xl mt-5 overflow-hidden transition-[max-height] duration-900 ease-in-out ${selectedFlightId === flight.id ? "max-h-96" : "max-h-0"}`}
                                         >
                                             {selectedFlightId === flight.id && (
                                                 <FlightDetails flight={flight} />
