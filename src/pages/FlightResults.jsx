@@ -19,6 +19,9 @@ import Lock from '@/assets/vectors/lock.svg'
 import FlightDetails from '../components/FlightResults/FlightDetails'
 
 export default function FlightResults() {
+    const [compareFlight, setCompareFlight] = useState(null);
+    const [selectedFlights, setSelectedFlights] = useState([]);
+
     const [isFlightDetailsModalOpen, setIsFlightDetailsModalOpen] = useState(false);
     const [isSignInModal, setIsSignInModal] = useState(false);
     const [selectedSort, setSelectedSort] = useState('CHEAPEST');
@@ -224,6 +227,27 @@ export default function FlightResults() {
 
     return (
         <>
+            {selectedFlights.length > 0 && (
+                <div className="fixed bottom-5 right-5 w-72 bg-white shadow-lg rounded-lg p-4 z-50 border border-gray-200">
+                    <h4 className="font-semibold mb-2">Selected Flights</h4>
+                    <ul className="space-y-1 max-h-40 overflow-y-auto">
+                        {selectedFlights.map(f => (
+                            <li key={f.id} className="flex justify-between items-center">
+                                <span>{f.airline} ({f.flightNumber})</span>
+                                <button
+                                    className="text-red-500 font-bold ml-2"
+                                    onClick={() =>
+                                        setSelectedFlights(prev => prev.filter(flight => flight.id !== f.id))
+                                    }
+                                >
+                                    ✕
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+
             {isFlightDetailsModalOpen && <FlightPriceDetailsModal onClose={() => setIsFlightDetailsModalOpen(false)} />}
             {isSignInModal && <SignInModal onClose={() => setIsSignInModal(false)} />}
             <div className="relative min-h-screen bg-gray-100">
@@ -549,7 +573,7 @@ export default function FlightResults() {
                         {/* Results Area */}
                         <div className="flex-1">
                             {/* Sorting Options */}
-                            <div className="glasseffect rounded-lg shadow-sm p-4 mb-4 secondary-font">
+                            <div className="glasseffect rounded-lg shadow-sm px-8 py-3 mb-4 secondary-font">
                                 <div className="grid grid-cols-4 gap-4">
                                     <button
                                         className={`cursor-pointer px-4 py-2 rounded flex items-center justify-start ${selectedSort === 'CHEAPEST' ? 'bg-white ' : 'bg-gray-100'}`}
@@ -609,7 +633,7 @@ export default function FlightResults() {
 
                                 </div>
 
-                                <h2 className="text-xl font-bold mb-4 mt-4">
+                                <h2 className="text-xl font-bold mt-4">
                                     Flights from New Delhi to Mumbai
                                 </h2>
                             </div>
@@ -700,7 +724,7 @@ export default function FlightResults() {
                                                 </div>
 
                                                 {/* Button */}
-                                                <button className="bg-[#811919] hover:bg-[#741111] text-white px-4 py-1 rounded-full font-medium text-sm" onClick={() => setIsFlightDetailsModalOpen(true)}>
+                                                <button className="cursor-pointer bg-[#811919] hover:bg-[#741111] text-white px-4 py-1 rounded-full font-medium text-sm" onClick={() => setIsFlightDetailsModalOpen(true)}>
                                                     VIEW PRICES
                                                 </button>
                                             </div>
@@ -710,8 +734,26 @@ export default function FlightResults() {
                                             <div className="flex items-center justify-between text-sm font-medium">
                                                 {/* Left section */}
                                                 <div className="pr-5 flex items-center px-3 py-1 rounded">
-                                                    <span className="text-[#811919] font-semibold">Add Compare More +</span>
+                                                    <span
+                                                        className={`text-[#811919] font-semibold cursor-pointer ${selectedFlights.some(f => f.id === flight.id) ? "underline" : ""
+                                                            }`}
+                                                        onClick={() => {
+                                                            if (selectedFlights.some(f => f.id === flight.id)) {
+                                                                // Remove flight if already selected
+                                                                setSelectedFlights(prev => prev.filter(f => f.id !== flight.id));
+                                                            } else if (selectedFlights.length < 3) {
+                                                                // Add flight if less than 3 selected
+                                                                setSelectedFlights(prev => [...prev, flight]);
+                                                            } else {
+                                                                alert("You can only select up to 3 flights to compare.");
+                                                            }
+                                                        }}
+                                                    >
+                                                        {selectedFlights.some(f => f.id === flight.id) ? "Added to Compare" : "Add Compare More +"}
+                                                    </span>
                                                 </div>
+
+
 
                                                 {/* Right section with gradient */}
                                                 <div className='pr-25 relative rounded-full' style={{ position: 'relative' }}>

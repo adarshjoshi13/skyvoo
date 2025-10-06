@@ -125,7 +125,7 @@ function Filters() {
                                 {filter}
                                 <button
                                     onClick={() => removeFilter(filter)}
-                                    className="ml-2 text-white bg-[#910E0E] w-4 h-4 rounded-full flex items-center justify-center"
+                                    className="cursor-pointer ml-2 text-white bg-[#910E0E] w-4 h-4 rounded-full flex items-center justify-center"
                                 >
                                     <X size={12} strokeWidth={3} />
                                 </button>
@@ -146,7 +146,7 @@ function Filters() {
                                     type="checkbox"
                                     checked={selected.includes(label)}
                                     onChange={() => toggleFilter(label)}
-                                    className="mr-3 accent-red-600"
+                                    className="mr-3 cursor-pointer accent-red-600"
                                 />
                                 {label}
                             </span>
@@ -176,7 +176,7 @@ function Filters() {
                                     type="checkbox"
                                     checked={selected.includes(label)}
                                     onChange={() => toggleFilter(label)}
-                                    className="mt-1 accent-red-600"
+                                    className="mt-1 cursor-pointer accent-red-600"
                                 />
                                 <span>{label}</span>
                             </label>
@@ -237,7 +237,7 @@ function Filters() {
                                     type="checkbox"
                                     checked={selected.includes(label)}
                                     onChange={() => toggleFilter(label)}
-                                    className="mt-1 accent-red-600"
+                                    className="mt-1 cursor-pointer accent-red-600"
                                 />
                                 <span>{label}</span>
                             </label>
@@ -370,7 +370,7 @@ function Filters() {
                                     type="checkbox"
                                     checked={selected.includes(e)}
                                     onChange={() => toggleFilter(e)}
-                                    className="mt-1 accent-red-600"
+                                    className="mt-1 cursor-pointer accent-red-600"
                                 />
                                 <span>{e}</span>
                             </label>
