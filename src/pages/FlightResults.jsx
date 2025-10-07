@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import FlightResultsHeader from '../components/FlightResults/FlightResultsHeader';
 import Filters from '../components/FlightResults/Filters';
 import FlightPriceDetailsModal from '../components/FlightResults/FlightPriceDetailsModal';
@@ -20,15 +20,16 @@ import FlightDetails from '../components/FlightResults/FlightDetails'
 import BookingFlightFormBg from "@/assets/imgs/bookingForm.png";
 
 export default function FlightResults() {
+    const navigate = useNavigate();
     const [selectedFlights, setSelectedFlights] = useState([]);
-
     const [isFlightDetailsModalOpen, setIsFlightDetailsModalOpen] = useState(false);
     const [isSignInModal, setIsSignInModal] = useState(false);
     const [selectedSort, setSelectedSort] = useState('CHEAPEST');
     const [isSwapping, setIsSwapping] = useState(false);
     const [rotation, setRotation] = useState(0);
     const [selectedFlightId, setSelectedFlightId] = useState(null);
-
+    const [tripType, setTripType] = useState('roundTrip');
+    const travellerBoxRef = useRef(null);
     const [flightSearchInfo, setFlightSearchInfo] = useState({
         from: '',
         to: '',
@@ -224,6 +225,24 @@ export default function FlightResults() {
         },
     ];
 
+    useEffect(() => {
+        function handleDocClick(e) {
+            if (travellerBoxRef.current && !travellerBoxRef.current.contains(e.target)) {
+                setShowTravellerBox(false);
+            }
+        }
+        function handleEsc(e) {
+            if (e.key === 'Escape') setShowTravellerBox(false);
+        }
+        document.addEventListener('mousedown', handleDocClick);
+        document.addEventListener('keydown', handleEsc);
+        return () => {
+            document.removeEventListener('mousedown', handleDocClick);
+            document.removeEventListener('keydown', handleEsc);
+        };
+    }, []);
+
+
     return (
         <>
             {selectedFlights.length > 0 && (
@@ -275,13 +294,12 @@ export default function FlightResults() {
 
                     {/* Footer button */}
                     <div className="p-3 bg-[#0A2B4E] border-t border-gray-200 flex justify-end">
-                        <button className="w-[60%] bg-blue-600 text-white font-bold py-2 rounded-full shadow hover:bg-blue-700 transition-colors">
+                        <button className="w-[60%] cursor-pointer bg-blue-600 text-white font-bold py-2 rounded-full shadow hover:bg-blue-700 transition-colors" onClick={() => { navigate('/compare-flights') }}>
                             COMPARE FLIGHTS
                         </button>
                     </div>
                 </div>
             )}
-
 
             {isFlightDetailsModalOpen && <FlightPriceDetailsModal onClose={() => setIsFlightDetailsModalOpen(false)} />}
             {isSignInModal && <SignInModal onClose={() => setIsSignInModal(false)} />}
@@ -295,259 +313,299 @@ export default function FlightResults() {
                 <FlightResultsHeader onOpen={() => setIsSignInModal(true)} />
 
                 {/* Search Header */}
-                <div className="relative bg-[#78080B] text-white px-4 py-5 z-999"
-                    style={{ boxShadow: ' 0px 4px 4px 0px rgba(0, 0, 0, 0.25)' }}
-                >
+                <div className="relative bg-[#78080B] text-white px-4 py-5 z-999" style={{ boxShadow: ' 0px 4px 4px 0px rgba(0, 0, 0, 0.25)' }}>
 
+                    {/* Flight Filter */}
                     <div className="max-w-7xl mx-auto flex items-center justify-between">
                         {/* Main Search Grid */}
-                        <div className="grid grid-cols-13 gap-4 sm:gap-6 items-end secondary-font font-semibold">
+                        <div className="grid grid-cols-15 gap-4 sm:gap-6 items-end secondary-font font-semibold">
 
-                            {/* From */}
-                            <div className="col-span-12 sm:col-span-2">
-                                <label className="block text-base">From</label>
-                                <input
-                                    type="text"
-                                    placeholder="Origin"
-                                    value={flightSearchInfo.from}
-                                    onChange={(e) => handleFlightInputChange('from', e.target.value)}
+                            {/* Trip Type */}
+                            <div className="col-span-2">
+                                <label className="block text-base text-white">Trip Type</label>
+                                <select
+                                    value={tripType}
+                                    onChange={(e) => setTripType(e.target.value)}
                                     className="w-full font-medium text-lg border-b border-white text-white placeholder-white focus:outline-none"
-                                />
-                            </div>
-
-                            {/* Swap */}
-                            <div className="col-span-12 sm:col-span-1 flex justify-center my-2 sm:my-0">
-                                <button
-                                    onClick={handleSwap}
-                                    className="cursor-pointer p-2 rounded-full transition-transform duration-300"
                                 >
-                                    <div
-                                        className="relative w-6 h-6 transition-transform duration-500"
-                                        style={{ transform: `rotate(${rotation}deg)` }}
-                                    >
-                                        <svg className="absolute top-0 left-0 w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor" style={{ transform: 'translate(4px,-4px) rotate(90deg)' }}>
-                                            <path d="M22 16.21v-1.895L14 8V4a2 2 0 0 0-4 0v4.105L2 14.42v1.789l8-2.526V18l-2 3h6l-2-3v-4.316L22 16.21z" />
-                                        </svg>
-                                        <svg className="absolute top-0 left-0 w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor" style={{ transform: 'translate(4px,10px) rotate(-90deg)' }}>
-                                            <path d="M22 16.21v-1.895L14 8V4a2 2 0 0 0-4 0v4.105L2 14.42v1.789l8-2.526V18l-2 3h6l-2-3v-4.316L22 16.21z" />
-                                        </svg>
-                                    </div>
-                                </button>
+                                    <option value="oneWay" className='text-black font-medium'>One Way</option>
+                                    <option value="roundTrip" className='text-black font-medium'>Round Trip</option>
+                                    <option value="multiCity" className='text-black font-medium'>Multi City</option>
+                                </select>
                             </div>
-
-                            {/* To */}
-                            <div className="col-span-12 sm:col-span-2">
-                                <label className="block text-base">To</label>
-                                <input
-                                    type="text"
-                                    placeholder="Destination"
-                                    value={flightSearchInfo.to}
-                                    onChange={(e) => handleFlightInputChange('to', e.target.value)}
-                                    className="w-full text-lg font-medium border-b border-white text-white focus:outline-none placeholder-white"
-                                />
-                            </div>
-
-                            {/* Depart & Return */}
-                            {[
-                                { label: 'Depart', key: 'depart' },
-                                { label: 'Return', key: 'return' },
-                            ].map(({ label, key }) => (
-                                <div key={key} className="col-span-12 sm:col-span-2 flex items-center gap-3">
-                                    <div className="flex flex-col">
-                                        <div className='flex justify-between items-center'>
-                                            <label className="text-base text-white flex items-center gap-2">{label}</label>
-                                            {key === 'return' && (
-                                                <div
-                                                    className='bg-[#0a223d] rounded-full w-4 h-4 flex justify-center items-center cursor-pointer hover:bg-[#12345a]'
-                                                    onClick={() => handleFlightInputChange('return', null)}
-                                                >
-                                                    <X className='h-3 w-3 text-white' />
-                                                </div>
-                                            )}
-                                        </div>
-                                        <DatePicker
-                                            selected={flightSearchInfo[key]}
-                                            onChange={(date) => handleFlightInputChange(key, date)}
-                                            minDate={new Date()}
-                                            monthsShown={2} // shows 2 months side by side
-                                            placeholderText={`Select ${label}`}
-                                            className="w-full font-medium text-lg text-white border-b border-white focus:outline-none placeholder-white react-datepicker-popper"
-
+                            {tripType === 'multiCity' ? (
+                                <div className="col-span-12 sm:col-span-11 flex flex-col items-start">
+                                    <label className="block text-base text-white">From (Multi City)</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Enter multiple destinations"
+                                        value={flightSearchInfo.from}
+                                        onChange={(e) => handleFlightInputChange('from', e.target.value)}
+                                        className="w-full font-medium text-lg border-b border-white text-white placeholder-white focus:outline-none"
+                                    />
+                                </div>
+                            ) : (
+                                <>
+                                    {/* From */}
+                                    < div className="col-span-2">
+                                        <label className="block text-base text-white">From</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Origin"
+                                            value={flightSearchInfo.from}
+                                            onChange={(e) => handleFlightInputChange('from', e.target.value)}
+                                            className="w-full font-medium text-lg border-b border-white text-white placeholder-white focus:outline-none"
                                         />
                                     </div>
-                                </div>
-                            ))}
 
-                            {/* Traveler */}
-                            <div className="col-span-12 sm:col-span-2 relative">
-                                <label className="block text-base">Travelers & Class</label>
+                                    {/* Swap */}
+                                    <div className="col-span-1 flex justify-center my-2 sm:my-0">
+                                        <button
+                                            type="button"
+                                            onClick={handleSwap}
+                                            aria-label="Swap origin and destination"
+                                            className="cursor-pointer p-2 rounded-full transition-transform duration-300"
+                                        >
+                                            <div
+                                                className="relative w-6 h-6 transition-transform duration-500"
+                                                style={{ transform: `rotate(${rotation}deg)` }}
+                                            >
+                                                <svg className="absolute top-0 left-0 w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor" style={{ transform: 'translate(4px,-4px) rotate(90deg)' }}>
+                                                    <path d="M22 16.21v-1.895L14 8V4a2 2 0 0 0-4 0v4.105L2 14.42v1.789l8-2.526V18l-2 3h6l-2-3v-4.316L22 16.21z" />
+                                                </svg>
+                                                <svg className="absolute top-0 left-0 w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor" style={{ transform: 'translate(4px,10px) rotate(-90deg)' }}>
+                                                    <path d="M22 16.21v-1.895L14 8V4a2 2 0 0 0-4 0v4.105L2 14.42v1.789l8-2.526V18l-2 3h6l-2-3v-4.316L22 16.21z" />
+                                                </svg>
+                                            </div>
+                                        </button>
+                                    </div>
 
-                                <div onClick={() => setShowTravellerBox(!showTravellerBox)} className="cursor-pointer border-b border-white text-white font-medium text-lg flex justify-between items-center"
-                                >
-                                    <span className="truncate whitespace-nowrap overflow-hidden text-ellipsis">
-                                        {(() => {
-                                            // Helper to convert a value that may be ">n" to a number
-                                            const toNumber = v => (typeof v === 'string' && v.startsWith('>') ? parseInt(v.slice(1), 10) : v);
+                                    {/* To */}
+                                    <div className="col-span-2">
+                                        <label className="block text-base text-white">To</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Destination"
+                                            value={flightSearchInfo.to}
+                                            onChange={(e) => handleFlightInputChange('to', e.target.value)}
+                                            className="w-full text-lg font-medium border-b border-white text-white focus:outline-none placeholder-white"
+                                        />
+                                    </div>
 
-                                            const total =
-                                                toNumber(travellers.adults) +
-                                                toNumber(travellers.children) +
-                                                toNumber(travellers.infants);
+                                    {/* Depart */}
+                                    <div className="col-span-2">
+                                        <label className="block text-base text-white">Depart</label>
+                                        <DatePicker
+                                            selected={flightSearchInfo.depart}
+                                            onChange={(date) => handleFlightInputChange('depart', date)}
+                                            minDate={new Date()}
+                                            monthsShown={2}
+                                            placeholderText="Select Depart"
+                                            className="w-full font-medium text-lg text-white border-b border-white focus:outline-none placeholder-white react-datepicker-popper"
+                                        />
+                                    </div>
 
-                                            return `${total} Traveller${total > 1 ? 's' : ''} • ${travellers.classType}`;
-                                        })()}
-                                    </span>
-                                </div>
+                                    {/* Return (conditionally rendered) */}
+                                    {tripType === 'roundTrip' && (
+                                        <div className="col-span-2">
+                                            <label className="block text-base text-white">Return</label>
+                                            <div className="flex items-center justify-between">
+                                                <DatePicker
+                                                    selected={flightSearchInfo.return}
+                                                    onChange={(date) => handleFlightInputChange('return', date)}
+                                                    minDate={flightSearchInfo.depart ?? new Date()}
+                                                    monthsShown={2}
+                                                    placeholderText="Select Return"
+                                                    className="w-full font-medium text-lg text-white border-b border-white focus:outline-none placeholder-white react-datepicker-popper"
+                                                />
+                                                {flightSearchInfo.return && (
+                                                    <div
+                                                        className="bg-[#0a223d] rounded-full w-4 h-4 flex justify-center items-center cursor-pointer hover:bg-[#12345a]"
+                                                        onClick={() => handleFlightInputChange('return', null)}
+                                                    >
+                                                        <X className="h-3 w-3 text-white" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
 
-                                {showTravellerBox && (
-                                    <div className="absolute right-0 z-999 mt-2 w-[45rem] bg-white rounded-md shadow-lg px-6 py-5 space-y-6 text-black ">
-                                        {/* ADULTS */}
-                                        <div className="flex flex-col">
-                                            <p className="font-semibold text-gray-800 text-base">
-                                                ADULTS (12y+) <br /> <span className='text-sm font-medium'> on the day of travel </span>
-                                            </p>
-                                            <div className="flex justify-between items-center mt-2">
-                                                <div className="flex border rounded-md overflow-hidden">
-                                                    {Array.from({ length: 9 }).map((_, i) => (
-                                                        <div
-                                                            key={i}
-                                                            onClick={() =>
-                                                                setTravellers(t => ({ ...t, adults: i + 1 }))
-                                                            }
-                                                            className={`px-3 py-2 text-sm cursor-pointer border-r last:border-r-0
+                                    {/* Traveler */}
+                                    <div className="col-span-2 relative">
+                                        <label className="block text-base">Travelers & Class</label>
+
+                                        <div onClick={() => setShowTravellerBox(!showTravellerBox)} className="cursor-pointer border-b border-white text-white font-medium text-lg flex justify-between items-center"
+                                        >
+                                            <span className="truncate whitespace-nowrap overflow-hidden text-ellipsis">
+                                                {(() => {
+                                                    // Helper to convert a value that may be ">n" to a number
+                                                    const toNumber = v => {
+                                                        if (typeof v === 'string' && v.startsWith('>')) {
+                                                            // return the numeric part (e.g. '>9' -> 9) or treat as a large number if you prefer
+                                                            const parsed = parseInt(v.slice(1), 10);
+                                                            return Number.isNaN(parsed) ? 0 : parsed;
+                                                        }
+                                                        const n = Number(v);
+                                                        return Number.isNaN(n) ? 0 : n;
+                                                    };
+
+                                                    const totalTravellers = [travellers.adults, travellers.children, travellers.infants].reduce((acc, v) => acc + toNumber(v), 0);
+
+                                                    return `${totalTravellers} Traveller${totalTravellers > 1 ? 's' : ''} • ${travellers.classType}`;
+                                                })()}
+                                            </span>
+                                        </div>
+
+                                        {showTravellerBox && (
+                                            <div ref={travellerBoxRef} className="absolute right-0 z-999 mt-2 w-[45rem] bg-white rounded-md shadow-lg px-6 py-5 space-y-6 text-black">
+                                                <div className="flex flex-col">
+                                                    <p className="font-semibold text-gray-800 text-base">
+                                                        ADULTS (12y+) <br /> <span className='text-sm font-medium'> on the day of travel </span>
+                                                    </p>
+                                                    <div className="flex justify-between items-center mt-2">
+                                                        <div className="flex border rounded-md overflow-hidden">
+                                                            {Array.from({ length: 9 }).map((_, i) => (
+                                                                <div
+                                                                    key={i}
+                                                                    onClick={() =>
+                                                                        setTravellers(t => ({ ...t, adults: i + 1 }))
+                                                                    }
+                                                                    className={`px-3 py-2 text-sm cursor-pointer border-r last:border-r-0
                  ${travellers.adults === i + 1 ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}
               `}
-                                                        >
-                                                            {i + 1}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                                <div
-                                                    onClick={() =>
-                                                        setTravellers(t => ({ ...t, adults: '>9' }))
-                                                    }
-                                                    className={`px-4 py-2 text-sm cursor-pointer border rounded-md
-             ${travellers.adults === '>9' ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}
-          `}
-                                                >
-                                                    &gt;9
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* CHILDREN & INFANTS side by side */}
-                                        <div className="flex flex-col">
-                                            <div className="flex justify-between items-start gap-6">
-                                                {/* Children */}
-                                                <div className='flex flex-col'>
-                                                    <p className="font-semibold text-gray-800 text-base">
-                                                        CHILDREN (2y - 12y) <br /> <span className='text-sm font-medium'>on the day of travel</span>
-                                                    </p>
-                                                    <div className='flex justify-between items-start mt-2'>
-                                                        <div className="flex border rounded-md overflow-hidden">
-                                                            {Array.from({ length: 6 }).map((_, i) => (
-                                                                <div
-                                                                    key={i}
-                                                                    onClick={() =>
-                                                                        setTravellers(t => ({ ...t, children: i }))
-                                                                    }
-                                                                    className={`px-3 py-2 text-sm cursor-pointer border-r last:border-r-0
-                 ${travellers.children === i ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}
-              `}
                                                                 >
-                                                                    {i}
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                        <div
-                                                            onClick={() => setTravellers(t => ({ ...t, children: '>6' }))
-                                                            }
-                                                            className={`ml-4 px-4 py-2 text-sm cursor-pointer border rounded-md ${travellers.children === '>6' ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}`} >
-                                                            &gt;6
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-
-                                                {/* Infants */}
-                                                <div className='flex flex-col items-start'>
-                                                    <p className="font-semibold text-gray-800 text-base">
-                                                        INFANTS (below 2y) <br />  <span className='text-sm font-medium'> on the day of travel </span>
-                                                    </p>
-
-                                                    <div className='flex justify-between items-start mt-2'>
-                                                        <div className="mr-4 flex border rounded-md overflow-hidden">
-                                                            {Array.from({ length: 6 }).map((_, i) => (
-                                                                <div
-                                                                    key={i}
-                                                                    onClick={() =>
-                                                                        setTravellers(t => ({ ...t, infants: i }))
-                                                                    }
-                                                                    className={`px-3 py-2 text-sm cursor-pointer border-r last:border-r-0
-                 ${travellers.infants === i ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}
-              `}
-                                                                >
-                                                                    {i}
+                                                                    {i + 1}
                                                                 </div>
                                                             ))}
                                                         </div>
                                                         <div
                                                             onClick={() =>
-                                                                setTravellers(t => ({ ...t, infants: '>6' }))
+                                                                setTravellers(t => ({ ...t, adults: '>9' }))
                                                             }
                                                             className={`px-4 py-2 text-sm cursor-pointer border rounded-md
-             ${travellers.infants === '>6' ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}
+             ${travellers.adults === '>9' ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}
           `}
                                                         >
-                                                            &gt;6
+                                                            &gt;9
                                                         </div>
                                                     </div>
+                                                </div>
 
+                                                {/* CHILDREN & INFANTS side by side */}
+                                                <div className="flex flex-col">
+                                                    <div className="flex justify-between items-start gap-6">
+                                                        {/* Children */}
+                                                        <div className='flex flex-col'>
+                                                            <p className="font-semibold text-gray-800 text-base">
+                                                                CHILDREN (2y - 12y) <br /> <span className='text-sm font-medium'>on the day of travel</span>
+                                                            </p>
+                                                            <div className='flex justify-between items-start mt-2'>
+                                                                <div className="flex border rounded-md overflow-hidden">
+                                                                    {Array.from({ length: 6 }).map((_, i) => (
+                                                                        <div
+                                                                            key={i}
+                                                                            onClick={() =>
+                                                                                setTravellers(t => ({ ...t, children: i }))
+                                                                            }
+                                                                            className={`px-3 py-2 text-sm cursor-pointer border-r last:border-r-0
+                 ${travellers.children === i ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}
+              `}
+                                                                        >
+                                                                            {i}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                                <div
+                                                                    onClick={() => setTravellers(t => ({ ...t, children: '>6' }))
+                                                                    }
+                                                                    className={`ml-4 px-4 py-2 text-sm cursor-pointer border rounded-md ${travellers.children === '>6' ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}`} >
+                                                                    &gt;6
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
+                                                        {/* Infants */}
+                                                        <div className='flex flex-col items-start'>
+                                                            <p className="font-semibold text-gray-800 text-base">
+                                                                INFANTS (below 2y) <br />  <span className='text-sm font-medium'> on the day of travel </span>
+                                                            </p>
+
+                                                            <div className='flex justify-between items-start mt-2'>
+                                                                <div className="mr-4 flex border rounded-md overflow-hidden">
+                                                                    {Array.from({ length: 6 }).map((_, i) => (
+                                                                        <div
+                                                                            key={i}
+                                                                            onClick={() =>
+                                                                                setTravellers(t => ({ ...t, infants: i }))
+                                                                            }
+                                                                            className={`px-3 py-2 text-sm cursor-pointer border-r last:border-r-0
+                 ${travellers.infants === i ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}
+              `}
+                                                                        >
+                                                                            {i}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                                <div
+                                                                    onClick={() =>
+                                                                        setTravellers(t => ({ ...t, infants: '>6' }))
+                                                                    }
+                                                                    className={`px-4 py-2 text-sm cursor-pointer border rounded-md
+             ${travellers.infants === '>6' ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}
+          `}
+                                                                >
+                                                                    &gt;6
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                                {/* Divider */}
+                                                <hr className="border-gray-200" />
+
+                                                {/* CLASS SELECTOR */}
+                                                <div>
+                                                    <p className="font-semibold text-gray-800 mb-3 uppercase tracking-wide text-base">
+                                                        Choose Travel Class
+                                                    </p>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {['Economy/Premium Economy', 'Premium Economy', 'Business', 'First Class']
+                                                            .map(cls => (
+                                                                <button
+                                                                    key={cls}
+                                                                    onClick={() => setTravellers(t => ({ ...t, classType: cls }))}
+                                                                    className={`px-3 py-1.5 rounded-md text-sm font-medium border transition-colors 
+                ${travellers.classType === cls
+                                                                            ? 'bg-[#78080B] text-white'
+                                                                            : 'border-gray-300 text-gray-700 hover:bg-gray-100'}
+              `}
+                                                                >
+                                                                    {cls}
+                                                                </button>
+                                                            ))}
+                                                    </div>
+                                                </div>
+
+                                                {/* Search Button */}
+                                                <div onClick={validateTravellers} className="cursor-pointer col-span-12 sm:col-span-2 flex justify-center bg-[#78080B] rounded-sm p-1">
+                                                    <button className='btn '>
+                                                        <span className="cursor-pointer button-text text-white secondary-font">D O N E</span>
+                                                    </button>
                                                 </div>
 
                                             </div>
-                                        </div>
-
-                                        {/* Divider */}
-                                        <hr className="border-gray-200" />
-
-                                        {/* CLASS SELECTOR */}
-                                        <div>
-                                            <p className="font-semibold text-gray-800 mb-3 uppercase tracking-wide text-base">
-                                                Choose Travel Class
-                                            </p>
-                                            <div className="flex flex-wrap gap-2">
-                                                {['Economy/Premium Economy', 'Premium Economy', 'Business', 'First Class']
-                                                    .map(cls => (
-                                                        <button
-                                                            key={cls}
-                                                            onClick={() => setTravellers(t => ({ ...t, classType: cls }))}
-                                                            className={`px-3 py-1.5 rounded-md text-sm font-medium border transition-colors 
-                ${travellers.classType === cls
-                                                                    ? 'bg-[#78080B] text-white'
-                                                                    : 'border-gray-300 text-gray-700 hover:bg-gray-100'}
-              `}
-                                                        >
-                                                            {cls}
-                                                        </button>
-                                                    ))}
-                                            </div>
-                                        </div>
-
-                                        {/* Search Button */}
-                                        <div onClick={validateTravellers} className="cursor-pointer col-span-12 sm:col-span-2 flex justify-center bg-[#78080B] rounded-sm p-1">
-                                            <button className='btn '>
-                                                <span className="cursor-pointer button-text text-white secondary-font">D O N E</span>
-                                            </button>
-                                        </div>
+                                        )}
 
                                     </div>
-                                )}
-
-                            </div>
+                                </>
+                            )}
 
                             {/* Search Button */}
-                            <div className="col-span-12 sm:col-span-2 flex justify-center relative">
+                            <div className="col-span-2 flex justify-center relative">
                                 <a href="#" id='ModifySearchButton'>
                                     <span></span>
                                     <span></span>
@@ -794,9 +852,6 @@ export default function FlightResults() {
                                                         </span>
                                                     )}
                                                 </div>
-
-
-
 
                                                 {/* Right section with gradient */}
                                                 <div className='pr-25 relative rounded-full' style={{ position: 'relative' }}>

@@ -34,7 +34,7 @@ const Header = ({ onOpen }) => {
                     {navItems.map((item) => (
                         <button
                             key={item.label}
-                            className="px-4 py-2 sm:px-6 rounded-full bg-[#D9D9D9] hover:bg-black hover:text-white transition"
+                            className="cursor-pointer px-4 py-2 sm:px-6 rounded-full bg-[#D9D9D9] hover:bg-black hover:text-white transition"
                         >
                             {item.label}
                         </button>

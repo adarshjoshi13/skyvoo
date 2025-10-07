@@ -1,7 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { Mail, LockKeyhole, Eye, LogOut } from 'lucide-react';
 
 export default function SignInModal({ onClose }) {
+
+    const [passwordVisibility, setPasswordVisibility] = useState(false)
+    
+    const togglePasswordVisibility = () => {
+        setPasswordVisibility(!passwordVisibility)
+    }
+    
     return (
         <div
             className="fixed inset-0 bg-black/50 flex items-center justify-center z-9999"
@@ -52,12 +59,12 @@ export default function SignInModal({ onClose }) {
                         <div className="flex items-center bg-gray-100 rounded-lg px-3 py-2">
                             <LockKeyhole className="text-gray-500 mr-2" />
                             <input
-                                type="password"
+                                type={passwordVisibility ? 'text' : 'password'}
                                 placeholder="Password"
                                 className="bg-transparent w-full outline-none text-gray-700"
                                 autoComplete="current-password"
                             />
-                            <button className="text-gray-400 hover:text-gray-600">
+                            <button className="text-gray-400 hover:text-gray-600" onClick={togglePasswordVisibility}>
                                 <Eye className="w-5 h-5" />
                             </button>
                         </div>
@@ -71,7 +78,7 @@ export default function SignInModal({ onClose }) {
                         {/* Divider */}
                         <div className="flex items-center my-6 secondary-font">
                             <div className="flex-grow border-t border-gray-300"></div>
-                            <span className="mx-3 text-gray-400 text-sm"><span className="underline"> sign up</span></span>
+                            <span className="mx-3 text-gray-400 text-sm"><span className="underline">sign up</span></span>
                             <div className="flex-grow border-t border-gray-300"></div>
                         </div>
 
