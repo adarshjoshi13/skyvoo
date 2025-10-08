@@ -4,9 +4,11 @@ import Header from '../components/Header';
 import SignInModal from '../components/SignInModal';
 import GrayFadedBg from '@/assets/imgs/grayfadedbg.png';
 import AirlineLogo from '@/assets/imgs/airlinelogo.png'
+import FlightPriceDetailsModal from '../components/FlightResults/FlightPriceDetailsModal';
 
 export default function CompareFlights() {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isFlightDetailsModalOpen, setIsFlightDetailsModalOpen] = useState(false);
 
     const flights = [
         {
@@ -73,18 +75,23 @@ export default function CompareFlights() {
 
     return (
         <>
+            {isFlightDetailsModalOpen && <FlightPriceDetailsModal onClose={() => setIsFlightDetailsModalOpen(false)} />}
             {isModalOpen && <SignInModal onClose={() => setIsModalOpen(false)} />}
 
             <div className="relative bg-white secondary-font">
                 {/* Background Image */}
                 <img
-                    className="absolute right-0 top-0 h-full object-cover pointer-events-none z-0"
+                    className="absolute right-0 z-10 max-w-full h-auto object-cover"
                     src={GrayFadedBg}
                     alt="gray faded bg"
                 />
                 <Header onOpen={() => setIsModalOpen(true)} />
 
-                {/* Main Content */}
+
+            </div>
+
+            {/* Main Content */}
+            <div className="pb-5 sm:pb-2 bg-cover bg-center" >
                 <div className="relative z-20 container mx-auto max-w-7xl px-4">
                     <h1 className="text-3xl font-bold mb-3">Compare your flights</h1>
                     {/* Route Info Bar */}
@@ -261,7 +268,7 @@ export default function CompareFlights() {
                                         <div className="text-2xl font-bold text-[#78080B] mb-1">{flight.price}</div>
                                         <div className="text-xs text-gray-500 mb-3">per adult</div>
                                         <div className="text-xs text-gray-500 mb-3">{flight.moreFares}</div>
-                                        <button className="w-full bg-[#811919] hover:bg-[#741111] text-white py-2 px-4 rounded-full text-sm font-semibold transition-colors">
+                                        <button className="w-full bg-[#811919] hover:bg-[#741111] text-white py-2 px-4 rounded-full text-sm font-semibold transition-colors" onClick={() => setIsFlightDetailsModalOpen(true)}>
                                             VIEW ALL FARE OPTIONS
                                         </button>
                                     </div>

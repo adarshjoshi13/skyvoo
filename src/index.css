@@ -49,6 +49,9 @@ body {
   }
 }
 
+
+
+
 .plane {
   position: absolute;
   right: -300px;
@@ -79,7 +82,16 @@ body {
   animation: ribbonExpand 1.5s linear forwards;
 }
 
+#FlightComparisonsSection {
+  width: 380px;
+  max-height: 500px;
+  transition: width 1s ease-out, max-height 1s ease-out, opacity 1s ease-out;
+  overflow: hidden;
+  opacity: 1;
+}
 
-.c {
-    z-index: 9999 !important;
+#FlightComparisonsSection.collapsed {
+  width: 0px;
+  max-height: 0px;
+  opacity: 0;
 }

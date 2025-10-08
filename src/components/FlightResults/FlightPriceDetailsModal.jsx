@@ -3,8 +3,71 @@ import AirlineLogo from '@/assets/imgs/airlinelogo.png'
 import Tick from '@/assets/vectors/Tick.svg'
 import Dash from '@/assets/vectors/Dash.svg'
 import Insuarance from '@/assets/vectors/Insuarance.svg'
+import { useNavigate } from 'react-router-dom';
+
+import { Splide, SplideSlide } from '@splidejs/react-splide';
+import "@splidejs/react-splide/css";
 
 export default function FlightPriceDetailsModal({ onClose }) {
+    const navigate = useNavigate();
+
+    const fareCards = [
+        {
+            title: "SKYVOO",
+            price: "₹ 5,330",
+            oldPrice: "₹ 5,530",
+            type: "Per adult",
+            benefitsWorth: "₹ 5,330",
+            insurance: "Travel Insurance for 1 days",
+            baggage: ["7 kgs Cabin Baggage", "15 kgs Check-in Baggage"],
+            flexibility: [
+                "Cancellation fee start at ₹ 5,330 (up to 24 hours before departure)",
+                "Date Change fee start at ₹ 5,330 up to 3hrs before departure",
+            ],
+            seatsMeals: ["Chargeable Seats", "Chargeable Meals"],
+            buttons: ["BOOK NOW"],
+        },
+        {
+            title: "FLEXI PLUS",
+            price: "₹ 5,340",
+            oldPrice: "₹ 5,530",
+            type: "Per adult",
+            baggage: ["7 kgs Cabin Baggage", "15 kgs Check-in Baggage"],
+            flexibility: [
+                "Lower Cancellation fee start at ₹ 5,330 (up to 24 hours before departure)",
+                "Free Date Change fee start at ₹ 5,330 up to 3hrs before departure",
+            ],
+            seatsMeals: ["Free Seats", "Chargeable Meals"],
+            buttons: ["LOCK PRICE", "BOOK NOW"],
+        },
+        {
+            title: "SUPER 6E",
+            price: "₹ 5,350",
+            oldPrice: "₹ 5,530",
+            type: "Per adult",
+            baggage: ["7 kgs Cabin Baggage", "15 kgs Check-in Baggage"],
+            flexibility: [
+                "Lower Cancellation fee start at ₹ 5,330 (up to 24 hours before departure)",
+                "Free Date Change fee start at ₹ 5,330 up to 3hrs before departure",
+            ],
+            seatsMeals: ["Free Seats", "Chargeable Meals"],
+            buttons: ["LOCK PRICE", "BOOK NOW"],
+        },
+        {
+            title: "TELLY 6E",
+            price: "₹ 5,250",
+            oldPrice: "₹ 5,520",
+            type: "Per adult",
+            baggage: ["7 kgs Cabin Baggage", "15 kgs Check-in Baggage"],
+            flexibility: [
+                "Lower Cancellation fee start at ₹ 2,330 (up to 24 hours before departure)",
+                "Free Date Change fee start at ₹ 1,330 up to 3hrs before departure",
+            ],
+            seatsMeals: ["Free Seats", "Chargeable Meals"],
+            buttons: ["LOCK PRICE", "BOOK NOW"],
+        },
+    ];
+
     return (
         <div
             className="fixed inset-0 flex items-center justify-center z-9999 bg-black/30 backdrop-blur-sm secondary-font"
@@ -43,290 +106,125 @@ export default function FlightPriceDetailsModal({ onClose }) {
 
                 </div>
 
-                {/* Fare Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-                    {/* Card 1 */}
-                    <div className="border rounded-xl shadow-sm p-6 relative flex flex-col justify-between">
-                        <div>
-                            <div className="flex items-baseline gap-2">
-                                <span className="text-lg line-through">₹ 5,530</span>
-                                <span className="text-2xl font-bold text-[#78080B]">₹ 5,330 </span>
-                                <span className="text-xl font-medium">Per adult</span>
-                            </div>
-
-                            <p className="text-sm font-medium mb-5">FARE BY <span className="font-bold text-[#78080B]">SKYVOO</span></p>
-
-                            <div className="space-y-2 text-sm">
-                                <div>
-                                    <p className="font-bold text-base">Baggage</p>
-
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-4 h-4 flex items-center justify-center rounded-full bg-[#78080B] text-white text-xs">
-                                            <img src={Tick} alt="tick" />
-                                        </div>
-                                        <p>7 kgs Cabin Baggage</p>
-                                    </div>
-
-                                    <div className="flex items-center gap-2 mt-1">
-                                        <div className="w-4 h-4 flex items-center justify-center rounded-full bg-[#78080B] text-white text-xs">
-                                            <img src={Tick} alt="tick" />
-                                        </div>
-                                        <p>15 kgs Check-in Baggage</p>
-                                    </div>
-                                </div>
-
-                                <div className="mt-4">
-                                    <p className="text-base font-bold">Flexibility</p>
-
-                                    {/* Item 1 */}
-                                    <div className="flex items-start gap-2">
-                                        <img src={Dash} alt="dash" className="pt-2" />
-
-                                        <p className="text-sm leading-loose">
-                                            Cancellation fee start at ₹ 5,330 (up to 24 hours before departure)
-                                        </p>
-                                    </div>
-                                    <div className="flex items-start gap-2">
-                                        <img src={Dash} alt="dash" className="pt-2" />
-
-                                        <p className="text-sm leading-loose">
-                                            Date Change fee start at ₹ 5,330 up to 3hrs before departure
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="mt-4">
-                                    <p className="text-base font-bold">Seats, Meals & More</p>
-
-                                    {/* Item 1 */}
-                                    <div className="flex items-start gap-2">
-                                        <img src={Dash} alt="dash" className="pt-2" />
-
-                                        <p className="text-sm leading-loose">
-                                            Chargeable Seats
-                                        </p>
-                                    </div>
-                                    <div className="flex items-start gap-2">
-                                        <img src={Dash} alt="dash" className="pt-2" />
-
-                                        <p className="text-sm leading-loose">
-                                            Chargeable Seats
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <p className="text-base mt-3 font-semibold">
-                                        BENEFITS WORTH ₹ <span className="text-[#FF8000]"> 5,330 </span> INCLUDED
-                                    </p>
-                                </div>
-
-                                <div className="flex items-center bg-[#D9D9D9] rounded-md text-black p-2"
-                                    style={{ boxShadow: '2px 4px 4px rgba(0, 0, 0, 0.10)' }}
+                <div className="my-8">
+                    <Splide
+                        options={{
+                            type: "loop",
+                            perPage: 3,
+                            perMove: 1,
+                            gap: "1rem",
+                            pagination: false,
+                            arrows: true,
+                            breakpoints: {
+                                1024: { perPage: 2 },
+                                640: { perPage: 1 },
+                            },
+                        }}
+                    >
+                        {fareCards.map((card, index) => (
+                            <SplideSlide key={index}>
+                                <div
+                                    className="border rounded-xl shadow-sm p-6 relative flex flex-col justify-between"
+                                    style={{ height: "-webkit-fill-available" }}
                                 >
-                                    <img src={Insuarance} alt="insuarance" className="" />
-
-                                    <p className="text-sm">Travel Insurance for 1 days</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex mt-6 text-sm font-medium gap-4">
-
-
-                            <div className="w-full flex justify-end">
-
-                                <button
-                                    className="cursor-pointer py-1 px-3 bg-[#78080B] text-white rounded-full border-2 border-transparent
-               hover:bg-white hover:text-[#78080B] hover:border-[#78080B] transition duration-200 shadow-sm"
-                                >
-                                    BOOK NOW
-                                </button>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    {/* Card 2 */}
-                    <div className="border rounded-xl shadow-sm p-6 relative flex flex-col justify-between">
-                        <div>
-                            <div className="flex items-baseline gap-2">
-                                <span className="text-lg line-through">₹ 5,530</span>
-                                <span className="text-2xl font-bold text-[#78080B]">₹ 5,340 </span>
-                                <span className="text-xl font-medium">Per adult</span>
-                            </div>
-                            <p className="text-sm font-medium mb-5">FARE BY <span className="font-bold text-[#78080B]">FLEXI PLUS</span></p>
-
-                            <div className="space-y-2 text-sm">
-                                <div>
-                                    <p className="font-bold text-base">Baggage</p>
-
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-4 h-4 flex items-center justify-center rounded-full bg-[#78080B] text-white text-xs">
-                                            <img src={Tick} alt="tick" />
+                                    <div>
+                                        <div className="flex items-baseline gap-2">
+                                            <span className="text-lg line-through">{card.oldPrice}</span>
+                                            <span className="text-2xl font-bold text-[#78080B]">
+                                                {card.price}
+                                            </span>
+                                            <span className="text-xl font-medium">{card.type}</span>
                                         </div>
-                                        <p>7 kgs Cabin Baggage</p>
-                                    </div>
 
-                                    <div className="flex items-center gap-2 mt-1">
-                                        <div className="w-4 h-4 flex items-center justify-center rounded-full bg-[#78080B] text-white text-xs">
-                                            <img src={Tick} alt="tick" />
+                                        <p className="text-sm font-medium mb-5">
+                                            FARE BY{" "}
+                                            <span className="font-bold text-[#78080B]">{card.title}</span>
+                                        </p>
+
+                                        <div className="space-y-2 text-sm">
+                                            {/* Baggage */}
+                                            <div>
+                                                <p className="font-bold text-base">Baggage</p>
+                                                {card.baggage.map((item, i) => (
+                                                    <div key={i} className="flex items-center gap-2 mt-1">
+                                                        <div className="w-4 h-4 flex items-center justify-center rounded-full bg-[#78080B] text-white text-xs">
+                                                            <img src={Tick} alt="tick" />
+                                                        </div>
+                                                        <p>{item}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* Flexibility */}
+                                            <div className="mt-4">
+                                                <p className="text-base font-bold">Flexibility</p>
+                                                {card.flexibility.map((item, i) => (
+                                                    <div key={i} className="flex items-start gap-2">
+                                                        <img src={Dash} alt="dash" className="pt-2" />
+                                                        <p className="text-sm leading-loose">{item}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* Seats, Meals & More */}
+                                            <div className="mt-4">
+                                                <p className="text-base font-bold">Seats, Meals & More</p>
+                                                {card.seatsMeals.map((item, i) => (
+                                                    <div key={i} className="flex items-start gap-2">
+                                                        <img src={Dash} alt="dash" className="pt-2" />
+                                                        <p className="text-sm leading-loose">{item}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* Optional: Benefits / Insurance */}
+                                            {card.benefitsWorth && (
+                                                <div>
+                                                    <p className="text-base mt-3 font-semibold">
+                                                        BENEFITS WORTH{" "}
+                                                        <span className="text-[#FF8000]">
+                                                            {card.benefitsWorth}
+                                                        </span>{" "}
+                                                        INCLUDED
+                                                    </p>
+                                                </div>
+                                            )}
+
+                                            {card.insurance && (
+                                                <div
+                                                    className="flex items-center bg-[#D9D9D9] rounded-md text-black p-2"
+                                                    style={{
+                                                        boxShadow: "2px 4px 4px rgba(0, 0, 0, 0.10)",
+                                                    }}
+                                                >
+                                                    <img src={Insuarance} alt="insurance" />
+                                                    <p className="text-sm">{card.insurance}</p>
+                                                </div>
+                                            )}
                                         </div>
-                                        <p>15 kgs Check-in Baggage</p>
+                                    </div>
+
+                                    {/* Buttons */}
+                                    <div className="flex mt-6 justify-between text-sm font-medium gap-4">
+                                        {card.buttons.map((btn, i) => (
+                                            <button
+                                                key={i}
+                                                className={`cursor-pointer py-1 px-3 rounded-full border-2 transition duration-200 shadow-sm ${btn === "BOOK NOW"
+                                                    ? "bg-[#78080B] text-white border-transparent hover:bg-white hover:text-[#78080B] hover:border-[#78080B]"
+                                                    : "border-[#78080B] text-[#78080B] hover:bg-[#78080B] hover:text-white"
+                                                    }`}
+                                                onClick={() => { navigate('/review-details') }}
+                                            >
+                                                {btn}
+                                            </button>
+                                        ))}
                                     </div>
                                 </div>
-
-                                <div className="mt-4">
-                                    <p className="text-base font-bold">Flexibility</p>
-
-                                    {/* Item 1 */}
-                                    <div className="flex items-start gap-2">
-                                        <img src={Dash} alt="dash" className="pt-2" />
-
-                                        <p className="text-sm leading-loose">
-                                            Lower Cancellation fee start at ₹ 5,330 (up to 24 hours before departure)
-                                        </p>
-                                    </div>
-                                    <div className="flex items-start gap-2">
-                                        <img src={Dash} alt="dash" className="pt-2" />
-
-                                        <p className="text-sm leading-loose">
-                                            Free Date Change fee start at ₹ 5,330 up to 3hrs before departure
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="mt-4">
-                                    <p className="text-base font-bold">Seats, Meals & More</p>
-
-                                    {/* Item 1 */}
-                                    <div className="flex items-start gap-2">
-                                        <img src={Dash} alt="dash" className="pt-2" />
-
-                                        <p className="text-sm leading-loose">
-                                            Free Seats
-                                        </p>
-                                    </div>
-                                    <div className="flex items-start gap-2">
-                                        <img src={Dash} alt="dash" className="pt-2" />
-
-                                        <p className="text-sm leading-loose">
-                                            Chargeable Meals
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex mt-6 justify-between text-sm font-medium gap-4">
-                            <button
-                                className="cursor-pointer py-1 px-3 border-2 border-[#78080B] text-[#78080B] rounded-full 
-               hover:bg-[#78080B] hover:text-white transition duration-200 shadow-sm"
-                                style={{ textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)' }}
-                            >
-                                LOCK PRICE
-                            </button>
-
-                            <button
-                                className="cursor-pointer py-1 px-3 bg-[#78080B] text-white rounded-full border-2 border-transparent
-               hover:bg-white hover:text-[#78080B] hover:border-[#78080B] transition duration-200 shadow-sm"
-                            >
-                                BOOK NOW
-                            </button>
-                        </div>
-
-                    </div>
-
-                    {/* Card 3 */}
-                    <div className="border rounded-xl shadow-sm p-6 relative flex flex-col justify-between">
-                        <div>
-                            <div className="flex items-baseline gap-2">
-                                <span className="text-lg line-through">₹ 5,530</span>
-                                <span className="text-2xl font-bold text-[#78080B]">₹ 5,350 </span>
-                                <span className="text-xl font-medium">Per adult</span>
-                            </div>
-                            <p className="text-sm font-medium mb-5">FARE BY <span className="font-bold text-[#78080B]">SUPER 6E</span></p>
-
-                            <div className="space-y-2 text-sm">
-                                <div>
-                                    <p className="font-bold text-base">Baggage</p>
-
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-4 h-4 flex items-center justify-center rounded-full bg-[#78080B] text-white text-xs">
-                                            <img src={Tick} alt="tick" />
-                                        </div>
-                                        <p>7 kgs Cabin Baggage</p>
-                                    </div>
-
-                                    <div className="flex items-center gap-2 mt-1">
-                                        <div className="w-4 h-4 flex items-center justify-center rounded-full bg-[#78080B] text-white text-xs">
-                                            <img src={Tick} alt="tick" />
-                                        </div>
-                                        <p>15 kgs Check-in Baggage</p>
-                                    </div>
-                                </div>
-
-                                <div className="mt-4">
-                                    <p className="text-base font-bold">Flexibility</p>
-
-                                    {/* Item 1 */}
-                                    <div className="flex items-start gap-2">
-                                        <img src={Dash} alt="dash" className="pt-2" />
-
-                                        <p className="text-sm leading-loose">
-                                            Lower Cancellation fee start at ₹ 5,330 (up to 24 hours before departure)
-                                        </p>
-                                    </div>
-                                    <div className="flex items-start gap-2">
-                                        <img src={Dash} alt="dash" className="pt-2" />
-
-                                        <p className="text-sm leading-loose">
-                                            Free Date Change fee start at ₹ 5,330 up to 3hrs before departure
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="mt-4">
-                                    <p className="text-base font-bold">Seats, Meals & More</p>
-
-                                    {/* Item 1 */}
-                                    <div className="flex items-start gap-2">
-                                        <img src={Dash} alt="dash" className="pt-2" />
-
-                                        <p className="text-sm leading-loose">
-                                            Free Seats
-                                        </p>
-                                    </div>
-                                    <div className="flex items-start gap-2">
-                                        <img src={Dash} alt="dash" className="pt-2" />
-
-                                        <p className="text-sm leading-loose">
-                                            Chargeable Meals
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex mt-6 justify-between text-sm font-medium gap-4">
-                            <button
-                                className="cursor-pointer py-1 px-3 border-2 border-[#78080B] text-[#78080B] rounded-full 
-               hover:bg-[#78080B] hover:text-white transition duration-200 shadow-sm"
-                                style={{ textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)' }}
-                            >
-                                LOCK PRICE
-                            </button>
-
-                            <button
-                                className="cursor-pointer py-1 px-3 bg-[#78080B] text-white rounded-full border-2 border-transparent
-               hover:bg-white hover:text-[#78080B] hover:border-[#78080B] transition duration-200 shadow-sm"
-                            >
-                                BOOK NOW
-                            </button>
-                        </div>
-
-                    </div>
-
+                            </SplideSlide>
+                        ))}
+                    </Splide>
                 </div>
+
             </div>
 
             {/* Animations */}

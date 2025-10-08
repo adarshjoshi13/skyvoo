@@ -6,7 +6,7 @@ import FlightPriceDetailsModal from '../components/FlightResults/FlightPriceDeta
 import SignInModal from '../components/SignInModal';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { X } from 'lucide-react';
+import { X, Search } from 'lucide-react';
 import GrayFadedBg from '@/assets/imgs/grayfadedbg.png'
 import AirlineLogo from '@/assets/imgs/airlinelogo.png'
 import RipSide from '@/assets/imgs/ripSide.png'
@@ -24,11 +24,13 @@ export default function FlightResults() {
     const [selectedFlights, setSelectedFlights] = useState([]);
     const [isFlightDetailsModalOpen, setIsFlightDetailsModalOpen] = useState(false);
     const [isSignInModal, setIsSignInModal] = useState(false);
-    const [selectedSort, setSelectedSort] = useState('CHEAPEST');
     const [isSwapping, setIsSwapping] = useState(false);
+    const [collapsed, setCollapsed] = useState(false);
+    const [selectedSort, setSelectedSort] = useState('CHEAPEST');
     const [rotation, setRotation] = useState(0);
     const [selectedFlightId, setSelectedFlightId] = useState(null);
     const [tripType, setTripType] = useState('roundTrip');
+
     const travellerBoxRef = useRef(null);
     const [flightSearchInfo, setFlightSearchInfo] = useState({
         from: '',
@@ -246,59 +248,71 @@ export default function FlightResults() {
     return (
         <>
             {selectedFlights.length > 0 && (
-                <div className="fixed bottom-20 right-5 w-90 bg-white shadow-lg rounded-lg overflow-hidden z-9999 border border-gray-200 secondary-font">
-                    {/* Header */}
-                    <div className="bg-[#0A2B4E] text-white px-4 py-2 flex justify-between items-center">
-                        <h4 className="font-semibold">Selected flights</h4>
-                        <button className="text-white cursor-pointer">—</button> {/* collapse toggle */}
-                    </div>
+                <>
+                    <div className='fixed cursor-pointer bottom-20 right-5 text-white z-1 bg-[#78080B] h-12 w-12 rounded-full flex justify-center items-center' onClick={() => setCollapsed(prev => !prev)}><Search className="h-8 w-8" /></div>
 
-                    {/* Flight list */}
-                    <ul className="divide-y divide-gray-200 max-h-48 overflow-y-auto">
-                        {selectedFlights.map(f => (
-                            <li
-                                key={f.id}
-                                className="flex items-center justify-between px-4 py-3"
-                            >
-                                {/* Left side: Logo + Airline */}
-                                <div className="flex items-center space-x-2">
-                                    <img
-                                        src={f.logoUrl || AirlineLogo}
-                                        alt={f.airline}
-                                        className="w-6 h-6 rounded"
-                                    />
-                                    <span className="font-medium text-gray-800">{f.airline}</span>
+                    <div className={`fixed bottom-20 right-5 bg-white shadow-lg rounded-lg overflow-hidden z-9999 border border-gray-200 secondary-font`}>
+                        <div className='relative'>
+
+                            <div id="FlightComparisonsSection" className={`${collapsed ? 'collapsed' : ''}`}>
+
+                                {/* Header */}
+                                <div className="bg-[#0A2B4E] text-white px-4 py-2 flex justify-between items-center">
+                                    <h4 className="font-semibold">Selected flights</h4>
+                                    <button className="text-white cursor-pointer" onClick={() => setCollapsed(prev => !prev)}> — </button>
                                 </div>
 
-                                {/* Middle: Times + Progress */}
-                                <div className="flex items-center ">
-                                    <div className="text-sm font-medium mr-4">{f.departure.time}</div>
-                                    <div className="h-1 w-16 bg-green-400 mx-auto my-1 rounded" />
-                                    <div className="text-sm font-medium ml-4">{f.arrival.time}</div>
+                                {/* Flight list */}
+                                <ul className="divide-y divide-gray-200 max-h-48 overflow-y-auto">
+                                    {selectedFlights.map(f => (
+                                        <li
+                                            key={f.id}
+                                            className="flex items-center justify-between px-4 py-3"
+                                        >
+                                            {/* Left side: Logo + Airline */}
+                                            <div className="flex items-center space-x-2">
+                                                <img
+                                                    src={f.logoUrl || AirlineLogo}
+                                                    alt={f.airline}
+                                                    className="w-6 h-6 rounded"
+                                                />
+                                                <span className="font-medium text-gray-800">{f.airline}</span>
+                                            </div>
+
+                                            {/* Middle: Times + Progress */}
+                                            <div className="flex items-center ">
+                                                <div className="text-sm font-medium mr-4">{f.departure.time}</div>
+                                                <div className="h-1 w-16 bg-green-400 mx-auto my-1 rounded" />
+                                                <div className="text-sm font-medium ml-4">{f.arrival.time}</div>
+                                            </div>
+
+                                            {/* Remove button */}
+                                            <button
+                                                className="text-gray-400 hover:text-red-500 ml-3"
+                                                onClick={() =>
+                                                    setSelectedFlights(prev =>
+                                                        prev.filter(flight => flight.id !== f.id)
+                                                    )
+                                                }
+                                            >
+                                                ✕
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                {/* Footer button */}
+                                <div className="p-3 bg-[#0A2B4E] border-t border-gray-200 flex justify-end">
+                                    <button className="w-[60%] cursor-pointer bg-blue-600 text-white font-bold py-2 rounded-full shadow hover:bg-blue-700 transition-colors" onClick={() => { navigate('/compare-flights') }}>
+                                        COMPARE FLIGHTS
+                                    </button>
                                 </div>
 
-                                {/* Remove button */}
-                                <button
-                                    className="text-gray-400 hover:text-red-500 ml-3"
-                                    onClick={() =>
-                                        setSelectedFlights(prev =>
-                                            prev.filter(flight => flight.id !== f.id)
-                                        )
-                                    }
-                                >
-                                    ✕
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-
-                    {/* Footer button */}
-                    <div className="p-3 bg-[#0A2B4E] border-t border-gray-200 flex justify-end">
-                        <button className="w-[60%] cursor-pointer bg-blue-600 text-white font-bold py-2 rounded-full shadow hover:bg-blue-700 transition-colors" onClick={() => { navigate('/compare-flights') }}>
-                            COMPARE FLIGHTS
-                        </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </>
+
             )}
 
             {isFlightDetailsModalOpen && <FlightPriceDetailsModal onClose={() => setIsFlightDetailsModalOpen(false)} />}
@@ -378,10 +392,10 @@ export default function FlightResults() {
                                                 </svg>
                                             </div>
                                         </button>
-                                    </div>
+                                    </div >
 
                                     {/* To */}
-                                    <div className="col-span-2">
+                                    < div className="col-span-2" >
                                         <label className="block text-base text-white">To</label>
                                         <input
                                             type="text"
@@ -390,10 +404,10 @@ export default function FlightResults() {
                                             onChange={(e) => handleFlightInputChange('to', e.target.value)}
                                             className="w-full text-lg font-medium border-b border-white text-white focus:outline-none placeholder-white"
                                         />
-                                    </div>
+                                    </div >
 
                                     {/* Depart */}
-                                    <div className="col-span-2">
+                                    < div className="col-span-2" >
                                         <label className="block text-base text-white">Depart</label>
                                         <DatePicker
                                             selected={flightSearchInfo.depart}
@@ -403,32 +417,34 @@ export default function FlightResults() {
                                             placeholderText="Select Depart"
                                             className="w-full font-medium text-lg text-white border-b border-white focus:outline-none placeholder-white react-datepicker-popper"
                                         />
-                                    </div>
+                                    </div >
 
                                     {/* Return (conditionally rendered) */}
-                                    {tripType === 'roundTrip' && (
-                                        <div className="col-span-2">
-                                            <label className="block text-base text-white">Return</label>
-                                            <div className="flex items-center justify-between">
-                                                <DatePicker
-                                                    selected={flightSearchInfo.return}
-                                                    onChange={(date) => handleFlightInputChange('return', date)}
-                                                    minDate={flightSearchInfo.depart ?? new Date()}
-                                                    monthsShown={2}
-                                                    placeholderText="Select Return"
-                                                    className="w-full font-medium text-lg text-white border-b border-white focus:outline-none placeholder-white react-datepicker-popper"
-                                                />
-                                                {flightSearchInfo.return && (
-                                                    <div
-                                                        className="bg-[#0a223d] rounded-full w-4 h-4 flex justify-center items-center cursor-pointer hover:bg-[#12345a]"
-                                                        onClick={() => handleFlightInputChange('return', null)}
-                                                    >
-                                                        <X className="h-3 w-3 text-white" />
-                                                    </div>
-                                                )}
+                                    {
+                                        tripType === 'roundTrip' && (
+                                            <div className="col-span-2">
+                                                <label className="block text-base text-white">Return</label>
+                                                <div className="flex items-center justify-between">
+                                                    <DatePicker
+                                                        selected={flightSearchInfo.return}
+                                                        onChange={(date) => handleFlightInputChange('return', date)}
+                                                        minDate={flightSearchInfo.depart ?? new Date()}
+                                                        monthsShown={2}
+                                                        placeholderText="Select Return"
+                                                        className="w-full font-medium text-lg text-white border-b border-white focus:outline-none placeholder-white react-datepicker-popper"
+                                                    />
+                                                    {flightSearchInfo.return && (
+                                                        <div
+                                                            className="bg-[#0a223d] rounded-full w-4 h-4 flex justify-center items-center cursor-pointer hover:bg-[#12345a]"
+                                                            onClick={() => handleFlightInputChange('return', null)}
+                                                        >
+                                                            <X className="h-3 w-3 text-white" />
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
+                                        )
+                                    }
 
                                     {/* Traveler */}
                                     <div className="col-span-2 relative">
@@ -602,7 +618,8 @@ export default function FlightResults() {
 
                                     </div>
                                 </>
-                            )}
+                            )
+                            }
 
                             {/* Search Button */}
                             <div className="col-span-2 flex justify-center relative">
@@ -614,11 +631,11 @@ export default function FlightResults() {
                                     MODIFY SEARCH</a>
                             </div>
 
-                        </div>
-                    </div>
+                        </div >
+                    </div >
 
                     {/* Fare Type */}
-                    <div className="filter-section max-w-7xl mx-auto mt-4 font-medium">
+                    < div className="filter-section max-w-7xl mx-auto mt-4 font-medium" >
                         <div className="flex items-center justify-start space-x-6">
                             {/* Label */}
                             <span className="text-base">Fare Type</span>
@@ -652,12 +669,12 @@ export default function FlightResults() {
                         </div>
 
 
-                    </div>
+                    </div >
 
-                </div>
+                </div >
 
                 {/* Main Content */}
-                <div className="relative max-w-7xl mx-auto px-4 py-6 z-50">
+                < div className="relative max-w-7xl mx-auto px-4 py-6 z-50" >
                     <div className="flex gap-6">
                         {/* Filters Sidebar */}
                         <Filters />
@@ -927,7 +944,7 @@ export default function FlightResults() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div >
             </div >
         </>
     );
