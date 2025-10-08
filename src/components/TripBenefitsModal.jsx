@@ -41,7 +41,7 @@ export default function TripBenefitsModal({ onClose }) {
                 </a>
 
                 {/* Benefits List */}
-                <div className="space-y-5 text-gray-700 overflow-y-auto relative max-h-[40vh] pr-2">
+                <div className="space-y-5 text-gray-700 overflow-y-auto relative max-h-[40vh]">
                     <Benefit
                         icon={<Briefcase className="text-teal-500" size={18} />}
                         title="Baggage Assistance"

@@ -16,6 +16,15 @@ export default function Home() {
   const [selectedFare, setSelectedFare] = useState('your-selection');
   const [isTripSecure, setIsTripSecure] = useState(false);
 
+
+  const handleScroll = (id) => {
+    const section = document.getElementById(id);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+
   return (
     <>
       {isModalOpen && <SignInModal onClose={() => setIsModalOpen(false)} />}
@@ -38,15 +47,40 @@ export default function Home() {
         {/* Booking Section */}
         <div className="min-h-screen bg-slate-50 secondary-font">
           {/* Header */}
-          <div className="relative z-20 bg-slate-900  text-white py-6 px-4">
+          <div className="z-999 bg-slate-900  text-white py-6 px-4 sticky top-0">
             <div className="max-w-7xl mx-auto flex items-center justify-between">
               <h1 className="text-2xl font-bold">Complete your booking</h1>
               <div className="flex gap-4 text-sm">
-                <span className="text-slate-300">Flights Summary</span>
-                <span className="text-slate-300">Travel Insurance</span>
-                <span className="text-slate-300">Traveller Details</span>
-                <span className="text-slate-300">Seats & Meals</span>
-                <span className="text-slate-300">Add-ons</span>
+                <span
+                  className="cursor-pointer text-slate-300 hover:text-white transition"
+                  onClick={() => handleScroll("flight-summary")}
+                >
+                  Flights Summary
+                </span>
+                <span
+                  className="cursor-pointer text-slate-300 hover:text-white transition"
+                  onClick={() => handleScroll("travel-insurance")}
+                >
+                  Travel Insurance
+                </span>
+                <span
+                  className="cursor-pointer text-slate-300 hover:text-white transition"
+                  onClick={() => handleScroll("traveller-details")}
+                >
+                  Traveller Details
+                </span>
+                <span
+                  className="cursor-pointer text-slate-300 hover:text-white transition"
+                  onClick={() => handleScroll("seats-meals")}
+                >
+                  Seats & Meals
+                </span>
+                <span
+                  className="cursor-pointer text-slate-300 hover:text-white transition"
+                  onClick={() => handleScroll("add-ons")}
+                >
+                  Add-ons
+                </span>
               </div>
             </div>
           </div>
@@ -65,7 +99,7 @@ export default function Home() {
                   </div>
 
                   {/* Flight Details Card */}
-                  <div className="bg-white rounded-lg shadow-sm border border-slate-200">
+                  <div id="flight-summary" className="bg-white rounded-lg shadow-sm border border-slate-200">
                     <div className="p-4" >
                       <div className='p-2' style={{ boxShadow: '0 1px 4px 0 rgba(0, 0, 0, .21)' }}>
                         {/* Route Header */}
@@ -421,6 +455,7 @@ export default function Home() {
                     </div>
                   </div>
 
+                  {/* Important Information */}
                   <div className="bg-white rounded-lg shadow-sm border border-slate-200">
                     <div className="p-5">
                       <div className="flex items-center mb-4">
@@ -463,7 +498,8 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="bg-white rounded-lg shadow-sm border border-slate-200">
+                  {/* Trip Secure */}
+                  <div id="travel-insurance" className="bg-white rounded-lg shadow-sm border border-slate-200">
                     <div className="p-5">
                       {/* Header */}
                       <div className="flex items-center mb-4">
@@ -584,12 +620,11 @@ export default function Home() {
                     </div>
                   </div>
 
-
                 </div>
 
                 {/* Sidebar - Fare Summary */}
                 <div className="lg:col-span-1">
-                  <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 sticky top-6">
+                  <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 sticky top-25">
                     <h2 className="text-xl font-bold mb-4">Fare Summary</h2>
 
                     <div className="space-y-3 mb-4">
