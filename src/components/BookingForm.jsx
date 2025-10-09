@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { CirclePlus, Calendar } from 'lucide-react';
-import { Field, Select } from '@headlessui/react';
-import { ChevronDownIcon } from '@heroicons/react/20/solid';
+import Select, { components } from "react-select";
+import { X, CirclePlus, Calendar } from 'lucide-react';
 import clsx from 'clsx';
 import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
@@ -20,19 +19,198 @@ function BookingForm() {
     const navigate = useNavigate();
     const [tripType, setTripType] = useState('oneWay');
     const [fareType, setFareType] = useState('regular');
-    const [classType, setClassType] = useState('Coach');
     const [isSwapping, setIsSwapping] = useState(false);
     const [rotation, setRotation] = useState(0);
+
     const [flightSearchInfo, setFlightSearchInfo] = useState({
-        from: '',
-        to: '',
+        from: null,
+        to: null,
         depart: null,
+        coach: null,
         return: null,
         traveller: 1,
+        Adult: 1,
+        Child: 1,
+        Infant: 1,
     });
 
+    console.log(flightSearchInfo, 'see this info')
+
+    const AirportOptions = [
+        {
+            airportCode: "BOM",
+            airportName: "Chhatrapati Shivaji International Airport",
+            city: "Mumbai",
+            state: "Maharashtra",
+            country: "India",
+            countryCode: "IN"
+        },
+        {
+            airportCode: "DEL",
+            airportName: "Indira Gandhi International Airport",
+            city: "New Delhi",
+            state: "Delhi",
+            country: "India",
+            countryCode: "IN"
+        },
+        {
+            airportCode: "IATA",
+            airportName: "Safdarjung Airport",
+            city: "New Delhi",
+            state: "Delhi",
+            country: "India",
+            countryCode: "IN"
+        },
+        {
+            airportCode: "HDO",
+            airportName: "Hindon Airport",
+            city: "Ghaziabad",
+            state: "Delhi",
+            country: "India",
+            countryCode: "IN"
+        },
+        {
+            airportCode: "BLR",
+            airportName: "Kempegowda International Airport",
+            city: "Bengaluru",
+            state: "Karnataka",
+            country: "India",
+            countryCode: "IN"
+        },
+        {
+            airportCode: "MAA",
+            airportName: "Chennai International Airport",
+            city: "Chennai",
+            state: "Tamil Nadu",
+            country: "India",
+            countryCode: "IN"
+        },
+        {
+            airportCode: "CCU",
+            airportName: "Netaji Subhas Chandra Bose International Airport",
+            city: "Kolkata",
+            state: "West Bengal",
+            country: "India",
+            countryCode: "IN"
+        },
+        {
+            airportCode: "PQQ",
+            airportName: "Lune Airport",
+            city: "Tune",
+            state: "Unknown",
+            country: "India",
+            countryCode: "IN"
+        },
+        {
+            airportCode: "BKK",
+            airportName: "Suvarnabhumi Airport",
+            city: "Bangkok",
+            state: "Bangkok",
+            country: "Thailand",
+            countryCode: "TH"
+        },
+        {
+            airportCode: "LHR",
+            airportName: "Heathrow Airport",
+            city: "London",
+            state: "England",
+            country: "United Kingdom",
+            countryCode: "GB"
+        },
+        {
+            airportCode: "JFK",
+            airportName: "John F. Kennedy International Airport",
+            city: "New York",
+            state: "New York",
+            country: "USA",
+            countryCode: "US"
+        },
+        {
+            airportCode: "CDG",
+            airportName: "Charles de Gaulle Airport",
+            city: "Paris",
+            state: "Île-de-France",
+            country: "France",
+            countryCode: "FR"
+        },
+        {
+            airportCode: "DXB",
+            airportName: "Dubai International Airport",
+            city: "Dubai",
+            state: "Dubai",
+            country: "UAE",
+            countryCode: "AE"
+        },
+        {
+            airportCode: "SYD",
+            airportName: "Sydney Kingsford Smith Airport",
+            city: "Sydney",
+            state: "New South Wales",
+            country: "Australia",
+            countryCode: "AU"
+        },
+        {
+            airportCode: "HND",
+            airportName: "Tokyo Haneda Airport",
+            city: "Tokyo",
+            state: "Tokyo",
+            country: "Japan",
+            countryCode: "JP"
+        },
+        {
+            airportCode: "FRA",
+            airportName: "Frankfurt am Main Airport",
+            city: "Frankfurt",
+            state: "Hesse",
+            country: "Germany",
+            countryCode: "DE"
+        },
+        {
+            airportCode: "SIN",
+            airportName: "Changi Airport",
+            city: "Singapore",
+            state: "Singapore",
+            country: "Singapore",
+            countryCode: "SG"
+        }
+    ];
+
+    const CoachOptions = [
+        { value: "Economy", label: "Economy" },
+        { value: "Premium Economy", label: "Premium Economy" },
+        { value: "Business", label: "Business" },
+        { value: "First Class", label: "First Class" },
+        { value: "Economy/Premium Economy", label: "Economy/Premium Economy" },
+        { value: "Business/First Class", label: "Business/First Class" },
+    ];
+
+    const CustomOption = (props) => (
+        <components.Option {...props}>
+            <div className="flex justify-between w-full">
+                <div className="flex flex-col">
+                    <span className="text-gray-900">{props.data.city}, {props.data.country}</span>
+                    <span className="text-gray-400 text-sm">{props.data.airportName}</span>
+                </div>
+                <span className="font-medium text-gray-700">{props.data.airportCode}</span>
+            </div>
+        </components.Option>
+    );
+
     const handleFlightInputChange = (field, value) => {
-        setFlightSearchInfo(prev => ({ ...prev, [field]: value }));
+        setFlightSearchInfo(prev => {
+            let updated = { ...prev, [field]: value };
+
+            // Enforce logical consistency
+            if (field === "depart" && updated.return && value && value > updated.return) {
+                updated.return = null; // clear return if it’s before new depart
+            }
+
+            if (field === "return" && updated.depart && value && value < updated.depart) {
+                updated.depart = null; // clear depart if it’s after new return (optional)
+            }
+
+            return updated;
+        });
     };
 
     const handleSwap = () => {
@@ -47,6 +225,33 @@ function BookingForm() {
     };
 
     const searchFlightResults = () => {
+
+        const travelType = "000";
+
+        const dataformat = {
+            Travel_Type: 0,
+            Booking_Type: 0,
+            TripInfo: [
+                {
+                    Origin: "BOM",
+                    Destination: "MAA",
+                    TravelDate: "01/25/2022",
+                    Trip_Id: 0
+                }
+            ],
+            Adult_Count: 1,
+            Child_Count: 0,
+            Infant_Count: 0,
+            Class_Of_Travel: 0,
+            InventoryType: 0,
+            Source_Type: 0,
+            Filtered_Airline: [
+                {
+                    "Airline_Code": ""
+                }
+            ]
+        }
+
         navigate('/search-results');
     };
 
@@ -109,42 +314,137 @@ function BookingForm() {
                         </label>
                     ))}
 
-                    <Field>
-                        <div className="relative secondary-font font-semibold w-full sm:w-auto">
-                            <Select
-                                value={classType}
-                                onChange={setClassType}
-                                className={clsx(
-                                    'w-full sm:w-auto rounded-lg px-4 py-1.5 text-black appearance-none',
-                                    'focus:outline-none focus:ring-1 focus:ring-black focus:border-transparent'
-                                )}
-                            >
-                                <option className="py-2 px-4">Coach</option>
-                                <option className="py-2 px-4 text-gray-600">Business</option>
-                                <option className="py-2 px-4 text-gray-600">First Class</option>
-                            </Select>
-                            <ChevronDownIcon
-                                className="pointer-events-none font-bold text-black absolute top-2 right-3 size-5 fill-gray-600 filter contrast-125"
-                                aria-hidden="true"
-                            />
-                        </div>
-                    </Field>
+                    <div className="relative secondary-font font-semibold w-full sm:w-auto">
+                        <Select
+                            options={CoachOptions}
+                            value={flightSearchInfo.coach || null}
+                            onChange={(option) => handleFlightInputChange("coach", option || null)}
+                            placeholder="Coach"
+                            isSearchable
+                            classNamePrefix="coach-select"
+                            components={{
+                                IndicatorSeparator: () => null,
+                            }}
+                            getOptionLabel={(option) => option.label}
+                            styles={{
+                                control: (base, state) => ({
+                                    ...base,
+                                    backgroundColor: "transparent",
+                                    border: "none",
+                                    boxShadow: state.isFocused ? "0 0 0 1px #000" : "none",
+                                    padding: "2px 4px",
+                                    minHeight: "38px",
+                                    color: "black",
+                                    fontSize: '1.155rem',
+                                    fontWeight: '600',
+                                    fontFamily: "Poppins, sans-serif",
+                                    "&:hover": { borderColor: "#000" },
+                                }),
+                                menu: (base) => ({
+                                    ...base,
+                                    zIndex: 50,
+                                    width: "300px",
+                                    fontSize: '1rem',
+                                    fontWeight: '500',
+                                }),
+                                option: (base, state) => ({
+                                    ...base,
+                                    backgroundColor: state.isFocused ? "#f3f4f6" : "transparent",
+                                    color: "black",
+                                    cursor: "pointer",
+                                    padding: "8px 12px",
+                                }),
+                                placeholder: (base) => ({
+                                    ...base,
+                                    color: "black",
+                                    fontSize: '1.155rem',
+                                    fontWeight: '600',
+                                    fontFamily: "Poppins, sans-serif",
+                                }),
+                                dropdownIndicator: (base) => ({
+                                    ...base,
+                                    color: "black",
+                                    padding: 4,
+                                    svg: {
+                                        fontSize: "1.155rem",
+                                        fontWeight: "600",
+                                    },
+                                }),
+
+                            }}
+                        />
+
+                    </div>
                 </div>
 
                 {/* Flight Search Form */}
-                <div className="w-full max-w-6xl mx-auto p-2 sm:p-4">
+                <div className="w-full max-w-6xl mx-auto p-2 sm:p-1">
                     <div className="grid grid-cols-12 gap-4 sm:gap-6 items-end secondary-font font-semibold">
 
                         {/* From */}
                         <div className="col-span-12 sm:col-span-2">
                             <label className="block text-lg text-gray-700">From</label>
-                            <input
-                                type="text"
+                            <Select
+                                options={AirportOptions}
+                                value={flightSearchInfo.from} // store full object
+                                onChange={(option) => { handleFlightInputChange("from", option) }}
                                 placeholder="Origin"
-                                value={flightSearchInfo.from}
-                                onChange={(e) => handleFlightInputChange('from', e.target.value)}
-                                className="w-full text-xl border-b text-[#525252] border-gray-400 focus:outline-none placeholder-gray-400"
+                                isSearchable
+                                menuPlacement="top"
+                                getOptionLabel={(option) => `${option.city} - ${option.airportName}`}
+                                components={{
+                                    Option: CustomOption,
+                                    DropdownIndicator: () => null,
+                                    IndicatorSeparator: () => null,
+                                }}
+                                filterOption={(option, inputValue) => {
+                                    const { airportCode, airportName, city, state, country, countryCode } = option.data;
+                                    const search = inputValue.toLowerCase();
+                                    return (
+                                        airportCode.toLowerCase().includes(search) ||
+                                        airportName.toLowerCase().includes(search) ||
+                                        city.toLowerCase().includes(search) ||
+                                        state.toLowerCase().includes(search) ||
+                                        country.toLowerCase().includes(search) ||
+                                        countryCode.toLowerCase().includes(search)
+                                    );
+                                }}
+                                classNamePrefix="flight-select"
+                                styles={{
+                                    control: (base, state) => ({
+                                        ...base,
+                                        backgroundColor: "transparent",
+                                        border: "none",
+                                        borderBottom: "1px solid",
+                                        borderColor: state.isFocused ? "#3b82f6" : "#9ca3af",
+                                        borderRadius: 0,
+                                        boxShadow: "none",
+                                        padding: "2px 0",
+                                        fontSize: "1.25rem",
+                                        color: "#525252",
+                                        "&:hover": { borderColor: "#3b82f6" },
+                                    }),
+                                    option: (base, state) => ({
+                                        ...base,
+                                        backgroundColor: state.isFocused
+                                            ? "#e5e7eb" // light gray on hover
+                                            : "transparent", // keep selected option background transparent
+                                        color: "#111827",
+                                        cursor: "pointer",
+                                        "&:active": { backgroundColor: "#d1d5db" },
+                                    }),
+                                    menu: (base) => ({
+                                        ...base,
+                                        zIndex: 50,
+                                        width: "400px",
+                                    }),
+                                    menuList: (base) => ({
+                                        ...base,
+                                        padding: 0,
+                                    }),
+                                }}
                             />
+
                         </div>
 
                         {/* Swap */}
@@ -170,47 +470,119 @@ function BookingForm() {
                         {/* To */}
                         <div className="col-span-12 sm:col-span-2">
                             <label className="block text-lg text-gray-700">To</label>
-                            <input
-                                type="text"
+                            <Select
+                                options={AirportOptions}
+                                value={flightSearchInfo.to || null} // store full object
+                                onChange={(option) => { handleFlightInputChange("to", option || null) }}
+
                                 placeholder="Destination"
-                                value={flightSearchInfo.to}
-                                onChange={(e) => handleFlightInputChange('to', e.target.value)}
-                                className="w-full text-xl text-[#525252] border-b border-gray-400 focus:outline-none placeholder-gray-400"
+                                isSearchable
+                                menuPlacement="top"
+                                getOptionLabel={(option) => `${option.city} - ${option.airportName}`} // display format
+                                components={{
+                                    Option: CustomOption,
+                                    DropdownIndicator: () => null,
+                                    IndicatorSeparator: () => null,
+                                }}
+                                filterOption={(option, inputValue) => {
+                                    const { airportCode, airportName, city, state, country, countryCode } = option.data;
+                                    const search = inputValue.toLowerCase();
+                                    return (
+                                        airportCode.toLowerCase().includes(search) ||
+                                        airportName.toLowerCase().includes(search) ||
+                                        city.toLowerCase().includes(search) ||
+                                        state.toLowerCase().includes(search) ||
+                                        country.toLowerCase().includes(search) ||
+                                        countryCode.toLowerCase().includes(search)
+                                    );
+                                }}
+                                classNamePrefix="flight-select"
+                                styles={{
+                                    control: (base, state) => ({
+                                        ...base,
+                                        backgroundColor: "transparent",
+                                        border: "none",
+                                        borderBottom: "1px solid",
+                                        borderColor: state.isFocused ? "#3b82f6" : "#9ca3af",
+                                        borderRadius: 0,
+                                        boxShadow: "none",
+                                        padding: "2px 0",
+                                        fontSize: "1.25rem",
+                                        color: "#525252",
+                                        "&:hover": { borderColor: "#3b82f6" },
+                                    }),
+                                    option: (base, state) => ({
+                                        ...base,
+                                        backgroundColor: state.isFocused ? "#e5e7eb" : "transparent", // remove blue for selected
+                                        color: "#111827",
+                                        cursor: "pointer",
+                                        "&:active": { backgroundColor: "#d1d5db" },
+                                    }),
+                                    menu: (base) => ({
+                                        ...base,
+                                        zIndex: 50,
+                                        width: "400px",
+                                    }),
+                                    menuList: (base) => ({
+                                        ...base,
+                                        padding: 0,
+                                    }),
+                                }}
                             />
                         </div>
 
-                        {/* Depart & Return */}
-                        {[{ label: 'Depart', key: 'depart' }, { label: 'Return', key: 'return' }].map(({ label, key }) => (
-                            <div key={key} className="col-span-12 sm:col-span-2 flex items-center gap-3">
-                                <div className="flex items-center">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="w-6 h-6 text-gray-600"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
+                        {/* Depart */}
+                        <div className="col-span-2" >
+                            <label className="block text-lg text-gray-700 flex items-center gap-2">Depart</label>
+                            
+                            <DatePicker
+                                selected={flightSearchInfo.depart}
+                                onChange={(date) => handleFlightInputChange('depart', date)}
+                                minDate={new Date()}
+                                maxDate={flightSearchInfo.return || null}
+                                monthsShown={2}
+                                placeholderText="Select Depart"
+                                className="w-full text-xl text-[#525252] border-b focus:outline-none placeholder-[#808080] p-2"
+                            />
+                        </div >
+
+                        {/* Return */}
+                        <div className="col-span-2">
+                            <div className='flex items-center justify-between'>
+                                <label className="block text-lg text-gray-700 flex items-center gap-2">Return</label>
+                                {flightSearchInfo.return && (
+                                    <div
+                                        className="bg-[#0a223d] rounded-full w-4 h-4 flex justify-center items-center cursor-pointer hover:bg-[#12345a]"
+                                        onClick={() => handleFlightInputChange('return', null)}
                                     >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                        />
-                                    </svg>
-                                </div>
-                                <div className="flex flex-col w-full">
-                                    <label className="block text-lg text-gray-700 flex items-center gap-2">{label}</label>
-                                    <DatePicker
-                                        selected={flightSearchInfo[key]}
-                                        onChange={(date) => handleFlightInputChange(key, date)}
-                                        minDate={new Date()}
-                                        monthsShown={2} // shows 2 months side by side
-                                        placeholderText={`Date`}
-                                        className="w-full text-xl text-[#525252] border-b border-gray-400 focus:outline-none placeholder-gray-400"
-                                    />
-                                </div>
+                                        <X className="h-3 w-3 text-white" />
+                                    </div>
+                                )}
                             </div>
-                        ))}
+                            <div className="flex items-center justify-between">
+                                <DatePicker
+                                    selected={flightSearchInfo.return}
+
+                                    onChange={(date) => {
+                                        if (!date) return handleFlightInputChange('return', null);
+
+                                        const formattedDate = date.toLocaleDateString('en-US', {
+                                            day: '2-digit',
+                                            month: 'short',
+                                            year: 'numeric',
+                                            weekday: 'long',
+                                        });
+                                        handleFlightInputChange('return', formattedDate);
+                                    }}
+                                    minDate={flightSearchInfo.depart || new Date()} // must 
+                                    monthsShown={2}
+                                    placeholderText="Select Return"
+                                    className="w-full text-xl text-[#525252] border-b focus:outline-none placeholder-[#808080] p-2"
+                                />
+
+                            </div>
+                        </div>
+
                         {/* Traveler */}
                         <div className="col-span-12 sm:col-span-2 flex items-center gap-3">
                             <img src={Person} alt="traveler" className="w-6 h-6" />
@@ -263,8 +635,8 @@ function BookingForm() {
                         </button>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }
 
