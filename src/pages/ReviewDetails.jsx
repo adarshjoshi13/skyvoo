@@ -1,21 +1,121 @@
 import React, { useState } from 'react';
 import Header from '../components/Header';
-import SignInModal from '../components/SignInModal';
-import FareRulesModal from '../components/FareRulesModal';
-import TripBenefitsModal from '../components/TripBenefitsModal';
+import SignInModal from '../components/Modals/SignInModal';
+import FareRulesModal from '../components/Modals/FareRulesModal';
+import TripBenefitsModal from '../components/Modals/TripBenefitsModal';
+import BaggageModal from '../components/Modals/BaggageModal';
 import GrayFadedBg from '@/assets/imgs/grayfadedbg.png'
 import AirlineLogo from '@/assets/imgs/airlinelogo.png'
 import CouponBg from '@/assets/imgs/couponbg.png';
 import Dash from '@/assets/vectors/Dash.svg'
-import { Plane, Luggage, AlertCircle, ShieldCheck, CirclePlus, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import { Trash2, Plane, User, Luggage, AlertCircle, ShieldCheck, CirclePlus, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import Select from "react-select";
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFareModalOpen, setIsFareModalOpen] = useState(false);
   const [isTripBenefitsModal, setIsTripBenefitsModal] = useState(false);
+  const [isBaggageModal, setIsBaggageModal] = useState(false);
   const [selectedFare, setSelectedFare] = useState('your-selection');
   const [isTripSecure, setIsTripSecure] = useState(false);
 
+  const countryOptions = [
+    { value: "+91", label: "India (+91)" },
+    { value: "+1", label: "United States (+1)" },
+    { value: "+7", label: "Russia (+7)" },
+    { value: "+20", label: "Egypt (+20)" },
+    { value: "+27", label: "South Africa (+27)" },
+    { value: "+30", label: "Greece (+30)" },
+    { value: "+31", label: "Netherlands (+31)" },
+    { value: "+32", label: "Belgium (+32)" },
+    { value: "+33", label: "France (+33)" },
+    { value: "+34", label: "Spain (+34)" },
+    { value: "+36", label: "Hungary (+36)" },
+    { value: "+39", label: "Italy (+39)" },
+    { value: "+40", label: "Romania (+40)" },
+    { value: "+41", label: "Switzerland (+41)" },
+    { value: "+44", label: "United Kingdom (+44)" },
+    { value: "+45", label: "Denmark (+45)" },
+    { value: "+46", label: "Sweden (+46)" },
+    { value: "+47", label: "Norway (+47)" },
+    { value: "+48", label: "Poland (+48)" },
+    { value: "+49", label: "Germany (+49)" },
+    { value: "+52", label: "Mexico (+52)" },
+    { value: "+55", label: "Brazil (+55)" },
+    { value: "+60", label: "Malaysia (+60)" },
+    { value: "+61", label: "Australia (+61)" },
+    { value: "+62", label: "Indonesia (+62)" },
+    { value: "+63", label: "Philippines (+63)" },
+    { value: "+64", label: "New Zealand (+64)" },
+    { value: "+65", label: "Singapore (+65)" },
+    { value: "+81", label: "Japan (+81)" },
+    { value: "+82", label: "South Korea (+82)" },
+    { value: "+84", label: "Vietnam (+84)" },
+    { value: "+86", label: "China (+86)" },
+    { value: "+90", label: "Turkey (+90)" },
+    { value: "+92", label: "Pakistan (+92)" },
+    { value: "+93", label: "Afghanistan (+93)" },
+    { value: "+94", label: "Sri Lanka (+94)" },
+    { value: "+95", label: "Myanmar (+95)" },
+    { value: "+98", label: "Iran (+98)" },
+    { value: "+212", label: "Morocco (+212)" },
+    { value: "+234", label: "Nigeria (+234)" },
+    { value: "+254", label: "Kenya (+254)" },
+    { value: "+255", label: "Tanzania (+255)" },
+    { value: "+256", label: "Uganda (+256)" },
+    { value: "+260", label: "Zambia (+260)" },
+    { value: "+351", label: "Portugal (+351)" },
+    { value: "+352", label: "Luxembourg (+352)" },
+    { value: "+353", label: "Ireland (+353)" },
+    { value: "+354", label: "Iceland (+354)" },
+    { value: "+358", label: "Finland (+358)" },
+    { value: "+380", label: "Ukraine (+380)" },
+    { value: "+852", label: "Hong Kong (+852)" },
+    { value: "+853", label: "Macau (+853)" },
+    { value: "+855", label: "Cambodia (+855)" },
+    { value: "+856", label: "Laos (+856)" },
+    { value: "+880", label: "Bangladesh (+880)" },
+    { value: "+971", label: "United Arab Emirates (+971)" },
+    { value: "+972", label: "Israel (+972)" },
+    { value: "+974", label: "Qatar (+974)" },
+    { value: "+975", label: "Bhutan (+975)" },
+    { value: "+976", label: "Mongolia (+976)" },
+    { value: "+977", label: "Nepal (+977)" },
+  ];
+
+  const stateOptions = [
+    { value: "andhra-pradesh", label: "Andhra Pradesh" },
+    { value: "arunachal-pradesh", label: "Arunachal Pradesh" },
+    { value: "assam", label: "Assam" },
+    { value: "bihar", label: "Bihar" },
+    { value: "chhattisgarh", label: "Chhattisgarh" },
+    { value: "goa", label: "Goa" },
+    { value: "gujarat", label: "Gujarat" },
+    { value: "haryana", label: "Haryana" },
+    { value: "himachal-pradesh", label: "Himachal Pradesh" },
+    { value: "jharkhand", label: "Jharkhand" },
+    { value: "karnataka", label: "Karnataka" },
+    { value: "kerala", label: "Kerala" },
+    { value: "madhya-pradesh", label: "Madhya Pradesh" },
+    { value: "maharashtra", label: "Maharashtra" },
+    { value: "manipur", label: "Manipur" },
+    { value: "meghalaya", label: "Meghalaya" },
+    { value: "mizoram", label: "Mizoram" },
+    { value: "nagaland", label: "Nagaland" },
+    { value: "odisha", label: "Odisha" },
+    { value: "punjab", label: "Punjab" },
+    { value: "rajasthan", label: "Rajasthan" },
+    { value: "sikkim", label: "Sikkim" },
+    { value: "tamil-nadu", label: "Tamil Nadu" },
+    { value: "telangana", label: "Telangana" },
+    { value: "tripura", label: "Tripura" },
+    { value: "uttar-pradesh", label: "Uttar Pradesh" },
+    { value: "uttarakhand", label: "Uttarakhand" },
+    { value: "west-bengal", label: "West Bengal" },
+    { value: "delhi", label: "Delhi" },
+    { value: "jammu-kashmir", label: "Jammu & Kashmir" },
+    { value: "ladakh", label: "Ladakh" },
+  ];
 
   const handleScroll = (id) => {
     const section = document.getElementById(id);
@@ -24,12 +124,80 @@ export default function Home() {
     }
   };
 
+  const totalTravellers = 7;
+
+  const [travellers, setTravellers] = useState([
+    {
+      id: 1,
+      firstName: '',
+      lastName: '',
+      gender: 'MALE',
+      countryCode: '',
+      mobile: '',
+      email: '',
+      wheelchair: false
+    }
+  ]);
+
+  const [saveToList, setSaveToList] = useState(false);
+
+  const [bookingDetails, setBookingDetails] = useState({
+    countryCode: '+91',
+    mobile: '',
+    email: 'befaltua1@gmail.com'
+  });
+
+  const [hasGST, setHasGST] = useState(false);
+
+  const [gstDetails, setGstDetails] = useState({
+    companyName: '',
+    registrationNo: ''
+  });
+
+  const updateTraveller = (index, field, value) => {
+    const updatedTravellers = [...travellers];
+    updatedTravellers[index][field] = value;
+    setTravellers(updatedTravellers);
+  };
+
+  const addNewTraveller = () => {
+    if (travellers.length < totalTravellers) {
+      setTravellers([
+        ...travellers,
+        {
+          id: travellers.length + 1,
+          firstName: '',
+          lastName: '',
+          gender: 'MALE',
+          countryCode: '',
+          mobile: '',
+          email: '',
+          wheelchair: false
+        }
+      ]);
+    }
+  };
+
+  const removeTraveller = (index) => {
+    const traveller = travellers[index];
+    const hasData = traveller.firstName || traveller.lastName || traveller.mobile;
+
+    if (hasData && !window.confirm('Remove this traveller? All entered data will be lost.')) {
+      return;
+    }
+
+    if (travellers.length > 1) {
+      setTravellers(travellers.filter((_, i) => i !== index));
+    }
+  };
 
   return (
     <>
       {isModalOpen && <SignInModal onClose={() => setIsModalOpen(false)} />}
       {isFareModalOpen && <FareRulesModal onClose={() => setIsFareModalOpen(false)} />}
       {isTripBenefitsModal && <TripBenefitsModal onClose={() => setIsTripBenefitsModal(false)} />}
+
+      {isBaggageModal && <BaggageModal onClose={() => setIsBaggageModal(false)} />}
 
       <div>
         {/* Hero Section */}
@@ -116,7 +284,7 @@ export default function Home() {
                           </span>
                         </div>
 
-                        <button className="text-blue-600 text-sm font-medium mb-4" onClick={() => setIsFareModalOpen(true)}>View Fare Rules</button>
+                        <button className="cursor-pointer text-blue-600 text-sm font-medium mb-4" onClick={() => setIsFareModalOpen(true)}>View Fare Rules</button>
 
                         {/* Airline Info */}
                         <div className="flex items-center justify-between mb-6">
@@ -183,7 +351,7 @@ export default function Home() {
                               <strong>3 KGs of extra baggage added on your trip for ₹ 2,100!</strong> Total check-in baggage is now 18 KGs.
                             </p>
                           </div>
-                          <button className="text-blue-600 font-semibold text-sm whitespace-nowrap">CHANGE</button>
+                          <button className="cursor-pointer text-blue-600 font-semibold text-sm whitespace-nowrap" onClick={() => setIsBaggageModal(true)}>ADD BAGGAGE</button>
                         </div>
 
                       </div>
@@ -193,7 +361,7 @@ export default function Home() {
                     <div className="border-t border-slate-200 p-6">
                       <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-bold">Cancellation & Date Change Policy</h3>
-                        <button className="text-blue-600 text-sm font-medium" onClick={() => setIsFareModalOpen(true)}>View Policy</button>
+                        <button className="cursor-pointer text-blue-600 text-sm font-medium" onClick={() => setIsFareModalOpen(true)}>View Policy</button>
                       </div>
 
                       <div className="flex items-start gap-3 mb-4">
@@ -619,6 +787,363 @@ export default function Home() {
                       </p>
                     </div>
                   </div>
+
+                  {/* Travellers Details */}
+                  <div id="traveller-details" className="bg-white rounded-lg shadow-sm border border-slate-200">
+                    <div className="p-5">
+
+                      {/* Header */}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                          <User className="w-5 h-5 text-blue-600" />
+                          <h3 className="text-lg font-bold">Traveller Details</h3>
+                        </div>
+                        <span className="text-sm text-slate-600">
+                          {travellers.length}/{totalTravellers} added
+                        </span>
+                      </div>
+
+                      {/* Important Notice */}
+                      <div className="bg-orange-50 border border-orange-200 rounded p-3 mb-4">
+                        <p className="text-sm text-orange-800">
+                          <span className="font-semibold">Important:</span> Enter name as mentioned on your passport or Government approved IDs.
+                        </p>
+                      </div>
+
+                      {/* Traveller Forms */}
+                      {travellers.map((traveller, index) => (
+                        <div
+                          key={traveller.id}
+                          className="mb-4 border border-slate-200 rounded-lg p-4"
+                          style={{ boxShadow: '0 1px 4px 0 rgba(0, 0, 0, .21)' }}
+                        >
+                          <div className="flex items-center justify-between gap-2 mb-4">
+                            <div className='flex items-center'>
+                              <input
+                                type="checkbox"
+                                checked={true}
+                                readOnly
+                                className="w-4 h-4 text-blue-600 mr-2"
+                              />
+                              <label className="font-semibold text-slate-800">ADULT {index + 1}</label>
+                            </div>
+                            <div>
+                              {travellers.length > 1 && (
+                                <button
+                                  onClick={() => removeTraveller(index)}
+                                  className="cursor-pointer text-red-500 hover:text-red-700 text-sm font-medium flex items-center gap-1"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            {/* First & Middle Name */}
+                            <input
+                              type="text"
+                              placeholder="First & Middle Name"
+                              value={traveller.firstName}
+                              onChange={(e) => updateTraveller(index, 'firstName', e.target.value)}
+                              className="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+
+                            {/* Last Name */}
+                            <input
+                              type="text"
+                              placeholder="Last Name"
+                              value={traveller.lastName}
+                              onChange={(e) => updateTraveller(index, 'lastName', e.target.value)}
+                              className="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+
+                            {/* Gender Selection */}
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => updateTraveller(index, 'gender', 'MALE')}
+                                className={`flex-1 py-2 px-4 rounded border text-sm font-medium transition-colors ${traveller.gender === 'MALE'
+                                  ? 'bg-blue-600 text-white border-blue-600'
+                                  : 'bg-white text-slate-700 border-slate-300 hover:border-blue-600'
+                                  }`}
+                              >
+                                MALE
+                              </button>
+                              <button
+                                onClick={() => updateTraveller(index, 'gender', 'FEMALE')}
+                                className={`flex-1 py-2 px-4 rounded border text-sm font-medium transition-colors ${traveller.gender === 'FEMALE'
+                                  ? 'bg-blue-600 text-white border-blue-600'
+                                  : 'bg-white text-slate-700 border-slate-300 hover:border-blue-600'
+                                  }`}
+                              >
+                                FEMALE
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                            {/* Country Code */}
+                            <div>
+                              <label className="block text-xs text-slate-600 mb-1">Country Code</label>
+                              <Select
+                                options={countryOptions}
+                                value={countryOptions.find(opt => opt.value === traveller.countryCode)}
+                                onChange={(option) => updateTraveller(index, "countryCode", option?.value || "")}
+                                placeholder="Country Code"
+                                classNamePrefix="country-select"
+                                styles={{
+                                  control: (base) => ({
+                                    ...base,
+                                    borderColor: "#cbd5e1", // slate-300
+                                    minHeight: "36px",
+                                    fontSize: "0.875rem", // text-sm
+                                    "&:hover": { borderColor: "#3b82f6" }, // blue-500
+                                    boxShadow: "none",
+                                  }),
+                                  placeholder: (base) => ({
+                                    ...base,
+                                    color: "#94a3b8", // slate-400
+                                  }),
+                                }}
+                              />
+                            </div>
+
+                            {/* Mobile No */}
+                            <div>
+                              <label className="block text-xs text-slate-600 mb-1">Mobile No</label>
+                              <input
+                                type="tel"
+                                placeholder="Mobile No(Optional)"
+                                value={traveller.mobile}
+                                onChange={(e) => updateTraveller(index, 'mobile', e.target.value)}
+                                className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              />
+                            </div>
+
+                            {/* Email */}
+                            <div>
+                              <label className="block text-xs text-slate-600 mb-1">Email</label>
+                              <input
+                                type="email"
+                                placeholder="Email(Optional)"
+                                value={traveller.email}
+                                onChange={(e) => updateTraveller(index, 'email', e.target.value)}
+                                className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Wheelchair Option */}
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              id={`wheelchair-${index}`}
+                              checked={traveller.wheelchair}
+                              onChange={(e) => updateTraveller(index, 'wheelchair', e.target.checked)}
+                              className="cursor-pointer w-4 h-4"
+                            />
+                            <label htmlFor={`wheelchair-${index}`} className="text-sm text-slate-600">
+                              I require wheelchair <span className="text-slate-400">(Optional)</span>
+                            </label>
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Add New Adult Button */}
+                      {travellers.length < totalTravellers && (
+                        <button
+                          onClick={addNewTraveller}
+                          className="cursor-pointer text-blue-600 text-sm font-medium hover:text-blue-700 mb-4"
+                        >
+                          + ADD NEW ADULT
+                        </button>
+                      )}
+
+                      {/* Save to My Traveller List */}
+                      <div className="bg-cyan-50 border border-cyan-200 rounded p-3 mb-6">
+                        <div className="flex items-start gap-2">
+                          <input
+                            type="checkbox"
+                            id="save-travellers"
+                            checked={saveToList}
+                            onChange={(e) => setSaveToList(e.target.checked)}
+                            className="w-4 h-4 mt-0.5"
+                          />
+                          <label htmlFor="save-travellers" className="text-sm text-slate-700">
+                            <span className="font-medium">Add these travellers to My Traveller List.</span> You won't have to fill traveller info on your next visit.
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Booking Details Section */}
+                      <h4 className="font-semibold text-slate-800 mb-3">Booking details will be sent to</h4>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        {/* Country Code for Booking */}
+                        <div>
+                          <label className="block text-xs text-slate-600 mb-1">Country Code</label>
+                          <Select
+                            options={countryOptions}
+                            value={countryOptions.find(opt => opt.value === bookingDetails.countryCode)}
+                            onChange={(option) => updateTraveller(index, "countryCode", option?.value || "")}
+                            placeholder="Country Code"
+                            classNamePrefix="country-select"
+                            styles={{
+                              control: (base) => ({
+                                ...base,
+                                borderColor: "#cbd5e1", // slate-300
+                                minHeight: "36px",
+                                fontSize: "0.875rem", // text-sm
+                                "&:hover": { borderColor: "#3b82f6" }, // blue-500
+                                boxShadow: "none",
+                              }),
+                              placeholder: (base) => ({
+                                ...base,
+                                color: "#94a3b8", // slate-400
+                              }),
+                            }}
+                          />
+                        </div>
+
+                        {/* Mobile No for Booking */}
+                        <div>
+                          <label className="block text-xs text-slate-600 mb-1">Mobile No</label>
+                          <input
+                            type="tel"
+                            placeholder="Mobile No"
+                            value={bookingDetails.mobile}
+                            onChange={(e) => setBookingDetails({ ...bookingDetails, mobile: e.target.value })}
+                            className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+
+                        {/* Email for Booking */}
+                        <div>
+                          <label className="block text-xs text-slate-600 mb-1">Email</label>
+                          <input
+                            type="email"
+                            placeholder="befaltua1@gmail.com"
+                            value={bookingDetails.email}
+                            onChange={(e) => setBookingDetails({ ...bookingDetails, email: e.target.value })}
+                            className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                      </div>
+
+                      {/* GST Details */}
+                      <div className="flex items-center gap-2 mb-3">
+                        <input
+                          type="checkbox"
+                          id="gst-checkbox"
+                          checked={hasGST}
+                          onChange={(e) => setHasGST(e.target.checked)}
+                          className="cursor-pointer w-4 h-4"
+                        />
+                        <label htmlFor="gst-checkbox" className="text-sm font-medium text-slate-800">
+                          I have a GST number <span className="text-slate-400 font-normal">(Optional)</span>
+                        </label>
+                      </div>
+
+                      {hasGST && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Company Name */}
+                          <div>
+                            <label className="block text-xs text-slate-600 mb-1">Company Name</label>
+                            <input
+                              type="text"
+                              placeholder="Company Name"
+                              value={gstDetails.companyName}
+                              onChange={(e) => setGstDetails({ ...gstDetails, companyName: e.target.value })}
+                              className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+
+                          {/* Registration No */}
+                          <div>
+                            <label className="block text-xs text-slate-600 mb-1">Registration No</label>
+                            <input
+                              type="text"
+                              placeholder="Registration No"
+                              value={gstDetails.registrationNo}
+                              onChange={(e) => setGstDetails({ ...gstDetails, registrationNo: e.target.value })}
+                              className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                    </div>
+
+                  </div>
+
+                  {/* State Info */}
+                  <div className="bg-white rounded-lg shadow-sm border border-slate-200">
+                    <div className="p-5">
+                      {/* Booking Details Section */}
+                      <p className="text-slate-800 mb-3 text-xs"><span className='font-semibold text-lg'>Your State</span>  (Required for GST purpose on your tax invoice. You can edit this anytime later in your profile section.) </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        {/* Select State */}
+                        <div>
+                          <label className="block text-xs text-slate-600 mb-1">Select the State</label>
+                          <Select
+                            options={stateOptions}
+                            placeholder="Select state..."
+                            isSearchable
+                            classNamePrefix="state-select"
+                            styles={{
+                              control: (base, state) => ({
+                                ...base,
+                                borderColor: state.isFocused ? "#3b82f6" : "#cbd5e1",
+                                boxShadow: state.isFocused ? "0 0 0 2px rgba(59, 130, 246, 0.2)" : "none",
+                                minHeight: "36px",
+                                fontSize: "0.875rem",
+                                "&:hover": { borderColor: "#3b82f6" },
+                              }),
+                              placeholder: (base) => ({
+                                ...base,
+                                color: "#94a3b8",
+                              }),
+                              menu: (base) => ({
+                                ...base,
+                                zIndex: 50,
+                              }),
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* GST Details */}
+                      <div className="flex items-center gap-2 mb-3">
+                        <input
+                          type="checkbox"
+                          id="billing-details-checkbox"
+                          className="cursor-pointer w-4 h-4"
+                        />
+                        <label className="text-sm font-medium text-slate-800">
+                          Confirm and save billing details to your profile
+                        </label>
+                      </div>
+
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="cursor-pointer bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white font-medium text-base px-6 py-2.5 rounded-full shadow-sm transition-all duration-200 flex items-center justify-center gap-2"
+                  >
+                    CONTINUE
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+
 
                 </div>
 

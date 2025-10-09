@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Header from '../components/Header';
 import PromotionalCard from '../components/PromotionalCard';
 import BookingForm from '../components/BookingForm';
-import SignInModal from '../components/SignInModal';
+import SignInModal from '../components/Modals/SignInModal';
 import GrayFadedBg from '@/assets/imgs/grayfadedbg.png'
 import BookingFlightSectionBg from '@/assets/imgs/bookingbg.png';
 

@@ -22,7 +22,7 @@ export default function SignInModal({ onClose }) {
             >
                 {/* Close button */}
                 <button
-                    className="absolute top-4 right-4 text-gray-500 hover:text-black"
+                    className="cursor-pointer absolute top-4 right-4 text-gray-500 hover:text-black"
                     onClick={onClose}
                 >
                     ✕
