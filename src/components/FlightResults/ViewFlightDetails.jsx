@@ -1,61 +1,9 @@
 import { useState } from "react";
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
+import { formatDate, formatMonth, formatDay, formatTime } from '../../utils/formatDateTime';
 
 const ViewFlightDetails = ({ flight }) => {
     const [activeTab, setActiveTab] = useState("details");
-
-    const formatDate = (dateString) => {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-
-        const monthdate = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-
-        const hours = date.getHours() % 12 || 12;
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
-
-        return monthdate;
-    };
-
-    const formatMonth = (dateString) => {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-
-        const hours = date.getHours() % 12 || 12;
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
-
-        return month;
-    };
-
-    const formatDay = (dateString) => {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-
-        const hours = date.getHours() % 12 || 12;
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
-
-        return day;
-    };
-
-    const formatTime = (dateString) => {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        return `${hours}:${minutes}`;
-    };
 
     return (
         <div

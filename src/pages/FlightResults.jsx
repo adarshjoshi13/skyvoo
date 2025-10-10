@@ -19,26 +19,49 @@ import Lock from '@/assets/vectors/lock.svg'
 import ViewFlightDetails from '../components/FlightResults/ViewFlightDetails.jsx'
 import BookingFlightFormBg from "@/assets/imgs/flightresultsbg.webp";
 import FlightsData from '../Data/FlightsData.js';
-
+import { formatTime } from '../utils/formatDateTime.js';
 
 export default function FlightResults() {
+
     const FlightDetails = FlightsData.TripDetails[0].Flights;
     console.log(FlightDetails[0], 'see the data')
     const navigate = useNavigate();
-    const [selectedFlights, setSelectedFlights] = useState([]);
 
-    const [isFlightDetailsModalOpen, setIsFlightDetailsModalOpen] = useState(false);
     const [isSignInModal, setIsSignInModal] = useState(false);
 
     const [isSwapping, setIsSwapping] = useState(false);
     const [collapsed, setCollapsed] = useState(false);
     const [selectedSort, setSelectedSort] = useState('CHEAPEST');
-    const [rotation, setRotation] = useState(0);
-    const [selectedFlightId, setSelectedFlightId] = useState(null);
     const [tripType, setTripType] = useState('roundTrip');
+    const [rotation, setRotation] = useState(0);
+
     const [showTravellerBox, setShowTravellerBox] = useState(false);
 
     const travellerBoxRef = useRef(null);
+
+    const [visibleCount, setVisibleCount] = useState(10);
+    const [selectedFlightId, setSelectedFlightId] = useState(null);
+    const [selectedFlights, setSelectedFlights] = useState([]);
+    const [isFlightDetailsModalOpen, setIsFlightDetailsModalOpen] = useState(false);
+
+    const toggleCompare = (flight) => {
+        setSelectedFlights((prev) => {
+            const exists = prev.some((f) => f.Flight_Id === flight.Flight_Id);
+            if (exists) {
+                return prev.filter((f) => f.Flight_Id !== flight.Flight_Id);
+            }
+            if (prev.length >= 3) {
+                alert("You can only select up to 3 flights to compare.");
+                return prev;
+            }
+            return [...prev, flight];
+        });
+    };
+
+    const toggleFlightDetails = (flightId) => {
+        setSelectedFlightId((prev) => (prev === flightId ? null : flightId));
+    };
+
     const [flightSearchInfo, setFlightSearchInfo] = useState({
         from: '',
         to: '',
@@ -98,140 +121,6 @@ export default function FlightResults() {
         return true;
     };
 
-    // Sample flight data
-    const flights = [
-        {
-            id: 1,
-            airline: "Vistara",
-            flightNumber: "UK 850",
-            departure: {
-                time: "00:45",
-                city: "New Delhi",
-                date: "15",
-                day: "Mon",
-                month: "Oct"
-            },
-            arrival: {
-                time: "03:45",
-                city: "Mumbai",
-                date: "15",
-                day: "Mon",
-                month: "Oct"
-            },
-            duration: "2h 50m",
-            stops: "Non Stop",
-            price: 7500,
-            departure_info: "1hr 30m before departure",
-            highlighted: true,
-            fareSummary: {
-                base: "₹6,200",
-                taxes: "₹1,300",
-                total: "₹7,500",
-            },
-            cancellation:
-                "Full refund if cancelled at least 24 hours before departure. 50% refund within 24 hours of departure.",
-            dateChange:
-                "Date changes allowed up to 2 hours before departure with a ₹2,000 fee plus fare difference.",
-        },
-        {
-            id: 2,
-            airline: "Vistara",
-            flightNumber: "UK 860",
-            departure: {
-                time: "05:20",
-                city: "New Delhi",
-                date: "15",
-                day: "Mon",
-                month: "Oct"
-            },
-            arrival: {
-                time: "08:15",
-                city: "Mumbai",
-                date: "15",
-                day: "Mon",
-                month: "Oct"
-            },
-            duration: "2h 55m",
-            stops: "2 Stops",
-            price: 6800,
-            departure_info: "1hr 30m before departure",
-            fareSummary: {
-                base: "₹5,600",
-                taxes: "₹1,200",
-                total: "₹6,800",
-            },
-            cancellation:
-                "Free cancellation up to 48 hours before departure. After that, ₹1,000 fee applies.",
-            dateChange:
-                "Change allowed up to 4 hours before departure with ₹1,500 fee plus fare difference.",
-        },
-        {
-            id: 3,
-            airline: "Vistara",
-            flightNumber: "UK 870",
-            departure: {
-                time: "11:00",
-                city: "New Delhi",
-                date: "15",
-                day: "Mon",
-                month: "Oct"
-            },
-            arrival: {
-                time: "14:00",
-                city: "Mumbai",
-                date: "15",
-                day: "Mon",
-                month: "Oct"
-            },
-            duration: "3h 00m",
-            stops: "2 Stops",
-            price: 7200,
-            departure_info: "1hr 30m before departure",
-            highlighted: true,
-            fareSummary: {
-                base: "₹6,000",
-                taxes: "₹1,200",
-                total: "₹7,200",
-            },
-            cancellation:
-                "Full refund if cancelled at least 24 hours before departure. 50% refund within 24 hours.",
-            dateChange:
-                "Date change allowed until 3 hours before departure with ₹1,800 fee plus fare difference.",
-        },
-        {
-            id: 4,
-            airline: "Vistara",
-            flightNumber: "UK 880",
-            departure: {
-                time: "18:30",
-                city: "New Delhi",
-                date: "15",
-                day: "Mon",
-                month: "Oct"
-            },
-            arrival: {
-                time: "21:20",
-                city: "Mumbai",
-                date: "15",
-                day: "Mon",
-                month: "Oct"
-            },
-            duration: "2h 50m",
-            stops: "2 Stops",
-            price: 6900,
-            departure_info: "1hr 30m before departure",
-            fareSummary: {
-                base: "₹5,700",
-                taxes: "₹1,200",
-                total: "₹6,900",
-            },
-            cancellation:
-                "Cancel up to 24 hours before departure for a ₹1,000 fee. No refund after that.",
-            dateChange:
-                "Date change allowed up to 1 hour before departure with ₹2,000 fee plus fare difference.",
-        },
-    ];
-
     useEffect(() => {
         function handleDocClick(e) {
             if (travellerBoxRef.current && !travellerBoxRef.current.contains(e.target)) {
@@ -249,15 +138,19 @@ export default function FlightResults() {
         };
     }, []);
 
-    // Universal function to get time (HH:MM) from any date string
-    const formatTime = (dateString) => {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        return `${hours}:${minutes}`;
-    };
+    useEffect(() => {
+        const handleScroll = () => {
+            if (
+                window.innerHeight + window.scrollY >=
+                document.body.offsetHeight - 200 // near bottom
+            ) {
+                setVisibleCount(prev => prev + 10); // load 10 more
+            }
+        };
 
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
     return (
         <>
@@ -331,6 +224,9 @@ export default function FlightResults() {
 
             {isFlightDetailsModalOpen && <FlightPriceDetailsModal onClose={() => setIsFlightDetailsModalOpen(false)} />}
             {isSignInModal && <SignInModal onClose={() => setIsSignInModal(false)} />}
+
+
+
             <div className="relative min-h-screen bg-gray-100">
 
                 <img
@@ -761,42 +657,44 @@ export default function FlightResults() {
                                 </h2>
                             </div>
 
-
                             {/* Flight Results */}
                             <div className="space-y-4">
-                                {FlightDetails.map((flight) => (
-                                    <div key={flight.Flight_Id} className={`rounded-2xl`}>
-                                        {/* <div className={`py-4 relative bg-cover bg-center rounded-xl shadow-sm hover:shadow-md transition-shadow secondary-font  ${flight.highlighted ? "" : ""}`} */}
-                                        <div className={`py-4 relative bg-cover bg-center rounded-xl shadow-sm hover:shadow-md transition-shadow secondary-font`}
-                                            style={{ backgroundImage: `url(${BookingFlightFormBg})`, boxShadow: "-3px 4px 20px -2px rgba(0, 0, 0, 0.25)" }}>
+                                {FlightDetails.slice(0, visibleCount).map((flight) => (
+                                    <div key={flight.Flight_Id} className="rounded-2xl">
+                                        <div
+                                            className="py-4 relative bg-cover bg-center rounded-xl shadow-sm hover:shadow-md transition-shadow secondary-font"
+                                            style={{
+                                                backgroundImage: `url(${BookingFlightFormBg})`,
+                                                boxShadow: "-3px 4px 20px -2px rgba(0, 0, 0, 0.25)",
+                                            }}
+                                        >
                                             <img
                                                 className="absolute -right-[0.330rem] top-1/2 -translate-y-1/2 h-[90%] hidden lg:block"
                                                 src={RipSide}
                                                 alt="ribbon side"
                                             />
+
                                             {/* ---- Top Row ---- */}
                                             <div className="flex items-center justify-between text-sm font-medium">
-                                                {/* Left section */}
-                                                <div className='pl-5 pr-40 relative' style={{ position: 'relative' }}>
+                                                <div className="pl-5 pr-40 relative">
                                                     <div
                                                         style={{
-                                                            position: 'absolute',
+                                                            position: "absolute",
                                                             top: 0,
                                                             left: 0,
-                                                            width: '100%',
-                                                            height: '100%',
-                                                            background: 'linear-gradient(90deg, rgba(196,36,36,0.5) 0%, rgba(255,255,255,0.5) 100%)',
-                                                            pointerEvents: 'none', // ensures text is clickable/selectable
+                                                            width: "100%",
+                                                            height: "100%",
+                                                            background:
+                                                                "linear-gradient(90deg, rgba(196,36,36,0.5) 0%, rgba(255,255,255,0.5) 100%)",
+                                                            pointerEvents: "none",
                                                             zIndex: 0,
                                                         }}
                                                     />
-                                                    {/* Content */}
-                                                    <div style={{ position: 'relative', zIndex: 1 }}>
-                                                        <p className='text-xs'>Free Seat With VISA Card*</p>
+                                                    <div style={{ position: "relative", zIndex: 1 }}>
+                                                        <p className="text-xs">Free Seat With VISA Card*</p>
                                                     </div>
                                                 </div>
 
-                                                {/* Right section with gradient */}
                                                 <div className="pr-5 flex items-center px-3 py-1 rounded">
                                                     <img src={Stopwatch} alt="stopwatch" className="w-4 h-4 mr-2" />
                                                     <span className="text-gray-800 font-medium">96% on Time</span>
@@ -818,49 +716,62 @@ export default function FlightResults() {
 
                                                 {/* Departure */}
                                                 <div className="text-center">
-                                                    <div className="text-2xl font-bold">{formatTime(flight.Segments[0].Departure_DateTime)}</div>
-                                                    <div className="text-sm text-gray-500">{flight.Segments[0].Origin_City}</div>
+                                                    <div className="text-2xl font-bold">
+                                                        {formatTime(flight.Segments[0].Departure_DateTime)}
+                                                    </div>
+                                                    <div className="text-sm text-gray-500">
+                                                        {flight.Segments[0].Origin_City}
+                                                    </div>
                                                 </div>
 
-                                                {/* Flight duration and stops */}
+                                                {/* Duration */}
                                                 <div className="flex flex-col items-center font-semibold">
-                                                    <div className="text-sm text-gray-500 mb-2">{flight.Segments[0].Duration}</div>
-                                                    <div className="relative w-24 h-0.5 rounded-xl bg-[#920000]">
+                                                    <div className="text-sm text-gray-500 mb-2">
+                                                        {flight.Segments[0].Duration}
                                                     </div>
-                                                    <div className="text-sm text-gray-500 mt-2">{flight.Segments[0].Stop_Over}</div>
+                                                    <div className="relative w-24 h-0.5 rounded-xl bg-[#920000]" />
+                                                    <div className="text-sm text-gray-500 mt-2">
+                                                        {flight.Segments[0].Stop_Over}
+                                                    </div>
                                                 </div>
 
                                                 {/* Arrival */}
                                                 <div className="text-center">
-                                                    <div className="text-2xl font-bold">{formatTime(flight.Segments[0].Arrival_DateTime)}</div>
-                                                    <div className="text-sm text-gray-500">{flight.Segments[0].Destination_City}</div>
+                                                    <div className="text-2xl font-bold">
+                                                        {formatTime(flight.Segments[0].Arrival_DateTime)}
+                                                    </div>
+                                                    <div className="text-sm text-gray-500">
+                                                        {flight.Segments[0].Destination_City}
+                                                    </div>
                                                 </div>
 
                                                 {/* Price */}
                                                 <div className="text-right">
-                                                    <div className="text-2xl font-bold">₹ {flight.Fares[0].FareDetails[0].Total_Amount}</div>
+                                                    <div className="text-2xl font-bold">
+                                                        ₹ {flight.Fares[0].FareDetails[0].Total_Amount}
+                                                    </div>
                                                     <div className="text-sm text-gray-500">Per Adult</div>
                                                 </div>
 
                                                 {/* Button */}
-                                                <button className="cursor-pointer bg-[#811919] hover:bg-[#741111] text-white px-4 py-1 rounded-full font-medium text-sm" onClick={() => setIsFlightDetailsModalOpen(true)}>
+                                                <button
+                                                    className="cursor-pointer bg-[#811919] hover:bg-[#741111] text-white px-4 py-1 rounded-full font-medium text-sm"
+                                                    onClick={() => setIsFlightDetailsModalOpen(true)}
+                                                >
                                                     VIEW PRICES
                                                 </button>
                                             </div>
 
-
                                             {/* ---- Mid Bottom Row ---- */}
                                             <div className="flex items-center justify-between text-sm font-medium">
-                                                {/* Left section */}
                                                 <div className="ml-2 pr-3 flex items-center px-3 py-1 rounded hover:bg-red-200 transition-colors duration-300 ease-in-out">
-                                                    {selectedFlights.some(f => f.id === flight.id) ? (
-                                                        // When flight is selected → show "Added" + remove button
+                                                    {selectedFlights.some((f) => f.Flight_Id === flight.Flight_Id) ? (
                                                         <span className="flex items-center">
                                                             <span>Added</span>
                                                             <span
                                                                 onClick={(e) => {
-                                                                    e.stopPropagation(); // prevent parent click
-                                                                    setSelectedFlights(prev => prev.filter(f => f.id !== flight.id));
+                                                                    e.stopPropagation();
+                                                                    toggleCompare(flight);
                                                                 }}
                                                                 className="ml-2 text-[#910E0E] font-bold w-4 h-4 rounded-full flex items-center justify-center cursor-pointer"
                                                             >
@@ -868,15 +779,11 @@ export default function FlightResults() {
                                                             </span>
                                                         </span>
                                                     ) : (
-                                                        // When flight is not selected → show add text
                                                         <span
                                                             className="text-[#811919] font-semibold cursor-pointer"
-                                                            onClick={() => {
-                                                                if (selectedFlights.length < 3) {
-                                                                    setSelectedFlights(prev => [...prev, flight]);
-                                                                } else {
-                                                                    alert("You can only select up to 3 flights to compare.");
-                                                                }
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                toggleCompare(flight);
                                                             }}
                                                         >
                                                             Add Compare More +
@@ -884,62 +791,59 @@ export default function FlightResults() {
                                                     )}
                                                 </div>
 
-                                                {/* Right section with gradient */}
-                                                <div className='pr-25 relative rounded-full' style={{ position: 'relative' }}>
-                                                    <div className='rounded-l-full'
+                                                <div className="pr-25 relative rounded-full">
+                                                    <div
+                                                        className="rounded-l-full"
                                                         style={{
-                                                            position: 'absolute',
+                                                            position: "absolute",
                                                             top: 0,
                                                             left: 0,
-                                                            width: '100%',
-                                                            height: '100%',
-                                                            background: 'linear-gradient(90deg, rgba(205 205 205) 0%, rgba(255,255,255,0.5) 100%)',
-                                                            pointerEvents: 'none',
+                                                            width: "100%",
+                                                            height: "100%",
+                                                            background:
+                                                                "linear-gradient(90deg, rgba(205 205 205) 0%, rgba(255,255,255,0.5) 100%)",
+                                                            pointerEvents: "none",
                                                             zIndex: 0,
                                                         }}
                                                     />
-
-                                                    {/* Content */}
-                                                    <div className='flex flex-row' style={{ position: 'relative', zIndex: 1 }}>
-                                                        <img src={Lock} alt="LOCK" className='px-2' />
-                                                        <p className='text-xs'>Lock this price starting from ₹ 413</p>
+                                                    <div className="flex flex-row" style={{ position: "relative", zIndex: 1 }}>
+                                                        <img src={Lock} alt="LOCK" className="px-2" />
+                                                        <p className="text-xs">Lock this price starting from ₹ 413</p>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             {/* ---- Bottom Row ---- */}
                                             <div className="flex items-center justify-between text-sm font-medium">
-                                                {/* Left section */}
-                                                <div className='pl-5 pr-55 relative' style={{ position: 'relative' }}>
+                                                <div className="pl-5 pr-55 relative">
                                                     <div
                                                         style={{
-                                                            position: 'absolute',
+                                                            position: "absolute",
                                                             top: 0,
                                                             left: 0,
-                                                            width: '100%',
-                                                            height: '100%',
-                                                            background: 'linear-gradient(90deg, rgba(205 205 205) 0%, rgba(255,255,255,0.5) 100%)',
-                                                            pointerEvents: 'none', // ensures text is clickable/selectable
+                                                            width: "100%",
+                                                            height: "100%",
+                                                            background:
+                                                                "linear-gradient(90deg, rgba(205 205 205) 0%, rgba(255,255,255,0.5) 100%)",
+                                                            pointerEvents: "none",
                                                             zIndex: 0,
                                                         }}
                                                     />
-                                                    {/* Content */}
-                                                    <div style={{ position: 'relative', zIndex: 1 }} className='flex flex-row items-center'>
-                                                        <div className='bg-[#720E0E] w-2 h-2 rounded-full mr-2'></div>
-                                                        <p className='text-xs'>FLAT ₹177 OFF using  MMTSUPER</p>
+                                                    <div
+                                                        style={{ position: "relative", zIndex: 1 }}
+                                                        className="flex flex-row items-center"
+                                                    >
+                                                        <div className="bg-[#720E0E] w-2 h-2 rounded-full mr-2"></div>
+                                                        <p className="text-xs">FLAT ₹177 OFF using MMTSUPER</p>
                                                     </div>
                                                 </div>
 
-                                                {/* Right section with gradient */}
                                                 <div className="pr-5 flex items-center px-3 py-1 rounded">
-                                                    <button className="text-[#811919] cursor-pointer hover:underline text-sm"
-                                                        onClick={() =>
-                                                            setSelectedFlightId(
-                                                                selectedFlightId === flight.id ? null : flight.id
-                                                            )
-                                                        }
+                                                    <button
+                                                        className="text-[#811919] cursor-pointer hover:underline text-sm"
+                                                        onClick={() => toggleFlightDetails(flight.Flight_Id)}
                                                     >
-                                                        {selectedFlightId === flight.id ? "Hide" : "View"} Flight Details
+                                                        {selectedFlightId === flight.Flight_Id ? "Hide" : "View"} Flight Details
                                                     </button>
                                                 </div>
                                             </div>
@@ -947,11 +851,10 @@ export default function FlightResults() {
 
                                         {/* ---- Slide-Down Details ---- */}
                                         <div
-                                            className={`shadow-2xl mt-5 overflow-hidden transition-[max-height] duration-900 ease-in-out ${selectedFlightId === flight.id ? "max-h-96" : "max-h-0"}`}
+                                            className={`shadow-2xl mt-5 overflow-hidden transition-[max-height] duration-900 ease-in-out ${selectedFlightId === flight.Flight_Id ? "max-h-96" : "max-h-0"
+                                                }`}
                                         >
-                                            {selectedFlightId === flight.id && (
-                                                <ViewFlightDetails flight={flight} />
-                                            )}
+                                            {selectedFlightId === flight.Flight_Id && <ViewFlightDetails flight={flight} />}
                                         </div>
                                     </div>
                                 ))}
