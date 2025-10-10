@@ -24,7 +24,6 @@ import { formatTime } from '../utils/formatDateTime.js';
 export default function FlightResults() {
 
     const FlightDetails = FlightsData.TripDetails[0].Flights;
-    console.log(FlightDetails[0], 'see the data')
     const navigate = useNavigate();
 
     const [isSignInModal, setIsSignInModal] = useState(false);
@@ -152,6 +151,8 @@ export default function FlightResults() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    console.log(selectedFlights, 'see this selectedFlights')
+
     return (
         <>
             {selectedFlights.length > 0 && (
@@ -171,26 +172,26 @@ export default function FlightResults() {
 
                                 {/* Flight list */}
                                 <ul className="divide-y divide-gray-200 max-h-48 overflow-y-auto">
-                                    {selectedFlights.map(f => (
+                                    {selectedFlights.map((flight) => (
                                         <li
-                                            key={f.id}
+                                            key={flight.Flight_Id}
                                             className="flex items-center justify-between px-4 py-3"
                                         >
                                             {/* Left side: Logo + Airline */}
                                             <div className="flex items-center space-x-2">
                                                 <img
-                                                    src={f.logoUrl || AirlineLogo}
-                                                    alt={f.airline}
+                                                    src={AirlineLogo}
+                                                    alt={flight.Segments[0].Airline_Name}
                                                     className="w-6 h-6 rounded"
                                                 />
-                                                <span className="font-medium text-gray-800">{f.airline}</span>
+                                                <span className="font-medium text-gray-800">{flight.Segments[0].Airline_Name}</span>
                                             </div>
 
                                             {/* Middle: Times + Progress */}
                                             <div className="flex items-center ">
-                                                <div className="text-sm font-medium mr-4">{f.departure.time}</div>
+                                                <div className="text-sm font-medium mr-4">{formatTime(flight.Segments[0].Departure_DateTime)}</div>
                                                 <div className="h-1 w-16 bg-green-400 mx-auto my-1 rounded" />
-                                                <div className="text-sm font-medium ml-4">{f.arrival.time}</div>
+                                                <div className="text-sm font-medium ml-4">{formatTime(flight.Segments[0].Arrival_DateTime)}</div>
                                             </div>
 
                                             {/* Remove button */}
@@ -198,7 +199,7 @@ export default function FlightResults() {
                                                 className="text-gray-400 hover:text-red-500 ml-3"
                                                 onClick={() =>
                                                     setSelectedFlights(prev =>
-                                                        prev.filter(flight => flight.id !== f.id)
+                                                        prev.filter(flight => flight.Flight_Id !== f.Flight_Id)
                                                     )
                                                 }
                                             >
@@ -224,8 +225,6 @@ export default function FlightResults() {
 
             {isFlightDetailsModalOpen && <FlightPriceDetailsModal onClose={() => setIsFlightDetailsModalOpen(false)} />}
             {isSignInModal && <SignInModal onClose={() => setIsSignInModal(false)} />}
-
-
 
             <div className="relative min-h-screen bg-gray-100">
 
@@ -588,7 +587,6 @@ export default function FlightResults() {
                     <div className="flex gap-6">
                         {/* Filters Sidebar */}
                         <Filters />
-
                         {/* Results Area */}
                         <div className="flex-1">
                             {/* Sorting Options */}
