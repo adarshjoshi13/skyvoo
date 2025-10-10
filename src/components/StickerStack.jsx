@@ -1,14 +1,16 @@
-import React, { useState, useRef } from "react";
-import offer3 from "@/assets/imgs/offer3.jpg";
-import offer2 from "@/assets/imgs/offer2.jpg";
+import React, { useState, useRef, useEffect } from "react";
+import offer3 from "@/assets/imgs/offer3.webp";
+import offer2 from "@/assets/imgs/offer2.webp";
 import offer1 from "@/assets/imgs/offer.jpg";
 import MoveUpRightArrow from "@/assets/vectors/MoveUpRightArrow.svg";
 
 const images = [offer1, offer2, offer3];
 
+
 function Sticker({ frontIndex, underIndex, onPeeled }) {
     const [peeled, setPeeled] = useState(false);
     const [instantReset, setInstantReset] = useState(false);
+    const [visible, setVisible] = useState(true);
     const hasCalledOnPeeled = useRef(false);
 
     const peel = () => { if (!peeled) setPeeled(true); };
@@ -27,20 +29,50 @@ function Sticker({ frontIndex, underIndex, onPeeled }) {
             !hasCalledOnPeeled.current
         ) {
             hasCalledOnPeeled.current = true;
-            onPeeled();
-            setInstantReset(true);
-            setPeeled(false);
-            requestAnimationFrame(() => {
-                setInstantReset(false);
-                hasCalledOnPeeled.current = false;
-            });
+
+            // 🔹 Step 1: fade out peeled sticker
+            setVisible(false);
+
+            // Wait for fade-out to complete before resetting
+            setTimeout(() => {
+                // 🔹 Step 2: update image indexes
+                onPeeled();
+
+                // Hide & instantly reset peel state while invisible
+                setInstantReset(true);
+                setPeeled(false);
+
+                // Let the DOM apply the reset silently (still opacity 0)
+                requestAnimationFrame(() => {
+                    setInstantReset(false);
+                    hasCalledOnPeeled.current = false;
+
+                    // 🔹 Step 3: fade back in AFTER reposition is done
+                    requestAnimationFrame(() => {
+                        setVisible(true);
+                    });
+                });
+            }, 300); // match your fade-out duration
         }
     };
+
+
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (!peeled) {
+                setPeeled(true);
+            }
+        }, 3000); // every 3 seconds
+
+        return () => clearInterval(interval);
+    }, [peeled]);
+
 
     return (
         <>
             <div className="sticker-underneath">
-            <div className="relative -top-[25px] -right-[10px] h-[95%] w-[95%]  bg-[#D9D9D9] rounded-2xl shadow-lg p-5"></div>
+                <div className="relative -top-[25px] -right-[10px] h-[95%] w-[95%]  bg-[#D9D9D9] rounded-2xl shadow-lg p-5"></div>
                 <div className="sticker__holder">
 
                     <div className="sticker__content rounded-xl" style={{ background: `url(${images[underIndex]}) center/cover` }} >
@@ -57,6 +89,10 @@ function Sticker({ frontIndex, underIndex, onPeeled }) {
                 onClick={peel}
                 onKeyDown={handleKey}
                 onTransitionEnd={handleTransitionEnd}
+                style={{
+                    // opacity: visible ? 1 : 0,
+                    // transition: "opacity ease-in",
+                }}
             >
                 <div className="sticker__face sticker__face--front">
                     <div className="sticker__holder">

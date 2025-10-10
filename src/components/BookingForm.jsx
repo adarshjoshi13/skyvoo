@@ -1,40 +1,84 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Select, { components } from "react-select";
-import { X, CirclePlus, Calendar } from 'lucide-react';
 import clsx from 'clsx';
+import { X, CirclePlus, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import DatePicker from 'react-datepicker';
 import Plane from '@/assets/vectors/Plane.svg';
 import Bed from '@/assets/vectors/Bed.svg';
 import Car from '@/assets/vectors/Car.svg';
 import Mic from '@/assets/vectors/Mic.svg';
 import FlyingPlane from '@/assets/vectors/FlyingPlane.svg';
 import Person from '@/assets/vectors/Person.svg';
-import RipSide from '@/assets/imgs/ripSide.png';
-import BookingFlightFormBg from "@/assets/imgs/bookingForm.png";
-import 'react-datepicker/dist/react-datepicker.css';
+import RipSide from '@/assets/imgs/ripSide.webp';
+import BookingFlightFormBg from "@/assets/imgs/bookingForm.webp";
+import { DayPicker } from "react-day-picker";
+import { format } from "date-fns";
+import "react-day-picker/dist/style.css";
+
 
 function BookingForm() {
-
     const navigate = useNavigate();
-    const [tripType, setTripType] = useState('oneWay');
-    const [fareType, setFareType] = useState('regular');
-    const [isSwapping, setIsSwapping] = useState(false);
-    const [rotation, setRotation] = useState(0);
 
     const [flightSearchInfo, setFlightSearchInfo] = useState({
         from: null,
         to: null,
         depart: null,
-        coach: null,
         return: null,
-        traveller: 1,
-        Adult: 1,
-        Child: 1,
-        Infant: 1,
+        coach: null,
+        traveller: 1
     });
 
-    console.log(flightSearchInfo, 'see this info')
+    const [travellers, setTravellers] = useState({
+        adults: 1,
+        children: 0,
+        infants: 0,
+    });
+
+    const [tripType, setTripType] = useState('ONE_WAY');
+    const [fareType, setFareType] = useState('regular');
+    const [isSwapping, setIsSwapping] = useState(false);
+    const [rotation, setRotation] = useState(0);
+
+    const [departOpen, setDepartOpen] = useState(false);
+    const [returnOpen, setReturnOpen] = useState(false);
+    const [departSelected, setDepartSelected] = useState(flightSearchInfo.depart);
+
+    const [showTravellerBox, setShowTravellerBox] = useState(false);
+
+    const departRef = useRef();
+    const returnRef = useRef();
+    const travellerBoxRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (departRef.current && !departRef.current.contains(e.target)) {
+                setDepartOpen(false);
+            }
+            if (returnRef.current && !returnRef.current.contains(e.target)) {
+                setReturnOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    useEffect(() => {
+        function handleDocClick(e) {
+            if (travellerBoxRef.current && !travellerBoxRef.current.contains(e.target)) {
+                setShowTravellerBox(false);
+            }
+        }
+        function handleEsc(e) {
+            if (e.key === 'Escape') setShowTravellerBox(false);
+        }
+        document.addEventListener('mousedown', handleDocClick);
+        document.addEventListener('keydown', handleEsc);
+        return () => {
+            document.removeEventListener('mousedown', handleDocClick);
+            document.removeEventListener('keydown', handleEsc);
+        };
+    }, []);
+
 
     const AirportOptions = [
         {
@@ -176,13 +220,12 @@ function BookingForm() {
     ];
 
     const CoachOptions = [
-        { value: "Economy", label: "Economy" },
-        { value: "Premium Economy", label: "Premium Economy" },
-        { value: "Business", label: "Business" },
-        { value: "First Class", label: "First Class" },
-        { value: "Economy/Premium Economy", label: "Economy/Premium Economy" },
-        { value: "Business/First Class", label: "Business/First Class" },
+        { value: 0, label: "Economy" },
+        { value: 3, label: "Premium Economy" },
+        { value: 1, label: "Business" },
+        { value: 2, label: "First Class" },
     ];
+
 
     const CustomOption = (props) => (
         <components.Option {...props}>
@@ -224,36 +267,118 @@ function BookingForm() {
         }));
     };
 
-    const searchFlightResults = () => {
+    const handleDepartSelect = (date) => {
+        setDepartSelected(date);
+        handleFlightInputChange("depart", date);
 
-        const travelType = "000";
+        // Auto-close and adjust Return if needed
+        if (flightSearchInfo.return && date > flightSearchInfo.return) {
+            handleFlightInputChange("return", null);
+        }
+        setDepartOpen(false);
+    };
 
-        const dataformat = {
-            Travel_Type: 0,
-            Booking_Type: 0,
+    const handleReturnSelect = (date) => {
+        handleFlightInputChange("return", date);
+        setReturnOpen(false);
+    };
+
+    const validateTravellers = () => {
+        const { adults, children, infants } = travellers;
+
+        const adultCount = adults === '>9' ? 9 : Number(adults);
+        const childrenCount = children === '>6' ? 6 : Number(children);
+        const infantsCount = infants === '>6' ? 6 : Number(infants);
+
+        if (adultCount < 1) {
+            alert('At least 1 adult is required for the booking.');
+            return;
+        }
+
+        if (infantsCount > adultCount) {
+            alert('Number of infants cannot exceed number of adults.');
+            return;
+        }
+
+        const totalTravellers = adultCount + childrenCount + infantsCount;
+        if (totalTravellers > 20) {
+            alert('Maximum 20 travelers allowed.');
+            return;
+        }
+
+        handleFlightInputChange('traveller', totalTravellers);
+        setTravellers({ adults: adultCount, children: childrenCount, infants: infantsCount });
+        setFlightSearchInfo(prev => ({
+            ...prev,
+            traveller: { adults: adultCount, children: childrenCount, infants: infantsCount }
+        }));
+        setShowTravellerBox(false);
+    };
+
+    const buildFlightDataFormat = () => {
+        const TravelType = flightSearchInfo.to?.countryCode?.toUpperCase() !== 'IN' ? 1 : 0;
+        const BookingType = tripType;
+        let TravelDate = flightSearchInfo.depart
+            ? (() => {
+                const date = new Date(flightSearchInfo.depart);
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${month}/${day}/${year}`;
+            })()
+            : null;
+
+        return {
+            Travel_Type: TravelType,
+            Booking_Type: BookingType,
             TripInfo: [
                 {
-                    Origin: "BOM",
-                    Destination: "MAA",
-                    TravelDate: "01/25/2022",
+                    Origin: flightSearchInfo.from.airportCode,
+                    Destination: flightSearchInfo.to.airportCode,
+                    TravelDate,
                     Trip_Id: 0
                 }
             ],
-            Adult_Count: 1,
-            Child_Count: 0,
-            Infant_Count: 0,
-            Class_Of_Travel: 0,
+            Adult_Count: flightSearchInfo.traveller.adults,
+            Child_Count: flightSearchInfo.traveller.children,
+            Infant_Count: flightSearchInfo.traveller.infants,
+            Class_Of_Travel: flightSearchInfo.coach,
             InventoryType: 0,
             Source_Type: 0,
-            Filtered_Airline: [
-                {
-                    "Airline_Code": ""
-                }
-            ]
-        }
-
-        navigate('/search-results');
+            Filtered_Airline: [{ Airline_Code: "" }]
+        };
     };
+
+    const validateFlightInfoInputs = () => {
+        const { from, to, depart, traveller, coach } = flightSearchInfo;
+
+        if (!from) return alert('Please select origin');
+        if (!to) return alert('Please select destination');
+        if (!depart) return alert('Please select a departure date');
+        if (!traveller) return alert('Please select travelers');
+        if (coach === null || coach === undefined) return alert('Please select a travel class');
+
+        return true;
+    };
+
+    const searchFlightResults = () => {
+        if (!validateFlightInfoInputs()) return;
+
+        // defer heavy computation
+        setTimeout(() => {
+            const dataformat = buildFlightDataFormat();
+
+            // optional: log only small parts
+            console.log({
+                TravelDate: dataformat.TripInfo[0].TravelDate,
+                Adults: dataformat.Adult_Count,
+            });
+
+            navigate('/search-results');
+        }, 0);
+    };
+
+
 
     return (
         <div
@@ -295,42 +420,46 @@ function BookingForm() {
 
                 {/* Trip Type Selection */}
                 <div className="flex filter-section flex-wrap gap-2 sm:gap-4 mb-4 text-lg secondary-font font-semibold">
-                    {['oneWay', 'roundTrip', 'multiCity'].map(type => (
-                        <label key={type} className="flex items-center cursor-pointer">
+                    {[
+                        { key: 0, value: 'ONE_WAY', label: 'One Way' },
+                        { key: 1, value: 'ROUND_TRIP', label: 'Round Trip' },
+                        { key: 3, value: 'MULTI_CITY', label: 'Multi-City' },
+                    ].map(({ key, value, label }) => (
+                        <label key={key} className="flex items-center cursor-pointer">
                             <div className={clsx(
                                 'secondary-font px-4 py-2 flex items-center rounded-md',
-                                tripType === type ? 'bg-black text-white' : 'text-black'
+                                tripType === value ? 'bg-black text-white' : 'text-black'
                             )}>
                                 <input
                                     type="radio"
                                     name="tripType"
-                                    value={type}
-                                    checked={tripType === type}
+                                    value={value}
+                                    checked={tripType === value}
                                     onChange={(e) => setTripType(e.target.value)}
                                     className="w-4 h-4 mr-2"
                                 />
-                                <span>{type === 'oneWay' ? 'One Way' : type === 'roundTrip' ? 'Round Trip' : 'Multi-City'}</span>
+                                <span>{label}</span>
                             </div>
                         </label>
                     ))}
 
+
                     <div className="relative secondary-font font-semibold w-full sm:w-auto">
                         <Select
                             options={CoachOptions}
-                            value={flightSearchInfo.coach || null}
-                            onChange={(option) => handleFlightInputChange("coach", option || null)}
+                            value={CoachOptions.find(c => c.value === flightSearchInfo.coach) || null}
+                            onChange={(option) => handleFlightInputChange("coach", option?.value ?? null)}
                             placeholder="Coach"
                             isSearchable
                             classNamePrefix="coach-select"
-                            components={{
-                                IndicatorSeparator: () => null,
-                            }}
+                            components={{ IndicatorSeparator: () => null }}
                             getOptionLabel={(option) => option.label}
                             styles={{
                                 control: (base, state) => ({
                                     ...base,
                                     backgroundColor: "transparent",
                                     border: "none",
+                                    cursor: 'pointer',
                                     boxShadow: state.isFocused ? "0 0 0 1px #000" : "none",
                                     padding: "2px 4px",
                                     minHeight: "38px",
@@ -474,7 +603,6 @@ function BookingForm() {
                                 options={AirportOptions}
                                 value={flightSearchInfo.to || null} // store full object
                                 onChange={(option) => { handleFlightInputChange("to", option || null) }}
-
                                 placeholder="Destination"
                                 isSearchable
                                 menuPlacement="top"
@@ -532,59 +660,77 @@ function BookingForm() {
                         </div>
 
                         {/* Depart */}
-                        <div className="col-span-2" >
-                            <label className="block text-lg text-gray-700 flex items-center gap-2">Depart</label>
-                            
-                            <DatePicker
-                                selected={flightSearchInfo.depart}
-                                onChange={(date) => handleFlightInputChange('depart', date)}
-                                minDate={new Date()}
-                                maxDate={flightSearchInfo.return || null}
-                                monthsShown={2}
-                                placeholderText="Select Depart"
-                                className="w-full text-xl text-[#525252] border-b focus:outline-none placeholder-[#808080] p-2"
+                        <div className="col-span-2 relative" ref={departRef}>
+                            <label className="block text-lg text-gray-700 mb-2 flex items-center gap-2">
+                                Depart
+                            </label>
+
+                            <input
+                                type="text"
+                                readOnly
+                                value={departSelected ? format(departSelected, "PPP") : ""}
+                                placeholder="Select Depart"
+                                onClick={() => setDepartOpen(!departOpen)}
+                                className="w-full text-xl text-[#525252] border-b focus:outline-none placeholder-[#808080] p-2 cursor-pointer"
                             />
-                        </div >
+
+                            {departOpen && (
+                                <div className="absolute bottom-full mb-2 bg-white p-4 rounded-2xl shadow-lg z-50">
+                                    <DayPicker
+                                        mode="single"
+                                        selected={departSelected}
+                                        onSelect={handleDepartSelect}
+                                        disabled={{ before: new Date(), after: flightSearchInfo.return || undefined }}
+                                        numberOfMonths={2}
+                                        captionLayout="dropdown-buttons"
+                                        className="text-gray-800"
+                                        classNames={{ months: "flex gap-4" }}
+                                    />
+                                </div>
+                            )}
+                        </div>
 
                         {/* Return */}
-                        <div className="col-span-2">
-                            <div className='flex items-center justify-between'>
+                        <div className="col-span-2 relative" ref={returnRef}>
+                            <div className="flex items-center justify-between mb-2">
                                 <label className="block text-lg text-gray-700 flex items-center gap-2">Return</label>
                                 {flightSearchInfo.return && (
                                     <div
                                         className="bg-[#0a223d] rounded-full w-4 h-4 flex justify-center items-center cursor-pointer hover:bg-[#12345a]"
-                                        onClick={() => handleFlightInputChange('return', null)}
+                                        onClick={() => handleFlightInputChange("return", null)}
                                     >
                                         <X className="h-3 w-3 text-white" />
                                     </div>
                                 )}
                             </div>
-                            <div className="flex items-center justify-between">
-                                <DatePicker
-                                    selected={flightSearchInfo.return}
 
-                                    onChange={(date) => {
-                                        if (!date) return handleFlightInputChange('return', null);
+                            <input
+                                type="text"
+                                readOnly
+                                value={flightSearchInfo.return ? format(flightSearchInfo.return, "PPP") : ""}
+                                placeholder="Select Return"
+                                onClick={() => setReturnOpen(!returnOpen)}
+                                className="w-full text-xl text-[#525252] border-b focus:outline-none placeholder-[#808080] p-2 cursor-pointer"
+                            />
 
-                                        const formattedDate = date.toLocaleDateString('en-US', {
-                                            day: '2-digit',
-                                            month: 'short',
-                                            year: 'numeric',
-                                            weekday: 'long',
-                                        });
-                                        handleFlightInputChange('return', formattedDate);
-                                    }}
-                                    minDate={flightSearchInfo.depart || new Date()} // must 
-                                    monthsShown={2}
-                                    placeholderText="Select Return"
-                                    className="w-full text-xl text-[#525252] border-b focus:outline-none placeholder-[#808080] p-2"
-                                />
-
-                            </div>
+                            {returnOpen && (
+                                <div className="absolute bottom-full mb-2 bg-white p-4 rounded-2xl shadow-lg z-50">
+                                    <DayPicker
+                                        mode="single"
+                                        selected={flightSearchInfo.return}
+                                        onSelect={handleReturnSelect}
+                                        disabled={{ before: departSelected || new Date() }}
+                                        numberOfMonths={2}
+                                        captionLayout="dropdown-buttons"
+                                        className="text-gray-800"
+                                        classNames={{ months: "flex gap-4" }}
+                                    />
+                                </div>
+                            )}
                         </div>
 
                         {/* Traveler */}
-                        <div className="col-span-12 sm:col-span-2 flex items-center gap-3">
+                        <div className="col-span-12 sm:col-span-2 flex items-center gap-3 relative">
                             <img src={Person} alt="traveler" className="w-6 h-6" />
                             <div className="flex flex-col">
                                 <label className="block text-lg text-gray-700 flex items-center gap-2">Traveler</label>
@@ -592,12 +738,119 @@ function BookingForm() {
                                     type="number"
                                     min="1"
                                     placeholder="1"
-                                    value={flightSearchInfo.traveller}
-                                    onChange={(e) => handleFlightInputChange('traveller', e.target.value)}
+                                    value={flightSearchInfo.traveller !== 1 ? flightSearchInfo.traveller.adults + flightSearchInfo.traveller.children : 1}
+                                    onFocus={() => setShowTravellerBox(true)}
+                                    onChange={(e) => handleFlightInputChange('traveller', Number(e.target.value))}
                                     className="w-16 text-xl border text-[#525252] border-gray-400 rounded-md text-center focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none[appearance:textfield]"
                                 />
                             </div>
+
+                            {showTravellerBox && (
+                                <div
+                                    ref={travellerBoxRef}
+                                    className="absolute bottom-15 right-0 z-50 mt-2 w-[45rem] bg-white rounded-md shadow-lg px-6 py-5 space-y-6 text-black"
+                                >
+                                    {/* Adults */}
+                                    <div className="flex flex-col">
+                                        <p className="font-semibold text-gray-800 text-base">
+                                            ADULTS (12y+) <br /> <span className="text-sm font-medium">on the day of travel</span>
+                                        </p>
+                                        <div className="flex justify-between items-center mt-2">
+                                            <div className="flex border rounded-md overflow-hidden">
+                                                {Array.from({ length: 9 }).map((_, i) => (
+                                                    <div
+                                                        key={i}
+                                                        onClick={() => setTravellers((t) => ({ ...t, adults: i + 1 }))}
+                                                        className={`px-3 py-2 text-sm cursor-pointer border-r last:border-r-0 ${travellers.adults === i + 1 ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'
+                                                            }`}
+                                                    >
+                                                        {i + 1}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div
+                                                onClick={() => setTravellers((t) => ({ ...t, adults: '>9' }))}
+                                                className={`px-4 py-2 text-sm cursor-pointer border rounded-md ${travellers.adults === '>9' ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'
+                                                    }`}
+                                            >
+                                                &gt;9
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Children & Infants */}
+                                    <div className="flex justify-between items-start gap-6">
+                                        {/* Children */}
+                                        <div className="flex flex-col">
+                                            <p className="font-semibold text-gray-800 text-base">
+                                                CHILDREN (2y - 12y) <br /> <span className="text-sm font-medium">on the day of travel</span>
+                                            </p>
+                                            <div className="flex justify-between items-start mt-2">
+                                                <div className="flex border rounded-md overflow-hidden">
+                                                    {Array.from({ length: 6 }).map((_, i) => (
+                                                        <div
+                                                            key={i}
+                                                            onClick={() => setTravellers((t) => ({ ...t, children: i }))}
+                                                            className={`px-3 py-2 text-sm cursor-pointer border-r last:border-r-0 ${travellers.children === i ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'
+                                                                }`}
+                                                        >
+                                                            {i}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div
+                                                    onClick={() => setTravellers((t) => ({ ...t, children: '>6' }))}
+                                                    className={`ml-4 px-4 py-2 text-sm cursor-pointer border rounded-md ${travellers.children === '>6' ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'
+                                                        }`}
+                                                >
+                                                    &gt;6
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Infants */}
+                                        <div className="flex flex-col items-start">
+                                            <p className="font-semibold text-gray-800 text-base">
+                                                INFANTS (below 2y) <br /> <span className="text-sm font-medium">on the day of travel</span>
+                                            </p>
+                                            <div className="flex justify-between items-start mt-2">
+                                                <div className="mr-4 flex border rounded-md overflow-hidden">
+                                                    {Array.from({ length: 6 }).map((_, i) => (
+                                                        <div
+                                                            key={i}
+                                                            onClick={() => setTravellers((t) => ({ ...t, infants: i }))}
+                                                            className={`px-3 py-2 text-sm cursor-pointer border-r last:border-r-0 ${travellers.infants === i ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'
+                                                                }`}
+                                                        >
+                                                            {i}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div
+                                                    onClick={() => setTravellers((t) => ({ ...t, infants: '>6' }))}
+                                                    className={`px-4 py-2 text-sm cursor-pointer border rounded-md ${travellers.infants === '>6' ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'
+                                                        }`}
+                                                >
+                                                    &gt;6
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Done Button */}
+                                    <div
+                                        onClick={validateTravellers}
+                                        className="cursor-pointer col-span-12 sm:col-span-2 flex justify-center bg-[#78080B] rounded-sm p-1"
+                                    >
+                                        <button className="btn">
+                                            <span className="cursor-pointer button-text text-white secondary-font">D O N E</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
+
+
 
                         {/* Search Button */}
                         <div className="col-span-12 sm:col-span-1 flex justify-center">

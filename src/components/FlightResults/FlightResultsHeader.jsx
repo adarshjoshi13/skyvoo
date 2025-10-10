@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import Logo from '@/assets/imgs/logo.png'
+import Logo from '@/assets/imgs/logo.webp'
 
 const FlightResultsHeader = ({ onOpen }) => {
 

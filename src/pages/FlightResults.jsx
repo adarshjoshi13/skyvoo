@@ -7,9 +7,9 @@ import SignInModal from '../components/Modals/SignInModal';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { X, Search } from 'lucide-react';
-import GrayFadedBg from '@/assets/imgs/grayfadedbg.png'
-import AirlineLogo from '@/assets/imgs/airlinelogo.png'
-import RipSide from '@/assets/imgs/ripSide.png'
+import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp'
+import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
+import RipSide from '@/assets/imgs/ripSide.webp'
 import Stopwatch from '@/assets/vectors/stopwatch.svg'
 import Cheapest from '@/assets/vectors/Cheapest.svg'
 import Nonstop from '@/assets/vectors/Nonstop.svg'
@@ -17,7 +17,7 @@ import Other from '@/assets/vectors/Other.svg'
 import Preference from '@/assets/vectors/Preference.svg'
 import Lock from '@/assets/vectors/lock.svg'
 import FlightDetails from '../components/FlightResults/FlightDetails'
-import BookingFlightFormBg from "@/assets/imgs/bookingForm.png";
+import BookingFlightFormBg from "@/assets/imgs/flightresultsbg.webp";
 
 export default function FlightResults() {
     const navigate = useNavigate();

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import StickerStack from './StickerStack'
 import MoveUpRightArrow from "@/assets/vectors/MoveUpRightArrow.svg";
-import Plane from '@/assets/imgs/plane.png'
+import Plane from '@/assets/imgs/plane.webp'
 
 function PromotionalCard() {
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import Logo from '@/assets/imgs/logo.png'
+import Logo from '@/assets/imgs/logo.webp'
 const Header = ({ onOpen }) => {
    
     const navigate = useNavigate();

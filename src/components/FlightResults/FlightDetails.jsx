@@ -1,5 +1,5 @@
 import { useState } from "react";
-import AirlineLogo from '@/assets/imgs/airlinelogo.png'
+import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
 
 const FlightDetails = ({ flight }) => {
     const [activeTab, setActiveTab] = useState("details");

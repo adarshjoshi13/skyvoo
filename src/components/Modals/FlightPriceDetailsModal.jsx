@@ -1,5 +1,5 @@
 import React from "react";
-import AirlineLogo from '@/assets/imgs/airlinelogo.png'
+import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
 import Tick from '@/assets/vectors/Tick.svg'
 import Dash from '@/assets/vectors/Dash.svg'
 import Insuarance from '@/assets/vectors/Insuarance.svg'

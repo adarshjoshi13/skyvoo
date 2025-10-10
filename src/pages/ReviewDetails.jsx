@@ -4,9 +4,9 @@ import SignInModal from '../components/Modals/SignInModal';
 import FareRulesModal from '../components/Modals/FareRulesModal';
 import TripBenefitsModal from '../components/Modals/TripBenefitsModal';
 import BaggageModal from '../components/Modals/BaggageModal';
-import GrayFadedBg from '@/assets/imgs/grayfadedbg.png'
-import AirlineLogo from '@/assets/imgs/airlinelogo.png'
-import CouponBg from '@/assets/imgs/couponbg.png';
+import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp'
+import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
+import CouponBg from '@/assets/imgs/couponbg.webp';
 import Dash from '@/assets/vectors/Dash.svg'
 import { Trash2, Plane, User, Luggage, AlertCircle, ShieldCheck, CirclePlus, ShieldAlert, CheckCircle2 } from 'lucide-react';
 import Select from "react-select";

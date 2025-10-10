@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import AirlineLogo from '@/assets/imgs/airlinelogo.png'
+import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
 
 export default function FareRulesModal({ onClose }) {
     const [activeTab, setActiveTab] = useState("cancellation");

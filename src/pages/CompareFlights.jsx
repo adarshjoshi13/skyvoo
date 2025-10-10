@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Plane, Utensils, Coffee, Clock, Plug, Tv, Luggage, DollarSign, RockingChair, BaggageClaim, Coins } from 'lucide-react';
 import Header from '../components/Header';
-import GrayFadedBg from '@/assets/imgs/grayfadedbg.png';
-import AirlineLogo from '@/assets/imgs/airlinelogo.png'
+import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp';
+import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
 import FlightPriceDetailsModal from '../components/Modals/FlightPriceDetailsModal';
 import SignInModal from '../components/Modals/SignInModal';
 
