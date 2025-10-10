@@ -378,8 +378,6 @@ function BookingForm() {
         }, 0);
     };
 
-
-
     return (
         <div
             className="relative grid grid-cols-12 gap-8 bg-no-repeat bg-cover bg-center rounded-[45px] shadow-[0_10px_30px_rgba(0,0,0,0.5)]"

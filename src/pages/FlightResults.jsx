@@ -16,20 +16,27 @@ import Nonstop from '@/assets/vectors/Nonstop.svg'
 import Other from '@/assets/vectors/Other.svg'
 import Preference from '@/assets/vectors/Preference.svg'
 import Lock from '@/assets/vectors/lock.svg'
-import FlightDetails from '../components/FlightResults/FlightDetails'
+import ViewFlightDetails from '../components/FlightResults/ViewFlightDetails.jsx'
 import BookingFlightFormBg from "@/assets/imgs/flightresultsbg.webp";
+import FlightsData from '../Data/FlightsData.js';
+
 
 export default function FlightResults() {
+    const FlightDetails = FlightsData.TripDetails[0].Flights;
+    console.log(FlightDetails[0], 'see the data')
     const navigate = useNavigate();
     const [selectedFlights, setSelectedFlights] = useState([]);
+
     const [isFlightDetailsModalOpen, setIsFlightDetailsModalOpen] = useState(false);
     const [isSignInModal, setIsSignInModal] = useState(false);
+
     const [isSwapping, setIsSwapping] = useState(false);
     const [collapsed, setCollapsed] = useState(false);
     const [selectedSort, setSelectedSort] = useState('CHEAPEST');
     const [rotation, setRotation] = useState(0);
     const [selectedFlightId, setSelectedFlightId] = useState(null);
     const [tripType, setTripType] = useState('roundTrip');
+    const [showTravellerBox, setShowTravellerBox] = useState(false);
 
     const travellerBoxRef = useRef(null);
     const [flightSearchInfo, setFlightSearchInfo] = useState({
@@ -46,8 +53,6 @@ export default function FlightResults() {
         infants: 0,
         classType: 'Economy/Premium Economy',
     });
-
-    const [showTravellerBox, setShowTravellerBox] = useState(false);
 
     const handleFlightInputChange = (field, value) => {
         setFlightSearchInfo(prev => ({ ...prev, [field]: value }));
@@ -243,6 +248,15 @@ export default function FlightResults() {
             document.removeEventListener('keydown', handleEsc);
         };
     }, []);
+
+    // Universal function to get time (HH:MM) from any date string
+    const formatTime = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
+    };
 
 
     return (
@@ -750,10 +764,10 @@ export default function FlightResults() {
 
                             {/* Flight Results */}
                             <div className="space-y-4">
-                                {flights.map((flight) => (
-                                    <div key={flight.id} className={`rounded-2xl`}>
-
-                                        <div className={`py-4 relative bg-cover bg-center rounded-xl shadow-sm hover:shadow-md transition-shadow secondary-font  ${flight.highlighted ? "" : ""}`}
+                                {FlightDetails.map((flight) => (
+                                    <div key={flight.Flight_Id} className={`rounded-2xl`}>
+                                        {/* <div className={`py-4 relative bg-cover bg-center rounded-xl shadow-sm hover:shadow-md transition-shadow secondary-font  ${flight.highlighted ? "" : ""}`} */}
+                                        <div className={`py-4 relative bg-cover bg-center rounded-xl shadow-sm hover:shadow-md transition-shadow secondary-font`}
                                             style={{ backgroundImage: `url(${BookingFlightFormBg})`, boxShadow: "-3px 4px 20px -2px rgba(0, 0, 0, 0.25)" }}>
                                             <img
                                                 className="absolute -right-[0.330rem] top-1/2 -translate-y-1/2 h-[90%] hidden lg:block"
@@ -797,34 +811,34 @@ export default function FlightResults() {
                                                         <img src={AirlineLogo} alt="airline logo" />
                                                     </div>
                                                     <div>
-                                                        <div className="font-semibold">{flight.airline}</div>
-                                                        <div className="text-sm text-gray-500">{flight.flightNumber}</div>
+                                                        <div className="font-semibold">{flight.Segments[0].Airline_Name}</div>
+                                                        <div className="text-sm text-gray-500">{flight.Segments[0].Flight_Number}</div>
                                                     </div>
                                                 </div>
 
                                                 {/* Departure */}
                                                 <div className="text-center">
-                                                    <div className="text-2xl font-bold">{flight.departure.time}</div>
-                                                    <div className="text-sm text-gray-500">{flight.departure.city}</div>
+                                                    <div className="text-2xl font-bold">{formatTime(flight.Segments[0].Departure_DateTime)}</div>
+                                                    <div className="text-sm text-gray-500">{flight.Segments[0].Origin_City}</div>
                                                 </div>
 
                                                 {/* Flight duration and stops */}
                                                 <div className="flex flex-col items-center font-semibold">
-                                                    <div className="text-sm text-gray-500 mb-2">{flight.duration}</div>
+                                                    <div className="text-sm text-gray-500 mb-2">{flight.Segments[0].Duration}</div>
                                                     <div className="relative w-24 h-0.5 rounded-xl bg-[#920000]">
                                                     </div>
-                                                    <div className="text-sm text-gray-500 mt-2">{flight.stops}</div>
+                                                    <div className="text-sm text-gray-500 mt-2">{flight.Segments[0].Stop_Over}</div>
                                                 </div>
 
                                                 {/* Arrival */}
                                                 <div className="text-center">
-                                                    <div className="text-2xl font-bold">{flight.arrival.time}</div>
-                                                    <div className="text-sm text-gray-500">{flight.arrival.city}</div>
+                                                    <div className="text-2xl font-bold">{formatTime(flight.Segments[0].Arrival_DateTime)}</div>
+                                                    <div className="text-sm text-gray-500">{flight.Segments[0].Destination_City}</div>
                                                 </div>
 
                                                 {/* Price */}
                                                 <div className="text-right">
-                                                    <div className="text-2xl font-bold">₹ {flight.price.toLocaleString()}</div>
+                                                    <div className="text-2xl font-bold">₹ {flight.Fares[0].FareDetails[0].Total_Amount}</div>
                                                     <div className="text-sm text-gray-500">Per Adult</div>
                                                 </div>
 
@@ -936,7 +950,7 @@ export default function FlightResults() {
                                             className={`shadow-2xl mt-5 overflow-hidden transition-[max-height] duration-900 ease-in-out ${selectedFlightId === flight.id ? "max-h-96" : "max-h-0"}`}
                                         >
                                             {selectedFlightId === flight.id && (
-                                                <FlightDetails flight={flight} />
+                                                <ViewFlightDetails flight={flight} />
                                             )}
                                         </div>
                                     </div>

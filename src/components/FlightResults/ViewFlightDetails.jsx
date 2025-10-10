@@ -1,8 +1,61 @@
 import { useState } from "react";
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
 
-const FlightDetails = ({ flight }) => {
+const ViewFlightDetails = ({ flight }) => {
     const [activeTab, setActiveTab] = useState("details");
+
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+
+        const monthdate = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+
+        const hours = date.getHours() % 12 || 12;
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
+
+        return monthdate;
+    };
+
+    const formatMonth = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+
+        const hours = date.getHours() % 12 || 12;
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
+
+        return month;
+    };
+
+    const formatDay = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+
+        const hours = date.getHours() % 12 || 12;
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
+
+        return day;
+    };
+
+    const formatTime = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
+    };
 
     return (
         <div
@@ -42,7 +95,7 @@ const FlightDetails = ({ flight }) => {
                     {/* Top Row */}
                     <div className="flex justify-between mb-1">
                         <h3 className="font-semibold">
-                            {flight.departure.city} to {flight.arrival.city}, {flight.departure.date} {flight.departure.month}
+                            {flight.Segments[0].Origin_City} to {flight.Segments[0].Destination_City}, {formatDate(flight.Segments[0].Departure_DateTime)} {formatMonth(flight.Segments[0].Departure_DateTime)}
                         </h3>
                     </div>
 
@@ -52,31 +105,31 @@ const FlightDetails = ({ flight }) => {
                                 <img src={AirlineLogo} alt="airline logo" />
                             </div>
                             <div>
-                                <div className="font-semibold">{flight.airline} <span className="text-sm text-gray-500"> {flight.flightNumber}</span></div>
+                                <div className="font-semibold">{flight.Segments[0].Airline_Name} <span className="text-sm text-gray-500"> {flight.Segments[0].Flight_Number}</span></div>
                             </div>
                         </div>
                         <div className="flex items-start justify-between space-x-6 text-sm mb-4 mt-2">
 
                             {/* Departure */}
                             <div className="text-start">
-                                <div className="text-xl font-bold">{flight.departure.time}</div>
-                                <div className="text-base text-[#78080B] font-medium">{flight.departure.day}, {flight.departure.month} {flight.departure.date}</div>
-                                <div className="text-sm text-gray-500">{flight.departure.city}</div>
+                                <div className="text-xl font-bold">{formatTime(flight.Segments[0].Departure_DateTime)}</div>
+                                <div className="text-base text-[#78080B] font-medium">{formatDay(flight.Segments[0].Departure_DateTime)}, {formatMonth(flight.Segments[0].Departure_DateTime)} {formatDate(flight.Segments[0].Departure_DateTime)}</div>
+                                <div className="text-sm text-gray-500">{flight.Segments[0].Origin_City}</div>
                             </div>
 
                             {/* Flight duration and stops */}
                             <div className="flex flex-col items-center font-semibold">
-                                <div className="text-sm text-gray-500 mb-2">{flight.duration}</div>
+                                <div className="text-sm text-gray-500 mb-2">{flight.Segments[0].Duration}</div>
                                 <div className="relative w-24 h-0.5 bg-[#920000] rounded">
                                 </div>
-                                <div className="text-sm text-gray-500 mt-2">{flight.stops}</div>
+                                <div className="text-sm text-gray-500 mt-2">{flight.Segments[0].Stop_Over}</div>
                             </div>
 
                             {/* Arrival */}
                             <div className="text-start">
-                                <div className="text-xl font-bold">{flight.arrival.time}</div>
-                                <div className="text-base text-[#78080B] font-medium ">{flight.arrival.day}, {flight.arrival.month} {flight.arrival.date}</div>
-                                <div className="text-sm text-gray-500">{flight.arrival.city}</div>
+                                <div className="text-xl font-bold">{formatTime(flight.Segments[0].Arrival_DateTime)}</div>
+                                <div className="text-base text-[#78080B] font-medium">{formatDay(flight.Segments[0].Arrival_DateTime)}, {formatMonth(flight.Segments[0].Arrival_DateTime)} {formatDate(flight.Segments[0].Arrival_DateTime)}</div>
+                                <div className="text-sm text-gray-500">{flight.Segments[0].Destination_City}</div>
                             </div>
 
                             {/* Price */}
@@ -132,11 +185,11 @@ const FlightDetails = ({ flight }) => {
 
                             {/* Values */}
                             <div className="text-right space-y-2">
-                                <p className="text-base text-gray-700">{flight.fareSummary.base}</p>
-                                <p className="text-base text-gray-700">{flight.fareSummary.taxes}</p>
+                                <p className="text-base text-gray-700">{flight.Fares[0].FareDetails[0].Basic_Amount}</p>
+                                <p className="text-base text-gray-700">{flight.Fares[0].FareDetails[0].GST}</p>
                                 <hr className="my-2 border-gray-300" />
                                 <p className="text-lg font-bold text-[#78080B]">
-                                    {flight.fareSummary.total}
+                                    {flight.Fares[0].FareDetails[0].Total_Amount}
                                 </p>
                             </div>
                         </div>
@@ -157,7 +210,7 @@ const FlightDetails = ({ flight }) => {
                     <div className="border border-black/30 rounded-2xl shadow-sm p-4 bg-white text-sm">
                         {/* Route */}
                         <p className="font-medium text-gray-700 mb-2">
-                            {flight.route || "HDO-BLR"}
+                            {`${flight.Origin} - ${flight.Destination}`}
                         </p>
 
                         {/* Info Text */}
@@ -204,7 +257,7 @@ const FlightDetails = ({ flight }) => {
                     <div className="border border-black/30 rounded-2xl shadow-sm p-4 bg-white text-sm">
                         {/* Route */}
                         <p className="font-medium text-gray-700 mb-2">
-                            {flight.route || "HDO-BLR"}
+                            {`${flight.Origin} - ${flight.Destination}`}
                         </p>
 
                         {/* Info Text */}
@@ -243,4 +296,4 @@ const FlightDetails = ({ flight }) => {
     );
 };
 
-export default FlightDetails;
+export default ViewFlightDetails;
