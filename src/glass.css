@@ -61,7 +61,7 @@
     backdrop-filter: blur(clamp(1px, 0.125em, 4px));
 }
 
-
+/* 
 .filterglasseffect:after {
     content: '';
     position: absolute;
@@ -72,4 +72,4 @@
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .4), transparent);
     transition: 0.5s;
     transition-delay: 0.5s;
-}
+} */
