@@ -22,7 +22,7 @@ function BookingForm() {
     const [flightSearchInfo, setFlightSearchInfo] = useState({
         from: null,
         to: null,
-        depart: null,
+        depart: new Date(),
         return: null,
         coach: null,
         traveller: 1

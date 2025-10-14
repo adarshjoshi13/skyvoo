@@ -16,7 +16,7 @@ export default function Home() {
 
       <div>
         {/* Hero Section */}
-        <div className="relative min-h-[80vh] bg-white bg-cover bg-center">
+        <div className="relative min-h-[70vh] bg-white bg-cover bg-center">
           <img
             className="absolute right-0 z-10 max-w-full h-auto object-cover"
             src={GrayFadedBg}

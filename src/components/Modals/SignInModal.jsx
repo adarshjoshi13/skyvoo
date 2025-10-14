@@ -64,7 +64,7 @@ export default function SignInModal({ onClose }) {
                                 className="bg-transparent w-full outline-none text-gray-700"
                                 autoComplete="current-password"
                             />
-                            <button className="text-gray-400 hover:text-gray-600" onClick={togglePasswordVisibility}>
+                            <button type="button" className="cursor-pointer text-gray-400 hover:text-gray-600" onClick={togglePasswordVisibility}>
                                 <Eye className="w-5 h-5" />
                             </button>
                         </div>
