@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Header from '../components/Header';
 import PromotionalCard from '../components/PromotionalCard';
@@ -9,7 +9,9 @@ import BookingFlightSectionBg from '@/assets/imgs/bookingbg.webp';
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  useEffect(() => {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  }, []);
   return (
     <>
       {isModalOpen && <SignInModal onClose={() => setIsModalOpen(false)} />}
@@ -30,7 +32,7 @@ export default function Home() {
               <div className="text-center mb-12">
                 <h1
                   className="primary-font text-3xl sm:text-4xl lg:text-5xl font-medium text-black mb-4"
-                  style={{ textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'  }}
+                  style={{ textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)' }}
                 >
                   TRAVEL SMARTER WITH DEALS YOU'LL ADORE
                 </h1>
