@@ -289,6 +289,10 @@ function Filters() {
                             className="absolute left-0 top-0 h-full bg-[#920000] rounded-sm"
                             style={{ width: `${percentage}%` }}
                         />
+                        <div
+                            className="absolute -bottom-[150%] bg-[#920000] rounded-full h-4 w-4 transform -translate-x-1/2"
+                            style={{ left: `${percentage}%`, boxShadow: '0 0 6px 0 rgba(0,0,0,.2)' }}>
+                        </div>
 
                         {/* Popup Tooltip - Only show when dragging */}
                         {isDragging && (

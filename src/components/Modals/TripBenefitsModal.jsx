@@ -19,13 +19,13 @@ export default function TripBenefitsModal({ onClose }) {
             style={{ animation: "fadeIn 0.3s ease-out forwards" }}
         >
             <div
-                className="bg-white shadow-xl p-8 w-[420px] relative"
+                className="bg-white shadow-xl p-8 w-[460px] relative"
                 onClick={(e) => e.stopPropagation()}
                 style={{ animation: "scaleIn 0.3s ease-out forwards" }}
             >
                 {/* Close button */}
                 <button
-                    className="absolute top-4 right-4 text-gray-500 hover:text-black"
+                    className="absolute cursor-pointer top-4 right-4 text-gray-500 hover:text-black"
                     onClick={onClose}
                 >
                     ✕
@@ -164,17 +164,26 @@ export default function TripBenefitsModal({ onClose }) {
 /* Reusable Benefit Component */
 function Benefit({ icon, title, subtitle, description }) {
     return (
-        <div className="flex">
-            <div className="flex items-start gap-2 mr-2 mt-2">
+        <div className="flex items-start gap-3">
+            {/* Icon */}
+            <div className="mt-1">
                 {icon}
             </div>
-            <div>
-                <div>
-                    <span className="font-semibold">{title}</span>
-                    {subtitle && <span className="ml-1 text-gray-600">{subtitle}</span>}
+
+            {/* Text Content */}
+            <div className="flex-1">
+                <div className="flex justify-between items-baseline">
+                    <span className="font-semibold text-gray-900">{title}</span>
+                    {subtitle && <span className="text-sm text-gray-600">{subtitle}</span>}
                 </div>
-                {description && <p className="text-sm">{description}</p>}
+
+                {description && (
+                    <p className="text-sm text-gray-700 mt-1">
+                        {description}
+                    </p>
+                )}
             </div>
         </div>
     );
 }
+

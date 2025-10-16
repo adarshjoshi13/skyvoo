@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Header from '../components/Header';
 import SignInModal from '../components/Modals/SignInModal';
 import FareRulesModal from '../components/Modals/FareRulesModal';
@@ -123,21 +123,18 @@ export default function Home() {
       section.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
+  const TotalTravellers = { Adults: 4, Childs: 2, Infants: 2 }
 
-  const totalTravellers = 7;
+  const { Adults, Childs, Infants } = TotalTravellers;
 
-  const [travellers, setTravellers] = useState([
-    {
-      id: 1,
-      firstName: '',
-      lastName: '',
-      gender: 'MALE',
-      countryCode: '',
-      mobile: '',
-      email: '',
-      wheelchair: false
-    }
-  ]);
+  // Traveller State
+  const [travellers, setTravellers] = useState({
+    Adults: [
+      { id: 1, firstName: '', lastName: '', gender: 'MALE', countryCode: '', mobile: '', email: '', wheelchair: false }
+    ],
+    Childs: [],
+    Infants: [],
+  });
 
   const [saveToList, setSaveToList] = useState(false);
 
@@ -154,40 +151,86 @@ export default function Home() {
     registrationNo: ''
   });
 
-  const updateTraveller = (index, field, value) => {
-    const updatedTravellers = [...travellers];
-    updatedTravellers[index][field] = value;
-    setTravellers(updatedTravellers);
+  const updateTraveller = (category, index, field, value) => {
+    const updated = { ...travellers };
+    updated[category][index][field] = value;
+    setTravellers(updated);
   };
 
-  const addNewTraveller = () => {
-    if (travellers.length < totalTravellers) {
-      setTravellers([
+  const addTraveller = (category, limit) => {
+    if (travellers[category].length < limit) {
+      setTravellers({
         ...travellers,
-        {
-          id: travellers.length + 1,
-          firstName: '',
-          lastName: '',
-          gender: 'MALE',
-          countryCode: '',
-          mobile: '',
-          email: '',
-          wheelchair: false
-        }
-      ]);
+        [category]: [
+          ...travellers[category],
+          category === "Adults"
+            ? { id: Date.now(), firstName: '', lastName: '', gender: 'MALE', countryCode: '', mobile: '', email: '', wheelchair: false }
+            : category === "Childs"
+              ? { id: Date.now(), firstName: '', lastName: '', gender: 'MALE', dob: '' }
+              : { id: Date.now(), firstName: '', lastName: '', gender: 'MALE', dob: '', accompanyingAdult: '' }
+        ]
+      });
     }
   };
 
-  const removeTraveller = (index) => {
-    const traveller = travellers[index];
-    const hasData = traveller.firstName || traveller.lastName || traveller.mobile;
+  const removeTraveller = (category, index) => {
+    const traveller = travellers[category][index];
+    const hasData = Object.values(traveller).some(v => v);
+    if (hasData && !window.confirm(`Remove this ${category.slice(0, -1)}? All entered data will be lost.`)) return;
 
-    if (hasData && !window.confirm('Remove this traveller? All entered data will be lost.')) {
-      return;
-    }
+    setTravellers({
+      ...travellers,
+      [category]: travellers[category].filter((_, i) => i !== index)
+    });
+  };
 
-    if (travellers.length > 1) {
-      setTravellers(travellers.filter((_, i) => i !== index));
+
+  const baseFare = 5936;
+  const taxes = 913;
+  const services = 2100;
+
+  const [showCoupons, setShowCoupons] = useState(false);
+  const [selectedCoupon, setSelectedCoupon] = useState(null);
+  const [manualCode, setManualCode] = useState("");
+
+  const coupons = [
+    { code: "SAVE200", label: "₹200 off on your booking", discountType: "flat", value: 200 },
+    { code: "FLY10", label: "10% off (up to ₹500)", discountType: "percent", value: 10 },
+    { code: "FREEMEAL", label: "₹150 off on meals", discountType: "flat", value: 150 },
+    { code: "SUPER25", label: "25% off on base fare (max ₹800)", discountType: "percent", value: 25 },
+    { code: "WELCOME100", label: "₹100 instant discount", discountType: "flat", value: 100 },
+    { code: "WELCOME200", label: "₹200 instant discount", discountType: "flat", value: 200 },
+    { code: "WELCOME300", label: "₹300 instant discount", discountType: "flat", value: 300 },
+    { code: "WELCOME400", label: "₹400 instant discount", discountType: "flat", value: 400 },
+    { code: "WELCOME500", label: "₹500 instant discount", discountType: "flat", value: 500 },
+  ];
+
+  const subtotal = useMemo(() => baseFare + taxes + services, []);
+
+  const calculateTotal = useMemo(() => {
+    if (!selectedCoupon) return subtotal;
+    const { discountType, value } = selectedCoupon;
+    let discount = 0;
+    if (discountType === "flat") discount = value;
+    else if (discountType === "percent") discount = Math.min((subtotal * value) / 100, 800);
+    return Math.max(subtotal - discount, 0);
+  }, [selectedCoupon, subtotal]);
+
+  const handleApplyCoupon = (coupon) => {
+    setSelectedCoupon(coupon);
+  };
+
+  const handleRemoveCoupon = () => {
+    setSelectedCoupon(null);
+  };
+
+  const handleManualApply = () => {
+    const found = coupons.find((c) => c.code.toUpperCase() === manualCode.toUpperCase());
+    if (found) {
+      handleApplyCoupon(found);
+      setManualCode("");
+    } else {
+      alert("Invalid coupon code");
     }
   };
 
@@ -792,287 +835,150 @@ export default function Home() {
                   <div id="traveller-details" className="bg-white rounded-lg shadow-sm border border-slate-200">
                     <div className="p-5">
 
-                      {/* Header */}
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2">
-                          <User className="w-5 h-5 text-blue-600" />
-                          <h3 className="text-lg font-bold">Traveller Details</h3>
-                        </div>
-                        <span className="text-sm text-slate-600">
-                          {travellers.length}/{totalTravellers} added
-                        </span>
+                      <div className="flex items-center gap-2 mb-4">
+                        <User className="w-5 h-5 text-blue-600" />
+                        <h3 className="text-lg font-bold">Traveller Details</h3>
                       </div>
 
-                      {/* Important Notice */}
-                      <div className="bg-orange-50 border border-orange-200 rounded p-3 mb-4">
-                        <p className="text-sm text-orange-800">
-                          <span className="font-semibold">Important:</span> Enter name as mentioned on your passport or Government approved IDs.
-                        </p>
+                      <div className="bg-orange-50 border border-orange-200 rounded p-3 mb-4 text-sm text-orange-800">
+                        <span className="font-semibold">Important:</span> Enter name as per passport or Government-approved ID.
                       </div>
 
-                      {/* Traveller Forms */}
-                      {travellers.map((traveller, index) => (
-                        <div
-                          key={traveller.id}
-                          className="mb-4 border border-slate-200 rounded-lg p-4"
-                          style={{ boxShadow: '0 1px 4px 0 rgba(0, 0, 0, .21)' }}
-                        >
-                          <div className="flex items-center justify-between gap-2 mb-4">
-                            <div className='flex items-center'>
-                              <input
-                                type="checkbox"
-                                checked={true}
-                                readOnly
-                                className="w-4 h-4 text-blue-600 mr-2"
-                              />
-                              <label className="font-semibold text-slate-800">ADULT {index + 1}</label>
-                            </div>
-                            <div>
-                              {travellers.length > 1 && (
-                                <button
-                                  onClick={() => removeTraveller(index)}
-                                  className="cursor-pointer text-red-500 hover:text-red-700 text-sm font-medium flex items-center gap-1"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
+                      {/* Render for each category */}
+                      {[
+                        { label: 'Adult', key: 'Adults', limit: Adults },
+                        { label: 'Child', key: 'Childs', limit: Childs },
+                        { label: 'Infant', key: 'Infants', limit: Infants },
+                      ].map(({ label, key, limit }) => (
+                        <div key={key} className="mb-6">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-semibold text-slate-800">{label} Details</h4>
+                            <span className="text-sm text-slate-500">
+                              {travellers[key].length}/{limit} added
+                            </span>
+                          </div>
+
+                          {travellers[key].map((t, i) => (
+                            <div key={t.id} className="mb-4 border border-slate-200 rounded-lg p-4 shadow-sm">
+                              <div className="flex items-center justify-between mb-3">
+                                <label className="font-semibold">{label.toUpperCase()} {i + 1}</label>
+                                {travellers[key].length > 0 && (
+                                  <button
+                                    onClick={() => removeTraveller(key, i)}
+                                    className="cursor-pointer text-red-500 hover:text-red-700 flex items-center gap-1 text-sm"
+                                  >
+                                    <Trash2 className="w-4 h-4" /> Remove
+                                  </button>
+                                )}
+                              </div>
+
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                                <input
+                                  type="text"
+                                  placeholder="First & Middle Name"
+                                  value={t.firstName}
+                                  onChange={(e) => updateTraveller(key, i, 'firstName', e.target.value)}
+                                  className="border border-slate-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Last Name"
+                                  value={t.lastName}
+                                  onChange={(e) => updateTraveller(key, i, 'lastName', e.target.value)}
+                                  className="border border-slate-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+                                />
+
+                                {/* Gender */}
+                                <div className="flex gap-2">
+                                  {['MALE', 'FEMALE'].map((g) => (
+                                    <button
+                                      key={g}
+                                      onClick={() => updateTraveller(key, i, 'gender', g)}
+                                      className={`flex-1 py-2 px-4 rounded border text-sm font-medium transition-colors ${t.gender === g
+                                        ? 'bg-blue-600 text-white border-blue-600'
+                                        : 'bg-white text-slate-700 border-slate-300 hover:border-blue-600'
+                                        }`}
+                                    >
+                                      {g}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Conditional Fields */}
+                              {key === 'Adults' && (
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                                  <Select
+                                    options={countryOptions}
+                                    value={countryOptions.find(opt => opt.value === t.countryCode)}
+                                    onChange={(opt) => updateTraveller(key, i, 'countryCode', opt?.value || '')}
+                                    placeholder="Country Code"
+                                    classNamePrefix="country-select"
+                                  />
+                                  <input
+                                    type="tel"
+                                    placeholder="Mobile No (Optional)"
+                                    value={t.mobile}
+                                    onChange={(e) => updateTraveller(key, i, 'mobile', e.target.value)}
+                                    className="border border-slate-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+                                  />
+                                  <input
+                                    type="email"
+                                    placeholder="Email (Optional)"
+                                    value={t.email}
+                                    onChange={(e) => updateTraveller(key, i, 'email', e.target.value)}
+                                    className="border border-slate-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+                                  />
+                                </div>
+                              )}
+
+                              {(key === 'Childs' || key === 'Infants') && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                                  <input
+                                    type="date"
+                                    value={t.dob}
+                                    onChange={(e) => updateTraveller(key, i, 'dob', e.target.value)}
+                                    className="border border-slate-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+                                  />
+                                  {key === 'Infants' && (
+                                    <input
+                                      type="text"
+                                      placeholder="Accompanying Adult Name"
+                                      value={t.accompanyingAdult}
+                                      onChange={(e) => updateTraveller(key, i, 'accompanyingAdult', e.target.value)}
+                                      className="border border-slate-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+                                    />
+                                  )}
+                                </div>
+                              )}
+
+                              {/* Wheelchair (Adults only) */}
+                              {key === 'Adults' && (
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    type="checkbox"
+                                    checked={t.wheelchair}
+                                    onChange={(e) => updateTraveller(key, i, 'wheelchair', e.target.checked)}
+                                    className="cursor-pointer w-4 h-4"
+                                  />
+                                  <label className="text-sm text-slate-600">I require wheelchair (Optional)</label>
+                                </div>
                               )}
                             </div>
-                          </div>
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                            {/* First & Middle Name */}
-                            <input
-                              type="text"
-                              placeholder="First & Middle Name"
-                              value={traveller.firstName}
-                              onChange={(e) => updateTraveller(index, 'firstName', e.target.value)}
-                              className="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
+                          ))}
 
-                            {/* Last Name */}
-                            <input
-                              type="text"
-                              placeholder="Last Name"
-                              value={traveller.lastName}
-                              onChange={(e) => updateTraveller(index, 'lastName', e.target.value)}
-                              className="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-
-                            {/* Gender Selection */}
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => updateTraveller(index, 'gender', 'MALE')}
-                                className={`flex-1 py-2 px-4 rounded border text-sm font-medium transition-colors ${traveller.gender === 'MALE'
-                                  ? 'bg-blue-600 text-white border-blue-600'
-                                  : 'bg-white text-slate-700 border-slate-300 hover:border-blue-600'
-                                  }`}
-                              >
-                                MALE
-                              </button>
-                              <button
-                                onClick={() => updateTraveller(index, 'gender', 'FEMALE')}
-                                className={`flex-1 py-2 px-4 rounded border text-sm font-medium transition-colors ${traveller.gender === 'FEMALE'
-                                  ? 'bg-blue-600 text-white border-blue-600'
-                                  : 'bg-white text-slate-700 border-slate-300 hover:border-blue-600'
-                                  }`}
-                              >
-                                FEMALE
-                              </button>
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                            {/* Country Code */}
-                            <div>
-                              <label className="block text-xs text-slate-600 mb-1">Country Code</label>
-                              <Select
-                                options={countryOptions}
-                                value={countryOptions.find(opt => opt.value === traveller.countryCode)}
-                                onChange={(option) => updateTraveller(index, "countryCode", option?.value || "")}
-                                placeholder="Country Code"
-                                classNamePrefix="country-select"
-                                styles={{
-                                  control: (base) => ({
-                                    ...base,
-                                    borderColor: "#cbd5e1", // slate-300
-                                    minHeight: "36px",
-                                    fontSize: "0.875rem", // text-sm
-                                    "&:hover": { borderColor: "#3b82f6" }, // blue-500
-                                    boxShadow: "none",
-                                  }),
-                                  placeholder: (base) => ({
-                                    ...base,
-                                    color: "#94a3b8", // slate-400
-                                  }),
-                                }}
-                              />
-                            </div>
-
-                            {/* Mobile No */}
-                            <div>
-                              <label className="block text-xs text-slate-600 mb-1">Mobile No</label>
-                              <input
-                                type="tel"
-                                placeholder="Mobile No(Optional)"
-                                value={traveller.mobile}
-                                onChange={(e) => updateTraveller(index, 'mobile', e.target.value)}
-                                className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              />
-                            </div>
-
-                            {/* Email */}
-                            <div>
-                              <label className="block text-xs text-slate-600 mb-1">Email</label>
-                              <input
-                                type="email"
-                                placeholder="Email(Optional)"
-                                value={traveller.email}
-                                onChange={(e) => updateTraveller(index, 'email', e.target.value)}
-                                className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              />
-                            </div>
-                          </div>
-
-                          {/* Wheelchair Option */}
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="checkbox"
-                              id={`wheelchair-${index}`}
-                              checked={traveller.wheelchair}
-                              onChange={(e) => updateTraveller(index, 'wheelchair', e.target.checked)}
-                              className="cursor-pointer w-4 h-4"
-                            />
-                            <label htmlFor={`wheelchair-${index}`} className="text-sm text-slate-600">
-                              I require wheelchair <span className="text-slate-400">(Optional)</span>
-                            </label>
-                          </div>
+                          {/* Add Button */}
+                          {travellers[key].length < limit && (
+                            <button
+                              onClick={() => addTraveller(key, limit)}
+                              className="cursor-pointer uppercase text-blue-600 text-sm font-medium hover:text-blue-700"
+                            >
+                              + Add {label}
+                            </button>
+                          )}
                         </div>
                       ))}
-
-                      {/* Add New Adult Button */}
-                      {travellers.length < totalTravellers && (
-                        <button
-                          onClick={addNewTraveller}
-                          className="cursor-pointer text-blue-600 text-sm font-medium hover:text-blue-700 mb-4"
-                        >
-                          + ADD NEW ADULT
-                        </button>
-                      )}
-
-                      {/* Save to My Traveller List */}
-                      <div className="bg-cyan-50 border border-cyan-200 rounded p-3 mb-6">
-                        <div className="flex items-start gap-2">
-                          <input
-                            type="checkbox"
-                            id="save-travellers"
-                            checked={saveToList}
-                            onChange={(e) => setSaveToList(e.target.checked)}
-                            className="w-4 h-4 mt-0.5"
-                          />
-                          <label htmlFor="save-travellers" className="text-sm text-slate-700">
-                            <span className="font-medium">Add these travellers to My Traveller List.</span> You won't have to fill traveller info on your next visit.
-                          </label>
-                        </div>
-                      </div>
-
-                      {/* Booking Details Section */}
-                      <h4 className="font-semibold text-slate-800 mb-3">Booking details will be sent to</h4>
-
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        {/* Country Code for Booking */}
-                        <div>
-                          <label className="block text-xs text-slate-600 mb-1">Country Code</label>
-                          <Select
-                            options={countryOptions}
-                            value={countryOptions.find(opt => opt.value === bookingDetails.countryCode)}
-                            onChange={(option) => updateTraveller(index, "countryCode", option?.value || "")}
-                            placeholder="Country Code"
-                            classNamePrefix="country-select"
-                            styles={{
-                              control: (base) => ({
-                                ...base,
-                                borderColor: "#cbd5e1", // slate-300
-                                minHeight: "36px",
-                                fontSize: "0.875rem", // text-sm
-                                "&:hover": { borderColor: "#3b82f6" }, // blue-500
-                                boxShadow: "none",
-                              }),
-                              placeholder: (base) => ({
-                                ...base,
-                                color: "#94a3b8", // slate-400
-                              }),
-                            }}
-                          />
-                        </div>
-
-                        {/* Mobile No for Booking */}
-                        <div>
-                          <label className="block text-xs text-slate-600 mb-1">Mobile No</label>
-                          <input
-                            type="tel"
-                            placeholder="Mobile No"
-                            value={bookingDetails.mobile}
-                            onChange={(e) => setBookingDetails({ ...bookingDetails, mobile: e.target.value })}
-                            className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-
-                        {/* Email for Booking */}
-                        <div>
-                          <label className="block text-xs text-slate-600 mb-1">Email</label>
-                          <input
-                            type="email"
-                            placeholder="befaltua1@gmail.com"
-                            value={bookingDetails.email}
-                            onChange={(e) => setBookingDetails({ ...bookingDetails, email: e.target.value })}
-                            className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                      </div>
-
-                      {/* GST Details */}
-                      <div className="flex items-center gap-2 mb-3">
-                        <input
-                          type="checkbox"
-                          id="gst-checkbox"
-                          checked={hasGST}
-                          onChange={(e) => setHasGST(e.target.checked)}
-                          className="cursor-pointer w-4 h-4"
-                        />
-                        <label htmlFor="gst-checkbox" className="text-sm font-medium text-slate-800">
-                          I have a GST number <span className="text-slate-400 font-normal">(Optional)</span>
-                        </label>
-                      </div>
-
-                      {hasGST && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {/* Company Name */}
-                          <div>
-                            <label className="block text-xs text-slate-600 mb-1">Company Name</label>
-                            <input
-                              type="text"
-                              placeholder="Company Name"
-                              value={gstDetails.companyName}
-                              onChange={(e) => setGstDetails({ ...gstDetails, companyName: e.target.value })}
-                              className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                          </div>
-
-                          {/* Registration No */}
-                          <div>
-                            <label className="block text-xs text-slate-600 mb-1">Registration No</label>
-                            <input
-                              type="text"
-                              placeholder="Registration No"
-                              value={gstDetails.registrationNo}
-                              onChange={(e) => setGstDetails({ ...gstDetails, registrationNo: e.target.value })}
-                              className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                          </div>
-                        </div>
-                      )}
-
                     </div>
-
                   </div>
 
                   {/* State Info */}
@@ -1152,61 +1058,88 @@ export default function Home() {
                   <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 sticky top-25">
                     <h2 className="text-xl font-bold mb-4">Fare Summary</h2>
 
+                    {/* --- Fare Breakdown --- */}
                     <div className="space-y-3 mb-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <CirclePlus className="w-4 h-4 text-slate-400" />
-                          <span className="text-sm">Base Fare</span>
-                        </div>
-                        <span className="font-semibold">₹ 5,936</span>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <CirclePlus className="w-4 h-4 text-slate-400" />
-                          <span className="text-sm">Taxes and Surcharges</span>
-                        </div>
-                        <span className="font-semibold">₹ 913</span>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <CirclePlus className="w-4 h-4 text-slate-400" />
-                          <span className="text-sm">Other Services</span>
-                        </div>
-                        <span className="font-semibold">₹ 2,100</span>
-                      </div>
+                      <FareRow label="Base Fare" amount={baseFare} />
+                      <FareRow label="Taxes and Surcharges" amount={taxes} />
+                      <FareRow label="Other Services" amount={services} />
                     </div>
 
+                    {/* --- Coupon Applied --- */}
+                    {selectedCoupon && (
+                      <div className="mb-4 bg-green-50 border border-green-200 text-green-700 rounded-lg p-3 text-sm flex justify-between items-center">
+                        <span>
+                          Applied <b>{selectedCoupon.code}</b> – {selectedCoupon.label}
+                        </span>
+                        <button
+                          onClick={handleRemoveCoupon}
+                          className="text-xs text-red-600 font-medium hover:underline"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+
+                    {/* --- Total --- */}
                     <div className="border-t border-t-2 border-slate-200 pt-4 mb-6">
                       <div className="flex items-center justify-between">
                         <span className="text-lg font-bold">Total Amount</span>
-                        <span className="text-2xl font-bold">₹ 8,949</span>
+                        <span className="text-2xl font-bold text-slate-800">
+                          ₹ {calculateTotal.toLocaleString()}
+                        </span>
                       </div>
                     </div>
 
-                    {/* Coupons Section */}
-                    <div className="rounded-lg p-4 mb-4 bg-cover"
+                    {/* --- Coupons Section --- */}
+                    <div
+                      className="rounded-lg p-4 mb-4 bg-cover"
                       style={{ backgroundImage: `url(${CouponBg})` }}
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold">Coupons and Offers</span>
-                        </div>
-                      </div>
+                      <span className="font-bold">Coupons and Offers</span>
                     </div>
 
-                    <input
-                      type="text"
-                      placeholder="Enter coupon code"
-                      className="w-full border border-slate-300 rounded-lg px-4 py-2 mb-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
+                    {/* --- Manual Code Input --- */}
+                    <div className="flex mb-3">
+                      <input
+                        type="text"
+                        value={manualCode}
+                        onChange={(e) => setManualCode(e.target.value)}
+                        placeholder="Enter coupon code"
+                        className="flex-1 border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
 
-                    <button className="w-full text-blue-600 font-semibold text-sm py-2">
-                      VIEW ALL COUPONS ˅
+                      <button
+                        onClick={handleManualApply}
+                        className="bg-blue-600 text-white text-sm font-semibold px-3 py-2 rounded-lg hover:bg-blue-700 flex-shrink-0"
+                        style={{ height: "100%" }}
+                      >
+                        Apply
+                      </button>
+                    </div>
+
+                    {/* --- View All Coupons Toggle --- */}
+                    <button
+                      onClick={() => setShowCoupons(!showCoupons)}
+                      className="cursor-pointer w-full text-blue-600 font-semibold text-sm py-2"
+                    >
+                      {showCoupons ? "HIDE COUPONS ˄" : "VIEW ALL COUPONS ˅"}
                     </button>
+
+                    {/* --- Coupons List --- */}
+                    {showCoupons && (
+                      <div className="max-h-90 overflow-y-auto mt-3 border border-slate-200 rounded-lg divide-y divide-slate-100">
+                        {coupons.map((coupon) => (
+                          <CouponItem
+                            key={coupon.code}
+                            coupon={coupon}
+                            onApply={() => handleApplyCoupon(coupon)}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
+
               </div>
             </div>
           </div>
@@ -1216,3 +1149,28 @@ export default function Home() {
     </>
   );
 }
+
+const FareRow = ({ label, amount }) => (
+  <div className="flex items-center justify-between">
+    <div className="flex items-center gap-2">
+      <CirclePlus className="w-4 h-4 text-slate-400" />
+      <span className="text-sm">{label}</span>
+    </div>
+    <span className="font-semibold">₹ {amount.toLocaleString()}</span>
+  </div>
+);
+
+const CouponItem = ({ coupon, onApply }) => (
+  <div className="flex justify-between items-center p-3 hover:bg-slate-50">
+    <div>
+      <div className="font-semibold text-slate-800">{coupon.code}</div>
+      <div className="text-xs text-slate-500">{coupon.label}</div>
+    </div>
+    <button
+      onClick={onApply}
+      className="text-blue-600 font-medium text-sm hover:underline"
+    >
+      Apply
+    </button>
+  </div>
+);

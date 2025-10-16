@@ -57,7 +57,6 @@ const otherOptions = [
     { label: "Late Arrival", value: "LATE_ARRIVAL" },
 ];
 
-
 const TimeRanges = {
     "Early Morning": { start: 0, end: 6 },
     "Morning": { start: 6, end: 12 },
@@ -271,7 +270,6 @@ export default function FlightResults() {
 
     const handleClick = (key) => {
         if (key === "OTHER") {
-            // toggle the dropdown
             setShowOtherMenu((prev) => !prev);
         } else {
             setSelectedSorting(key);
@@ -315,7 +313,6 @@ export default function FlightResults() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    // Update height when isEditable changes
     useEffect(() => {
         if (isEditable && contentRef.current) {
             setFareTypeHeight(contentRef.current.scrollHeight);
@@ -802,7 +799,7 @@ export default function FlightResults() {
 
                                             {/* Underline animation */}
                                             <div
-                                                className={`absolute bottom-0 left-0 h-[3px] bg-blue-500 rounded-full transition-all duration-300 ease-out ${selectedSorting === option.key ||
+                                                className={`absolute bottom-0 left-0 h-[3px] bg-blue-500 rounded-full transition-all duration-1000 ease-out ${selectedSorting === option.key ||
                                                     (option.key === "OTHER" && otherOptions.includes(selectedSorting))
                                                     ? "w-full"
                                                     : "w-0"
