@@ -1,0 +1,1 @@
+import FlightsData from '../Data/SeatMapData.js';

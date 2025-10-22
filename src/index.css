@@ -5,6 +5,11 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+button{
+  cursor: pointer;
 }
 
 .filter-section input[type="radio"]:checked {
@@ -49,13 +54,10 @@ body {
   }
 }
 
-
-
-
 .plane {
   position: absolute;
-  right: -300px;
-  bottom: -50px;
+  right: -250px;
+  bottom: 10px;
   animation: planeLandin 2s ease-out forwards;
 }
 
@@ -66,7 +68,6 @@ body {
   background-size: 200% 100%;
   background-position: left;
 }
-
 
 @keyframes ribbonExpand {
   from {
