@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import FlightResultsHeader from '../components/FlightResults/FlightResultsHeader';
-import Filters from '../components/FlightResults/Filters';
-import FlightPriceDetailsModal from '../components/Modals/FlightPriceDetailsModal';
-import SignInModal from '../components/Modals/SignInModal';
+import FlightResultsHeader from '@/components/flight/FlightResultsHeader';
+import Filters from '@/components/flight/Filters';
+import FlightPriceDetailsModal from '@/components/common/Modals/FlightPriceDetailsModal';
+import SignInModal from '@/components/common/Modals/SignInModal';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { X, Search } from 'lucide-react';
@@ -16,11 +16,12 @@ import Nonstop from '@/assets/vectors/Nonstop.svg'
 import Other from '@/assets/vectors/Other.svg'
 import Preference from '@/assets/vectors/Preference.svg'
 import Lock from '@/assets/vectors/lock.svg'
-import ViewFlightDetails from '../components/FlightResults/ViewFlightDetails.jsx'
+import ViewFlightDetails from '../components/flight/ViewFlightDetails.jsx'
 import BookingFlightFormBg from "@/assets/imgs/flightresultsbg.webp";
 import FlightsData from '../Data/FlightsData.js';
 import { formatTime } from '../utils/formatDateTime.js';
 import { useFlightFilters } from '../contexts/FlightFilterContext.jsx';
+import ProgressBar from "../components/layout/ProgressBar.jsx";
 
 const sortOptions = [
     {
@@ -67,7 +68,9 @@ const TimeRanges = {
 export default function FlightResults() {
 
     const [selectedSorting, setSelectedSorting] = useState("");
-    // const [allFlightDetails, setAllFlightDetails] = useState();
+
+    const [progress, setProgress] = useState(0);
+    const [showLoader, setShowLoader] = useState(true);
 
     const RawFlightDetails = FlightsData.TripDetails[0].Flights;
 
@@ -321,6 +324,25 @@ export default function FlightResults() {
         }
     }, [isEditable]);
 
+    // Loader
+    useEffect(() => {
+        const sequence = [70, 90, 100];
+        let index = 0;
+
+        const timer = setInterval(() => {
+            setProgress(sequence[index]);
+            index++;
+
+            if (index >= sequence.length) {
+                clearInterval(timer);
+                // hide loader after short delay
+                setTimeout(() => setShowLoader(false), 500);
+            }
+        }, 800);
+
+        return () => clearInterval(timer);
+    }, []);
+
     return (
         <>
             {selectedFlights.length > 0 && (
@@ -338,28 +360,28 @@ export default function FlightResults() {
                                     <button className="text-white cursor-pointer" onClick={() => setCollapsed(prev => !prev)}> — </button>
                                 </div>
 
-                                {/* Flight list */}
+                                {/* Selected Comparison Flight list */}
                                 <ul className="divide-y divide-gray-200 max-h-48 overflow-y-auto">
-                                    {selectedFlights.map((flight) => (
+                                    {selectedFlights.map(selectedFlight => (
                                         <li
-                                            key={flight.Flight_Id}
+                                            key={selectedFlight.Flight_Id}
                                             className="flex items-center justify-between px-4 py-3"
                                         >
                                             {/* Left side: Logo + Airline */}
                                             <div className="flex items-center space-x-2">
                                                 <img
                                                     src={AirlineLogo}
-                                                    alt={flight.Segments[0].Airline_Name}
+                                                    alt={selectedFlight.Segments[0].Airline_Name}
                                                     className="w-6 h-6 rounded"
                                                 />
-                                                <span className="font-medium text-gray-800">{flight.Segments[0].Airline_Name}</span>
+                                                <span className="font-medium text-gray-800">{selectedFlight.Segments[0].Airline_Name}</span>
                                             </div>
 
                                             {/* Middle: Times + Progress */}
                                             <div className="flex items-center ">
-                                                <div className="text-sm font-medium mr-4">{formatTime(flight.Segments[0].Departure_DateTime)}</div>
+                                                <div className="text-sm font-medium mr-4">{formatTime(selectedFlight.Segments[0].Departure_DateTime)}</div>
                                                 <div className="h-1 w-16 bg-green-400 mx-auto my-1 rounded" />
-                                                <div className="text-sm font-medium ml-4">{formatTime(flight.Segments[0].Arrival_DateTime)}</div>
+                                                <div className="text-sm font-medium ml-4">{formatTime(selectedFlight.Segments[0].Arrival_DateTime)}</div>
                                             </div>
 
                                             {/* Remove button */}
@@ -367,7 +389,7 @@ export default function FlightResults() {
                                                 className="text-gray-400 hover:text-red-500 ml-3"
                                                 onClick={() =>
                                                     setSelectedFlights(prev =>
-                                                        prev.filter(flight => flight.Flight_Id !== f.Flight_Id)
+                                                        prev.filter(f => f.Flight_Id !== selectedFlight.Flight_Id)
                                                     )
                                                 }
                                             >
@@ -404,7 +426,7 @@ export default function FlightResults() {
                 <FlightResultsHeader onOpen={() => setIsSignInModal(true)} />
 
                 {/* Search Header */}
-                <div className="relative bg-[#78080B] text-white px-4 py-5 z-999" style={{ boxShadow: ' 0px 4px 4px 0px rgba(0, 0, 0, 0.25)' }}>
+                <div className="relative bg-[#78080B] text-white px-4 py-5 z-999 mb-4" style={{ boxShadow: ' 0px 4px 4px 0px rgba(0, 0, 0, 0.25)' }}>
 
                     {/* Flight Filter */}
                     <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -758,6 +780,10 @@ export default function FlightResults() {
                     </div>
 
                 </div >
+
+                {showLoader && (
+                    <ProgressBar progress={progress} />
+                )}
 
                 {/* Main Content */}
                 < div className="relative max-w-7xl mx-auto px-4 py-6 z-50" >

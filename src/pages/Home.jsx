@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-import Header from '../components/Header';
-import PromotionalCard from '../components/PromotionalCard';
-import BookingForm from '../components/BookingForm';
-import SignInModal from '../components/Modals/SignInModal';
+import Header from '@/components/layout/Header';
+import PromotionalCard from '@/components/PromotionalCard';
+import BookingForm from '@/components/BookingForm';
+import SignInModal from '@/components/common/Modals/SignInModal';
 import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp'
 import BookingFlightSectionBg from '@/assets/imgs/bookingbg.webp';
 

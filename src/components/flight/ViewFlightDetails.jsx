@@ -43,7 +43,7 @@ const ViewFlightDetails = ({ flight }) => {
                     {/* Top Row */}
                     <div className="flex justify-between mb-1">
                         <h3 className="font-semibold">
-                            {flight.Segments[0].Origin_City} to {flight.Segments[0].Destination_City}, {formatDate(flight.Segments[0].Departure_DateTime)} {formatMonth(flight.Segments[0].Departure_DateTime)}
+                            {flight.Segments[0].Origin_City} to {flight.Segments[0].Destination_City}, {formatDate(flight.Segments[0].Departure_DateTime)} {formatDay(flight.Segments[0].Departure_DateTime)}
                         </h3>
                     </div>
 

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Plane, Utensils, Coffee, Clock, Plug, Tv, Luggage, DollarSign, RockingChair, BaggageClaim, Coins } from 'lucide-react';
-import Header from '../components/Header';
+import Header from '@/components/layout/Header';
 import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp';
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
-import FlightPriceDetailsModal from '../components/Modals/FlightPriceDetailsModal';
-import SignInModal from '../components/Modals/SignInModal';
+import FlightPriceDetailsModal from '@/components/common/Modals/FlightPriceDetailsModal';
+import SignInModal from '@/components/common/Modals/SignInModal';
 
 export default function CompareFlights() {
     const [isModalOpen, setIsModalOpen] = useState(false);

@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import FlightResults from './pages/FlightResults';
 import CompareFlights from './pages/CompareFlights';
 import ReviewDetails from './pages/ReviewDetails';
+import BookSeat from './pages/BookSeat.jsx';
 import { FlightFilterProvider } from './contexts/FlightFilterContext.jsx'
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         />
         <Route path="/compare-flights" element={<CompareFlights />} />
         <Route path="/review-details" element={<ReviewDetails />} />
+        <Route path="/book-seat" element={<BookSeat />} />
       </Routes>
 
     </Router>

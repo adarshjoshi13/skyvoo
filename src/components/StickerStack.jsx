@@ -85,7 +85,6 @@ function Sticker({ frontIndex, underIndex, onPeeled }) {
             <div
                 className={`sticker ${peeled ? "is-peeled" : ""} ${instantReset ? "instant-reset" : ""}`}
                 role="button"
-                tabIndex={0}
                 onClick={peel}
                 onKeyDown={handleKey}
                 onTransitionEnd={handleTransitionEnd}

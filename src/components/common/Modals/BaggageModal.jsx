@@ -25,7 +25,7 @@ export default function BaggageModal({ onClose }) {
             >
                 {/* Close button */}
                 <button
-                    className="absolute top-4 right-4 text-gray-500 hover:text-black"
+                    className="absolute cursor-pointer top-4 right-4 text-gray-500 hover:text-black"
                     onClick={onClose}
                 >
                     ✕
@@ -123,7 +123,7 @@ function BaggageOption({ weight, price }) {
                 <button className="px-4 py-1 text-sm font-medium text-gray-700 border border-gray-300 hover:bg-gray-50">
                     Add
                 </button>
-                <button className="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-gray-700 text-lg">
+                <button className="cursor-pointer w-6 h-6 flex items-center justify-center text-gray-500 hover:text-gray-700 text-lg">
                     +
                 </button>
             </div>

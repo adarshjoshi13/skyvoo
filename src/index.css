@@ -6,6 +6,7 @@ body {
   padding: 0;
   box-sizing: border-box;
   overflow-x: hidden;
+    font-family: "Poppins", sans-serif;
 }
 
 button{
@@ -56,7 +57,7 @@ button{
 
 .plane {
   position: absolute;
-  right: -250px;
+  right: -300px;
   bottom: 10px;
   animation: planeLandin 2s ease-out forwards;
 }

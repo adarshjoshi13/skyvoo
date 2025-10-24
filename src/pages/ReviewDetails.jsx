@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from 'react';
-import Header from '../components/Header';
-import SignInModal from '../components/Modals/SignInModal';
-import FareRulesModal from '../components/Modals/FareRulesModal';
-import TripBenefitsModal from '../components/Modals/TripBenefitsModal';
-import BaggageModal from '../components/Modals/BaggageModal';
+import Header from '@/components/layout/Header.jsx';
+import SignInModal from '@/components/common/Modals/SignInModal';
+import FareRulesModal from '@/components/common/Modals/FareRulesModal';
+import TripBenefitsModal from '@/components/common/Modals/TripBenefitsModal';
+import BaggageModal from '@/components/common/Modals/BaggageModal';
 import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp'
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
 import CouponBg from '@/assets/imgs/couponbg.webp';
@@ -11,7 +11,7 @@ import Dash from '@/assets/vectors/Dash.svg'
 import { Trash2, Plane, User, Luggage, AlertCircle, ShieldCheck, CirclePlus, ShieldAlert, CheckCircle2 } from 'lucide-react';
 import Select from "react-select";
 
-export default function Home() {
+export default function ReviewDetails() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFareModalOpen, setIsFareModalOpen] = useState(false);
   const [isTripBenefitsModal, setIsTripBenefitsModal] = useState(false);
@@ -1073,7 +1073,7 @@ export default function Home() {
                         </span>
                         <button
                           onClick={handleRemoveCoupon}
-                          className="text-xs text-red-600 font-medium hover:underline"
+                          className="cursor-pointer text-xs text-red-600 font-medium hover:underline"
                         >
                           Remove
                         </button>
@@ -1099,7 +1099,7 @@ export default function Home() {
                     </div>
 
                     {/* --- Manual Code Input --- */}
-                    <div className="flex mb-3">
+                    <div className="flex items-center gap-2 mb-3">
                       <input
                         type="text"
                         value={manualCode}
@@ -1168,7 +1168,7 @@ const CouponItem = ({ coupon, onApply }) => (
     </div>
     <button
       onClick={onApply}
-      className="text-blue-600 font-medium text-sm hover:underline"
+      className="cursor-pointer text-blue-600 font-medium text-sm hover:underline"
     >
       Apply
     </button>
