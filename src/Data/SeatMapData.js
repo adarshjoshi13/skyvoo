@@ -19,7 +19,7 @@ const SeatMapData = {
                                     "SSR_Code": null,
                                     "SSR_Key": "YCmPNQ/8kzcupQ0pA8T/QofDXaPRyXqYYunfHDCY2NiXMKZWgiZTSYTLCEVdWJXnClwqV7KqF0ETEYwsBuwDYC7y65ckziiWIz2Wp1YHBy6L9HeXb6yynIlB2SztX+U44gGoQFP6L8KGJiY2eLQkz9mQ479H9IuNy2wpFomQuBnzQyOHq6OPtVYRYTRO1oHRUj5YZCxuMacBm3fd/E08XFhrtEQ0g7Zj78tl/I/fVsVhgfjVenVILVDBgodgFIxEy6l21ci2fsjiz9aVWoTKy7LvLMYS2YOMwkMp2Uqe0KPJn2A/Glj7vaJghle6Ri9MR573fuHCZNipj0ajx7XI/J7QCjL8xRCY1x7wDY2sVjL8WeKPjKDd1ojO6udDBPYwSTBJooG1L4CR1prDP2TtasNzE4kh6CN9kgquU3+VoDsuKA3u3mkZZvDLn1rl4VuHSsrnM1E3MPziwiGD1hvbARNE1cR/PBnpU7gc4/2Ax5U=",
                                     "SSR_Status": 1,
-                                    "SSR_Type": [13, 1, 5],
+                                    "SSR_Type": [13, 2, 5],
                                     "SSR_TypeDesc": "XL",
                                     "SSR_TypeName": "1A",
                                     "Segment_Id": 0,

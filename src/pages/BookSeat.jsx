@@ -473,7 +473,7 @@ const FlightSeatMap = () => {
                                                         <p className="text-sm text-gray-500">{seat.classType}</p>
                                                         <div className='flex flex-wrap mt-3'>
                                                             {seatSSRTypes.map((type, idx) => (
-                                                                <div key={idx} className="text-xs font-semibold border border-gray-400 rounded-sm mr-2 mb-2 px-2">
+                                                                <div key={idx} className="text-xs font-semibold border border-gray-400 rounded-sm mr-1 mb-1 px-2">
                                                                     <p> {type}</p>
                                                                 </div>
                                                             ))}
