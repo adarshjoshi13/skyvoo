@@ -3,25 +3,30 @@ import SeatMapData from '../Data/SeatMapData.js';
 import { Plus, LogOut, Plane } from 'lucide-react';
 
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
+import { useNavigate } from 'react-router-dom';
 
 const FlightSeatMap = () => {
+    
     const [selectedSeats, setSelectedSeats] = useState(new Set());
     const [hoveredSeat, setHoveredSeat] = useState(null);
     const seatData = SeatMapData.AirSeatMaps[0].Seat_Segments[0].Seat_Row;
+    const navigate = useNavigate();
+
+    const SSRTypes = ['Baggage', 'Meals', 'Complimentary Meals', 'Seat', 'Sports', 'BagOutFirst', 'Lounge', 'Celebration', 'CarryMore', 'FastForward', 'Wheelchair', 'FrequentFlyer', 'Others'];
 
     const legendItems = [
-        { label: "Available", color: "border-emerald-400 border " },
-        { label: "Selected", color: "border-indigo-600 text-white shadow-md" },
-        { label: "Occupied", color: "border-red-500 bg-gray-200 text-white" },
-        { label: "Blocked", color: "bg-gray-300 boR text-gray-500" },
+        { label: "Available", color: "border-2 border-[#16a249] bg-white" },
+        { label: "Selected", color: "bg-indigo-600 border-indigo-600 text-white shadow-md" },
+        { label: "Booked", color: "bg-[#ef434333] border-2 border-[#ef434366]" },
+        { label: "Blocked", color: "bg-gray-300 text-gray-500" },
         {
             label: "Extra Legroom",
-            color: "border-[#16a249] border relative",
+            color: "border-2 border-[#16a249] bg-white relative",
             icon: <Plus className="absolute -top-1 -right-1 w-3 h-3 text-white bg-indigo-800 rounded-full p-[1px]" />
         },
         {
             label: "Exit Row",
-            color: "border-emerald-400 border relative",
+            color: "border-2 border-[#16a249] bg-white relative",
             icon: <LogOut className="absolute -top-1 -right-1 w-3 h-3 text-white bg-indigo-800 rounded-full p-[1px]" />
         },
     ];
@@ -33,23 +38,26 @@ const FlightSeatMap = () => {
         const rows = seatData.map((row, idx) => {
             const seats = row.Seat_Details.map(seat => {
                 const isAvailable = seat.SSR_Status === 1;
-                const isOccupied = seat.SSR_Status === 2;
-                const isBlocked = seat.SSR_Status === 0;
+                const isBlocked = seat.SSR_Status === 2;
+                const isBooked = seat.SSR_Status === 3;
+                const isIsle = seat.SSR_Status === 0;
                 const isExtraLegroom = seat.SSR_TypeName.includes("XL");
                 const isExitRow = seat.SSR_TypeName.includes("EXIT");
-                const seatLetter = seat.SSR_TypeName.replace(/\d+/g, '');
+                const seatLetter = seat.SSR_TypeName.match(/[A-Z]+/i)?.[0] || seat.SSR_TypeName;
                 return {
                     number: seat.SSR_TypeName,
                     letter: seatLetter,
                     price: seat.Total_Amount,
                     currency: seat.Currency_Code,
                     isAvailable,
-                    isOccupied,
+                    isBooked,
                     isBlocked,
+                    isIsle,
                     rowNumber: idx + 1,
                     classType: idx < 3 ? 'Premium' : idx < 13 ? 'Standard' : 'Economy',
                     isExtraLegroom,
                     isExitRow,
+                    SSRType: seat.SSR_Type
                 };
             });
             return { rowNumber: idx + 1, seats };
@@ -98,37 +106,43 @@ const FlightSeatMap = () => {
 
     const getSeatColor = (seat) => {
         if (selectedSeats.has(seat.number))
-            return 'border-indigo-600 shadow-md border-2';
-        if (seat.isOccupied)
-            return 'border-red-500 bg-gray-200 text-white';
+            return 'bg-indigo-600 border-indigo-600 text-white shadow-md';
+        if (seat.isBooked)
+            return 'bg-[#ef434333] border-2 border-[#ef434366] text-white'; // stronger red for booked
         if (seat.isBlocked)
-            return 'bg-gray-300 boR text-gray-500';
+            return 'bg-gray-300 text-gray-500';
         if (seat.isExtraLegroom)
-            return 'border-[#16a249] border relative';
+            return 'border-2 border-[#16a249] bg-white relative';
         if (seat.isExitRow)
-            return 'border-emerald-400 border relative';
+            return 'border-2 border-[#16a249] bg-white relative';
         if (seat.isAvailable)
-            return 'border-emerald-400 border-2';
-        return 'bg-gray-200 border-2 border-gray-200';
+            return 'border-2 border-[#16a249] bg-white';
+        if (seat.isIsle)
+            return 'bg-gray-50';
+        return 'bg-transparent';
     };
 
-    const getSeatPriceColor = (price) => {
-        if (price > 500) return 'text-purple-600 font-bold';
-        if (price > 0) return 'text-green-700';
-        return 'text-gray-500';
-    };
+    const renderSeatTooltip = (seat) => {
+        // Normalize SSR_Type into an array of type names
+        const seatSSRTypes = Array.isArray(seat.SSRType)
+            ? seat.SSRType.map(t => SSRTypes[t])
+            : [SSRTypes[seat.SSRType]];
 
-    const renderSeatTooltip = (seat) => (
-        <div className="p-3 bg-white/90 backdrop-blur-md shadow-2xl border border-gray-200 rounded-xl text-sm w-48 pointer-events-none transform transition-all duration-200 animate-fade-in">
-            <div><span className="font-semibold">Seat:</span> {seat.number}</div>
-            <div><span className="font-semibold">Class:</span> {seat.classType}</div>
-            <div><span className="font-semibold">Price:</span> ₹{seat.price || 'Free'}</div>
-            <div>
-                <span className="font-semibold">Status:</span>{' '}
-                {seat.isAvailable ? 'Available' : seat.isOccupied ? 'Occupied' : 'Blocked'}
+        return (
+            <div className="p-3 bg-white/90 backdrop-blur-md shadow-2xl border border-gray-200 rounded-xl text-sm w-48 pointer-events-none transform transition-all duration-200 animate-fade-in">
+                <div><span className="font-semibold">Seat:</span> {seat.number}</div>
+                <div>{seat.classType}</div>
+                <div><span className="font-semibold">₹{seat.price || 'Free'}</span> </div>
+                <div>
+                    {seatSSRTypes.join(', ')}
+                </div>
+                <div>
+                    <span className="font-semibold">{seat.isAvailable ? 'Available' : seat.isBooked ? 'Booked' : seat.isBlocked ? 'Blocked' : 'Aisle'}</span>
+                </div>
+
             </div>
-        </div>
-    );
+        );
+    };
 
     const seatLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -199,7 +213,7 @@ const FlightSeatMap = () => {
                             <div className="flex space-x-5">
                                 {legendItems.map((item) => (
                                     <div key={item.label} className="flex items-center">
-                                        <div className={`w-7 h-7 mr-2 rounded-md flex items-center justify-center relative border-2 ${item.color}`}>
+                                        <div className={`w-7 h-7 mr-2 rounded-md flex items-center justify-center relative ${item.color}`}>
                                             {item.icon}
                                         </div>
                                         <span className="text-sm text-gray-700">{item.label}</span>
@@ -211,7 +225,8 @@ const FlightSeatMap = () => {
                         <div className="bg-[#f1f0f29e] shadow-sm rounded-2xl py-8 px-20 border border-gray-200">
 
                             {/* Top Header Row */}
-                            <div className="grid grid-cols-8 justify-items-center mb-6">
+                            <div className="grid grid-cols-10 justify-items-center mb-6">
+                                <div></div>
                                 <div></div>
                                 {seatLetters.map((letter, idx) => (
                                     <React.Fragment key={letter}>
@@ -222,15 +237,17 @@ const FlightSeatMap = () => {
                             </div>
 
                             {/* Seat Rows */}
-                            <div className="space-y-5">
+                            <div className="space-y-2">
                                 {processedRows.map(row => {
                                     const rowSeatsMap = Object.fromEntries(row.seats.map(seat => [seat.letter, seat]));
 
                                     return (
                                         <div
                                             key={row.rowNumber}
-                                            className="grid grid-cols-8 justify-items-center items-center gap-0"
+                                            className="grid grid-cols-10 justify-items-center items-center"
                                         >
+                                            <div></div>
+
                                             {/* Row Number */}
                                             <div className="text-gray-700 font-semibold text-lg text-start">
                                                 <div>{row.rowNumber}</div>
@@ -241,39 +258,59 @@ const FlightSeatMap = () => {
                                                 const seat = rowSeatsMap[letter];
                                                 return seat ? (
                                                     <div key={seat.number} className="relative flex flex-col items-center">
-                                                        <button
-                                                            onClick={() => handleSeatClick(seat)}
-                                                            disabled={!seat.isAvailable}
-                                                            onMouseEnter={() => setHoveredSeat(seat.number)}
-                                                            onMouseLeave={() => setHoveredSeat(null)}
-                                                            onTouchStart={() => setHoveredSeat(seat.number)}
-                                                            onTouchEnd={() => setHoveredSeat(null)}
-                                                            className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center text-sm font-medium transition transform hover:scale-110 shadow-md relative ${getSeatColor(seat)}`}
-                                                        >
-                                                            {/* Seat label */}
-                                                            <span className="font-semibold text-base">{`${seat.rowNumber}${seat.letter}`}</span>
-                                                            {/* <span className={`text-xs ${getSeatPriceColor(seat.price)}`}>
-                                                            {seat.price > 0 ? `₹${seat.price}` : 'Free'}
-                                                        </span> */}
+                                                        {selectedSeats.has(seat.number) ? (
+                                                            <div className="p-[3px] bg-white border-2 border-indigo-500 rounded-2xl flex items-center justify-center transition-all duration-300 ease-in-out">
+                                                                <button
+                                                                    onClick={() => handleSeatClick(seat)}
+                                                                    disabled={!seat.isAvailable}
+                                                                    onMouseEnter={() => setHoveredSeat(seat.number)}
+                                                                    onMouseLeave={() => setHoveredSeat(null)}
+                                                                    onTouchStart={() => setHoveredSeat(seat.number)}
+                                                                    onTouchEnd={() => setHoveredSeat(null)}
+                                                                    className={`w-16 h-16 rounded-xl flex flex-col items-center justify-center text-sm font-medium transition-all duration-300 ease-in-out transform scale-105 shadow-md relative ${getSeatColor(seat)}`}
+                                                                >
+                                                                    <span className="font-semibold text-base">{`${seat.rowNumber}${seat.letter}`}</span>
+                                                                    {seat.isExtraLegroom && (
+                                                                        <Plus className="absolute -top-1 -right-1 w-3 h-3 text-white bg-indigo-800 rounded-full p-[1px]" />
+                                                                    )}
+                                                                    {seat.isExitRow && (
+                                                                        <LogOut className="absolute -top-1 -right-1 w-3 h-3 text-white bg-indigo-800 rounded-full p-[1px]" />
+                                                                    )}
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <button
+                                                                onClick={() => handleSeatClick(seat)}
+                                                                disabled={!seat.isAvailable}
+                                                                onMouseEnter={() => setHoveredSeat(seat.number)}
+                                                                onMouseLeave={() => setHoveredSeat(null)}
+                                                                onTouchStart={() => setHoveredSeat(seat.number)}
+                                                                onTouchEnd={() => setHoveredSeat(null)}
+                                                                className={`w-16 h-16 rounded-xl flex flex-col items-center justify-center text-sm font-medium transition-all duration-300 ease-in-out transform hover:scale-110 shadow-md relative ${getSeatColor(seat)}`}
+                                                            >
+                                                                <span className="font-semibold text-base">{`${seat.rowNumber}${seat.letter}`}</span>
+                                                                {seat.isExtraLegroom && (
+                                                                    <Plus className="absolute -top-1 -right-1 w-3 h-3 text-white bg-indigo-800 rounded-full p-[1px]" />
+                                                                )}
+                                                                {seat.isExitRow && (
+                                                                    <LogOut className="absolute -top-1 -right-1 w-3 h-3 text-white bg-indigo-800 rounded-full p-[1px]" />
+                                                                )}
+                                                            </button>
+                                                        )}
 
-                                                            {/* 👇 Extra icons for special seats */}
-                                                            {seat.isExtraLegroom && (
-                                                                <Plus className="absolute -top-1 -right-1 w-3 h-3 text-white bg-indigo-800 rounded-full p-[1px]" />
-                                                            )}
-                                                            {seat.isExitRow && (
-                                                                <LogOut className="absolute -top-1 -right-1 w-3 h-3 text-white bg-indigo-800 rounded-full p-[1px]" />
-                                                            )}
-                                                        </button>
                                                         {hoveredSeat === seat.number && (
-                                                            <div className="absolute -top-32 left-1/2 -translate-x-1/2 z-50">
+                                                            <div
+                                                                className="absolute -top-32 left-1/2 -translate-x-1/2 z-50 transform animate-fadeIn animate-scaleIn"
+                                                            >
                                                                 {renderSeatTooltip(seat)}
                                                             </div>
                                                         )}
                                                     </div>
                                                 ) : (
-                                                    <div key={letter} className="w-16 h-16"></div>
+                                                    <div key={letter} className="w-16 h-16 bg-gray-50"></div>
                                                 );
                                             })}
+
 
                                             {/* Aisle Divider */}
                                             <div className="flex items-center justify-between w-8">
@@ -286,41 +323,59 @@ const FlightSeatMap = () => {
                                                 const seat = rowSeatsMap[letter];
                                                 return seat ? (
                                                     <div key={seat.number} className="relative flex flex-col items-center">
-
-                                                        <button
-                                                            onClick={() => handleSeatClick(seat)}
-                                                            disabled={!seat.isAvailable}
-                                                            onMouseEnter={() => setHoveredSeat(seat.number)}
-                                                            onMouseLeave={() => setHoveredSeat(null)}
-                                                            onTouchStart={() => setHoveredSeat(seat.number)}
-                                                            onTouchEnd={() => setHoveredSeat(null)}
-                                                            className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center text-sm font-medium transition transform hover:scale-110 shadow-md relative ${getSeatColor(seat)}`}
-                                                        >
-                                                            {/* Seat label */}
-                                                            <span className="font-semibold text-base">{`${seat.rowNumber}${seat.letter}`}</span>
-                                                            {/* <span className={`text-xs ${getSeatPriceColor(seat.price)}`}>
-                                                            {seat.price > 0 ? `₹${seat.price}` : 'Free'}
-                                                        </span> */}
-
-                                                            {/* 👇 Extra icons for special seats */}
-                                                            {seat.isExtraLegroom && (
-                                                                <Plus className="absolute -top-1 -right-1 w-3 h-3 text-white bg-indigo-800 rounded-full p-[1px]" />
-                                                            )}
-                                                            {seat.isExitRow && (
-                                                                <LogOut className="absolute -top-1 -right-1 w-3 h-3 text-white bg-indigo-800 rounded-full p-[1px]" />
-                                                            )}
-                                                        </button>
+                                                        {selectedSeats.has(seat.number) ? (
+                                                            <div className="p-[3px] bg-white border-2 border-indigo-500 rounded-2xl flex items-center justify-center transition-all duration-300 ease-in-out">
+                                                                <button
+                                                                    onClick={() => handleSeatClick(seat)}
+                                                                    disabled={!seat.isAvailable}
+                                                                    onMouseEnter={() => setHoveredSeat(seat.number)}
+                                                                    onMouseLeave={() => setHoveredSeat(null)}
+                                                                    onTouchStart={() => setHoveredSeat(seat.number)}
+                                                                    onTouchEnd={() => setHoveredSeat(null)}
+                                                                    className={`w-16 h-16 rounded-xl flex flex-col items-center justify-center text-sm font-medium transition-all duration-300 ease-in-out transform scale-105 shadow-md relative ${getSeatColor(seat)}`}
+                                                                >
+                                                                    <span className="font-semibold text-base">{`${seat.rowNumber}${seat.letter}`}</span>
+                                                                    {seat.isExtraLegroom && (
+                                                                        <Plus className="absolute -top-1 -right-1 w-3 h-3 text-white bg-indigo-800 rounded-full p-[1px]" />
+                                                                    )}
+                                                                    {seat.isExitRow && (
+                                                                        <LogOut className="absolute -top-1 -right-1 w-3 h-3 text-white bg-indigo-800 rounded-full p-[1px]" />
+                                                                    )}
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <button
+                                                                onClick={() => handleSeatClick(seat)}
+                                                                disabled={!seat.isAvailable}
+                                                                onMouseEnter={() => setHoveredSeat(seat.number)}
+                                                                onMouseLeave={() => setHoveredSeat(null)}
+                                                                onTouchStart={() => setHoveredSeat(seat.number)}
+                                                                onTouchEnd={() => setHoveredSeat(null)}
+                                                                className={`w-16 h-16 rounded-xl flex flex-col items-center justify-center text-sm font-medium transition-all duration-300 ease-in-out transform hover:scale-110 shadow-md relative ${getSeatColor(seat)}`}
+                                                            >
+                                                                <span className="font-semibold text-base">{`${seat.rowNumber}${seat.letter}`}</span>
+                                                                {seat.isExtraLegroom && (
+                                                                    <Plus className="absolute -top-1 -right-1 w-3 h-3 text-white bg-indigo-800 rounded-full p-[1px]" />
+                                                                )}
+                                                                {seat.isExitRow && (
+                                                                    <LogOut className="absolute -top-1 -right-1 w-3 h-3 text-white bg-indigo-800 rounded-full p-[1px]" />
+                                                                )}
+                                                            </button>
+                                                        )}
 
                                                         {hoveredSeat === seat.number && (
-                                                            <div className="absolute -top-32 left-1/2 -translate-x-1/2 z-50">
+                                                            <div
+                                                                className="absolute -top-32 left-1/2 -translate-x-1/2 z-50 transform animate-fadeIn animate-scaleIn"
+                                                            >
                                                                 {renderSeatTooltip(seat)}
                                                             </div>
                                                         )}
                                                     </div>
                                                 ) : (
-                                                    <div key={letter} className="w-16 h-16"></div>
+                                                    <div key={letter} className="w-16 h-16 bg-gray-50"></div>
                                                 );
                                             })}
+
                                         </div>
                                     );
                                 })}

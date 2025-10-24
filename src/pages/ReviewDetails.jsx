@@ -10,8 +10,12 @@ import CouponBg from '@/assets/imgs/couponbg.webp';
 import Dash from '@/assets/vectors/Dash.svg'
 import { Trash2, Plane, User, Luggage, AlertCircle, ShieldCheck, CirclePlus, ShieldAlert, CheckCircle2 } from 'lucide-react';
 import Select from "react-select";
+import { useNavigate } from 'react-router-dom';
 
 export default function ReviewDetails() {
+
+  const navigate = useNavigate();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFareModalOpen, setIsFareModalOpen] = useState(false);
   const [isTripBenefitsModal, setIsTripBenefitsModal] = useState(false);
@@ -1036,6 +1040,7 @@ export default function ReviewDetails() {
                   <button
                     type="button"
                     className="cursor-pointer bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white font-medium text-base px-6 py-2.5 rounded-full shadow-sm transition-all duration-200 flex items-center justify-center gap-2"
+                    onClick={() => { navigate('/book-seat') }}
                   >
                     CONTINUE
                     <svg
