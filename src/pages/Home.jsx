@@ -9,9 +9,11 @@ import BookingFlightSectionBg from '@/assets/imgs/bookingbg.webp';
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  useEffect(() => {
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-  }, []);
+
+  // useEffect(() => {
+  //   window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  // }, []);
+
   return (
     <>
       {isModalOpen && <SignInModal onClose={() => setIsModalOpen(false)} />}

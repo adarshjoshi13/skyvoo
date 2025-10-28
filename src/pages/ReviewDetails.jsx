@@ -1040,7 +1040,7 @@ export default function ReviewDetails() {
                   <button
                     type="button"
                     className="cursor-pointer bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white font-medium text-base px-6 py-2.5 rounded-full shadow-sm transition-all duration-200 flex items-center justify-center gap-2"
-                    onClick={() => { navigate('/book-seat') }}
+                    onClick={() => { navigate('/flight-seat-map') }}
                   >
                     CONTINUE
                     <svg
@@ -1110,7 +1110,7 @@ export default function ReviewDetails() {
                         value={manualCode}
                         onChange={(e) => setManualCode(e.target.value)}
                         placeholder="Enter coupon code"
-                        className="flex-1 border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="flex-1 border border-slate-300 w-[90%] rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
 
                       <button
