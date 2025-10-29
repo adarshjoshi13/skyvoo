@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import SeatMapData from '../Data/SeatMapData.js';
 import { Plus, LogOut } from 'lucide-react';
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
@@ -11,6 +11,10 @@ import { useSeatSelection } from "../hooks/useSeatSelection.js";
 import SeatTooltip from '../components/FlightSeatMap/SeatTooltip.jsx';
 
 const FlightSeatMap = () => {
+
+    useEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }, []); 
 
     const legendItems = useMemo(() => [
         { label: "Available", color: "border-2 border-[#16a249] bg-white" },

@@ -10,9 +10,22 @@ import BookingFlightSectionBg from '@/assets/imgs/bookingbg.webp';
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // useEffect(() => {
-  //   window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-  // }, []);
+  useEffect(() => {
+    const planeEl = document.getElementById('plane-animation');
+
+    if (planeEl) {
+      const handleAnimationEnd = () => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      };
+
+      planeEl.addEventListener('animationend', handleAnimationEnd);
+
+      return () => {
+        planeEl.removeEventListener('animationend', handleAnimationEnd);
+      };
+    }
+  }, []);
+
 
   return (
     <>

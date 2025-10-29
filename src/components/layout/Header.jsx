@@ -3,18 +3,19 @@ import { Menu, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '@/assets/imgs/logo.webp'
 const Header = ({ onOpen }) => {
-   
+
     const navigate = useNavigate();
     const [mobileOpen, setMobileOpen] = useState(false);
 
     const navItems = [
-        { label: 'Home' },
-        { label: 'Flights' },
-        { label: 'Hotels' },
-        { label: 'Bus' },
-        { label: 'Cab' },
-        { label: 'Customer Supports' },
+        { label: 'Home', url: '/' },
+        { label: 'Flights', url: '/flight-results' },
+        { label: 'Hotels', url: '/hotels' },
+        { label: 'Bus', url: '/bus' },
+        { label: 'Cab', url: '/cab' },
+        { label: 'Customer Supports', url: '/support' },
     ];
+
 
     return (
         <header className="relative z-10">
@@ -31,14 +32,27 @@ const Header = ({ onOpen }) => {
 
                 {/* Desktop Navigation */}
                 <nav className="hidden md:flex items-center space-x-4 lg:space-x-4 text-black text-base font-medium">
-                    {navItems.map((item) => (
-                        <button
-                            key={item.label}
-                            className="cursor-pointer px-4 py-2 sm:px-6 rounded-full bg-[#D9D9D9] hover:bg-black hover:text-white transition"
-                        >
-                            {item.label}
-                        </button>
-                    ))}
+                    {navItems.map((item) => {
+                        const isComingSoon = ['Hotels', 'Bus', 'Cab'].includes(item.label);
+                        return (
+                            <button
+                                key={item.label}
+                                disabled={isComingSoon}
+                                onClick={() => navigate(`${item.url}`)}
+                                className={`relative  px-4 py-2 sm:px-6 rounded-full transition bg-[#D9D9D9] 
+                ${isComingSoon
+                                        ? '!cursor-not-allowed'
+                                        : 'cursor-pointer hover:bg-black hover:text-white'}`}
+                            >
+                                {item.label}
+                                {isComingSoon && (
+                                    <span className="absolute bottom-0 right-1 text-[9px] text-red-500 font-semibold">
+                                        Coming Soon
+                                    </span>
+                                )}
+                            </button>
+                        );
+                    })}
                 </nav>
 
                 {/* Log In Button (desktop) */}
@@ -63,14 +77,27 @@ const Header = ({ onOpen }) => {
             {mobileOpen && (
                 <div className="md:hidden bg-white shadow-lg">
                     <div className="px-4 pt-2 pb-4 space-y-2">
-                        {navItems.map((item) => (
-                            <button
-                                key={item.label}
-                                className="block w-full text-left px-4 py-2 rounded-md bg-[#F5F5F5] hover:bg-black hover:text-white transition"
-                            >
-                                {item.label}
-                            </button>
-                        ))}
+                        {navItems.map((item) => {
+                            const isComingSoon = ['Hotels', 'Bus', 'Cab'].includes(item.label);
+                            return (
+                                <button
+                                    key={item.label}
+                                    disabled={isComingSoon}
+                                    className={`relative cursor-pointer bg-[#D9D9D9] px-4 py-2 sm:px-6 rounded-full transition 
+                ${isComingSoon
+                                            ? 'text-gray-500 cursor-not-allowed'
+                                            : 'hover:bg-black hover:text-white'}`}
+                                >
+                                    {item.label}
+                                    {isComingSoon && (
+                                        <span className="absolute bottom-0 right-1 text-[10px] text-red-500 font-semibold">
+                                            Coming Soon
+                                        </span>
+                                    )}
+                                </button>
+                            );
+                        })}
+
 
                         <button
                             onClick={onOpen}

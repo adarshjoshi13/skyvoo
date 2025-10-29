@@ -15,9 +15,25 @@ import { DayPicker } from "react-day-picker";
 import { format } from "date-fns";
 import "react-day-picker/dist/style.css";
 
-
 function BookingForm() {
     const navigate = useNavigate();
+
+    const [startAnimation, setStartAnimation] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const triggerPoint = 100;
+
+            if (window.scrollY >= triggerPoint && !startAnimation) {
+                setStartAnimation(true);
+                window.removeEventListener('scroll', handleScroll); // stop listening
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const [flightSearchInfo, setFlightSearchInfo] = useState({
         from: null,
@@ -374,7 +390,7 @@ function BookingForm() {
                 Adults: dataformat.Adult_Count,
             });
 
-            navigate('/search-results');
+            navigate('/flight-results');
         }, 0);
     };
 
@@ -414,7 +430,9 @@ function BookingForm() {
                     </button>
                 </div>
 
-                <div className='mb-3 grid grid-cols-12 gap-8 '> <div className="col-span-8 flex items-center relative" style={{ right: "40px" }} > <div className=" h-4 relative ribbon animate-ribbon mr-2"></div> <img src={FlyingPlane} alt="flyingplane" /> </div> </div>
+                <div className='mb-3 grid grid-cols-12 gap-8 '> <div className="col-span-8 flex items-center relative" style={{ right: "40px" }} >
+                    <div className={`h-4 relative ribbon mr-2 ${startAnimation ? 'animate-ribbon' : ''}`}></div> <img src={FlyingPlane} alt="flyingplane" /> </div>
+                </div>
 
                 {/* Trip Type Selection */}
                 <div className="flex filter-section flex-wrap gap-2 sm:gap-4 mb-4 text-lg secondary-font font-semibold">

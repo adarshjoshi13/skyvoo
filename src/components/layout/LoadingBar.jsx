@@ -1,7 +1,7 @@
 import React from "react";
 import FlyingPlane from "@/assets/vectors/FlyingPlane.svg";
 
-export default function ProgressBar({ progress = 0, label = true }) {
+export default function LoadingBar({ progress = 0, label = true }) {
   // Clamp progress between 0 and 100 to prevent layout issues
   const safeProgress = Math.min(Math.max(progress, 0), 100);
 

@@ -1,5 +1,6 @@
-import React from 'react'
-import { Plus, LogOut } from 'lucide-react';
+import React from "react";
+import { Plus, LogOut } from "lucide-react";
+import FlightSeatIcon from "./FlightSeat";
 
 function SeatButton({ seat, onClick, onHover, onLeave, getSeatColor }) {
     return (
@@ -10,17 +11,25 @@ function SeatButton({ seat, onClick, onHover, onLeave, getSeatColor }) {
             onMouseLeave={onLeave}
             onTouchStart={onHover}
             onTouchEnd={onLeave}
-            className={`w-16 h-16 rounded-xl flex flex-col items-center justify-center text-sm font-medium transition-all duration-300 ease-in-out transform hover:scale-110 shadow-md relative ${getSeatColor(seat)}`}
+            className={`relative w-16 h-16 flex items-center justify-center rounded-xl transition-all duration-300 ease-in-out transform hover:scale-105 ${getSeatColor(seat)} disabled:opacity-50 disabled:cursor-not-allowed`}
         >
-            <span className="font-semibold text-base">{`${seat.rowNumber}${seat.letter}`}</span>
+            {/* SVG seat icon */}
+            <FlightSeatIcon className="absolute inset-0 w-full h-full text-gray-600 opacity-70" />
+
+            {/* Seat number overlay */}
+            <span className="relative z-10 font-semibold text-base text-gray-900">
+                {`${seat.rowNumber}${seat.letter}`}
+            </span>
+
+            {/* Indicators */}
             {seat.isExtraLegroom && (
-                <Plus className="absolute -top-1 -right-1 w-5 h-5 text-white bg-indigo-800 rounded-full p-[1px]" />
+                <Plus className="absolute -top-1 -right-1 w-5 h-5 text-white bg-indigo-700 rounded-full p-[1px]" />
             )}
             {seat.isExitRow && (
-                <LogOut className="absolute -top-1 -right-1 w-5 h-5 text-white bg-indigo-800 rounded-full p-[1px]" />
+                <LogOut className="absolute -top-1 -right-1 w-5 h-5 text-white bg-indigo-700 rounded-full p-[1px]" />
             )}
         </button>
-    )
+    );
 }
 
-export default SeatButton
+export default SeatButton;

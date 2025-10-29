@@ -68,7 +68,7 @@ export default function FareRulesModal({ onClose }) {
                                         <span className="text-sm font-normal">(From Scheduled flight departure)</span>
                                     </div>
                                     <div className="font-semibold text-gray-700">
-                                        Airline Fee + MMT Fee<br />
+                                        Airline Fee + sv Fee<br />
                                         <span className="text-sm font-normal">(Per passenger)</span>
                                     </div>
                                 </div>
@@ -123,7 +123,7 @@ export default function FareRulesModal({ onClose }) {
                                         <span className="text-sm font-normal">(From Scheduled flight departure)</span>
                                     </div>
                                     <div className="font-semibold text-gray-700">
-                                        Airline Fee + MMT Fee + Fare difference<br />
+                                        Airline Fee + sv Fee + Fare difference<br />
                                         <span className="text-sm font-normal">(Per passenger)</span>
                                     </div>
                                 </div>

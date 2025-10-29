@@ -33,10 +33,7 @@ function SeatGrid({ processedRows, seatLetters, selectedSeats, onSeatClick, onSe
                     const rowSeatsMap = Object.fromEntries(row.seats.map(seat => [seat.letter, seat]));
 
                     return (
-                        <div
-                            key={row.rowNumber}
-                            className="grid grid-cols-10 justify-items-center items-center"
-                        >
+                        <div key={row.rowNumber} className="grid grid-cols-10 justify-items-center items-center">
                             <div></div>
 
                             {/* Row Number */}
@@ -68,10 +65,6 @@ function SeatGrid({ processedRows, seatLetters, selectedSeats, onSeatClick, onSe
                                                 getSeatColor={() => getSeatColor(seat)}
                                             />
                                         )}
-
-                                        {/* {hoveredSeat === seat.number && (
-                                            <SeatTooltip seat={seat} position={seatTooltipPosition} />
-                                        )} */}
 
                                     </div>
                                 ) : (
@@ -111,10 +104,6 @@ function SeatGrid({ processedRows, seatLetters, selectedSeats, onSeatClick, onSe
                                             />
                                         )}
 
-                                        {/* {hoveredSeat === seat.number && (
-                                            <SeatTooltip seat={seat} position={seatTooltipPosition} />
-                                        )} */}
-
                                     </div>
                                 ) : (
                                     <div key={letter} className="w-16 h-16 bg-gray-50"></div>
@@ -123,6 +112,7 @@ function SeatGrid({ processedRows, seatLetters, selectedSeats, onSeatClick, onSe
 
                         </div>
                     );
+
                 })}
             </div>
         </div>

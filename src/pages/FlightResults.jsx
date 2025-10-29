@@ -21,7 +21,7 @@ import BookingFlightFormBg from "@/assets/imgs/flightresultsbg.webp";
 import FlightsData from '../Data/FlightsData.js';
 import { formatTime } from '../utils/formatDateTime.js';
 import { useFlightFilters } from '../contexts/FlightFilterContext.jsx';
-import ProgressBar from "../components/layout/ProgressBar.jsx";
+import LoadingBar from "../components/layout/LoadingBar.jsx";
 
 const sortOptions = [
     {
@@ -782,7 +782,7 @@ export default function FlightResults() {
                 </div >
 
                 {showLoader && (
-                    <ProgressBar progress={progress} />
+                    <LoadingBar progress={progress} />
                 )}
 
                 {/* Main Content */}
@@ -1038,7 +1038,7 @@ export default function FlightResults() {
                                                             className="flex flex-row items-center"
                                                         >
                                                             <div className="bg-[#720E0E] w-2 h-2 rounded-full mr-2"></div>
-                                                            <p className="text-xs">FLAT ₹177 OFF using MMTSUPER</p>
+                                                            <p className="text-xs">FLAT ₹177 OFF using SkyvooSUPER</p>
                                                         </div>
                                                     </div>
 

@@ -15,11 +15,10 @@ function PromotionalCard() {
         </div>
       </div>
 
-
-
       {/* Plane Image */}
       <div className="md:col-span-9">
         <img
+          id="plane-animation"
           src={Plane}
           className="plane w-[80%] sm:w-[90%] md:w-[100%] h-auto"
           alt="Plane"
