@@ -15,32 +15,165 @@ import { DayPicker } from "react-day-picker";
 import { format } from "date-fns";
 import "react-day-picker/dist/style.css";
 
+const AirportOptions = [
+    {
+        airportCode: "BOM",
+        airportName: "Chhatrapati Shivaji International Airport",
+        city: "Mumbai",
+        state: "Maharashtra",
+        country: "India",
+        countryCode: "IN"
+    },
+    {
+        airportCode: "DEL",
+        airportName: "Indira Gandhi International Airport",
+        city: "New Delhi",
+        state: "Delhi",
+        country: "India",
+        countryCode: "IN"
+    },
+    {
+        airportCode: "IATA",
+        airportName: "Safdarjung Airport",
+        city: "New Delhi",
+        state: "Delhi",
+        country: "India",
+        countryCode: "IN"
+    },
+    {
+        airportCode: "HDO",
+        airportName: "Hindon Airport",
+        city: "Ghaziabad",
+        state: "Delhi",
+        country: "India",
+        countryCode: "IN"
+    },
+    {
+        airportCode: "BLR",
+        airportName: "Kempegowda International Airport",
+        city: "Bengaluru",
+        state: "Karnataka",
+        country: "India",
+        countryCode: "IN"
+    },
+    {
+        airportCode: "MAA",
+        airportName: "Chennai International Airport",
+        city: "Chennai",
+        state: "Tamil Nadu",
+        country: "India",
+        countryCode: "IN"
+    },
+    {
+        airportCode: "CCU",
+        airportName: "Netaji Subhas Chandra Bose International Airport",
+        city: "Kolkata",
+        state: "West Bengal",
+        country: "India",
+        countryCode: "IN"
+    },
+    {
+        airportCode: "PQQ",
+        airportName: "Lune Airport",
+        city: "Tune",
+        state: "Unknown",
+        country: "India",
+        countryCode: "IN"
+    },
+    {
+        airportCode: "BKK",
+        airportName: "Suvarnabhumi Airport",
+        city: "Bangkok",
+        state: "Bangkok",
+        country: "Thailand",
+        countryCode: "TH"
+    },
+    {
+        airportCode: "LHR",
+        airportName: "Heathrow Airport",
+        city: "London",
+        state: "England",
+        country: "United Kingdom",
+        countryCode: "GB"
+    },
+    {
+        airportCode: "JFK",
+        airportName: "John F. Kennedy International Airport",
+        city: "New York",
+        state: "New York",
+        country: "USA",
+        countryCode: "US"
+    },
+    {
+        airportCode: "CDG",
+        airportName: "Charles de Gaulle Airport",
+        city: "Paris",
+        state: "Île-de-France",
+        country: "France",
+        countryCode: "FR"
+    },
+    {
+        airportCode: "DXB",
+        airportName: "Dubai International Airport",
+        city: "Dubai",
+        state: "Dubai",
+        country: "UAE",
+        countryCode: "AE"
+    },
+    {
+        airportCode: "SYD",
+        airportName: "Sydney Kingsford Smith Airport",
+        city: "Sydney",
+        state: "New South Wales",
+        country: "Australia",
+        countryCode: "AU"
+    },
+    {
+        airportCode: "HND",
+        airportName: "Tokyo Haneda Airport",
+        city: "Tokyo",
+        state: "Tokyo",
+        country: "Japan",
+        countryCode: "JP"
+    },
+    {
+        airportCode: "FRA",
+        airportName: "Frankfurt am Main Airport",
+        city: "Frankfurt",
+        state: "Hesse",
+        country: "Germany",
+        countryCode: "DE"
+    },
+    {
+        airportCode: "SIN",
+        airportName: "Changi Airport",
+        city: "Singapore",
+        state: "Singapore",
+        country: "Singapore",
+        countryCode: "SG"
+    }
+];
+
+
+const CoachOptions = [
+    { value: 0, label: "Economy" },
+    { value: 3, label: "Premium Economy" },
+    { value: 1, label: "Business" },
+    { value: 2, label: "First Class" },
+];
+
+
 function BookingForm() {
     const navigate = useNavigate();
 
     const [startAnimation, setStartAnimation] = useState(false);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            const triggerPoint = 100;
-
-            if (window.scrollY >= triggerPoint && !startAnimation) {
-                setStartAnimation(true);
-                window.removeEventListener('scroll', handleScroll); // stop listening
-            }
-        };
-
-        window.addEventListener('scroll', handleScroll);
-
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
 
     const [flightSearchInfo, setFlightSearchInfo] = useState({
         from: null,
         to: null,
         depart: new Date(),
         return: null,
-        coach: null,
+        coach: 0,
         traveller: 1
     });
 
@@ -95,152 +228,20 @@ function BookingForm() {
         };
     }, []);
 
+    useEffect(() => {
+        const handleScroll = () => {
+            const triggerPoint = 100;
 
-    const AirportOptions = [
-        {
-            airportCode: "BOM",
-            airportName: "Chhatrapati Shivaji International Airport",
-            city: "Mumbai",
-            state: "Maharashtra",
-            country: "India",
-            countryCode: "IN"
-        },
-        {
-            airportCode: "DEL",
-            airportName: "Indira Gandhi International Airport",
-            city: "New Delhi",
-            state: "Delhi",
-            country: "India",
-            countryCode: "IN"
-        },
-        {
-            airportCode: "IATA",
-            airportName: "Safdarjung Airport",
-            city: "New Delhi",
-            state: "Delhi",
-            country: "India",
-            countryCode: "IN"
-        },
-        {
-            airportCode: "HDO",
-            airportName: "Hindon Airport",
-            city: "Ghaziabad",
-            state: "Delhi",
-            country: "India",
-            countryCode: "IN"
-        },
-        {
-            airportCode: "BLR",
-            airportName: "Kempegowda International Airport",
-            city: "Bengaluru",
-            state: "Karnataka",
-            country: "India",
-            countryCode: "IN"
-        },
-        {
-            airportCode: "MAA",
-            airportName: "Chennai International Airport",
-            city: "Chennai",
-            state: "Tamil Nadu",
-            country: "India",
-            countryCode: "IN"
-        },
-        {
-            airportCode: "CCU",
-            airportName: "Netaji Subhas Chandra Bose International Airport",
-            city: "Kolkata",
-            state: "West Bengal",
-            country: "India",
-            countryCode: "IN"
-        },
-        {
-            airportCode: "PQQ",
-            airportName: "Lune Airport",
-            city: "Tune",
-            state: "Unknown",
-            country: "India",
-            countryCode: "IN"
-        },
-        {
-            airportCode: "BKK",
-            airportName: "Suvarnabhumi Airport",
-            city: "Bangkok",
-            state: "Bangkok",
-            country: "Thailand",
-            countryCode: "TH"
-        },
-        {
-            airportCode: "LHR",
-            airportName: "Heathrow Airport",
-            city: "London",
-            state: "England",
-            country: "United Kingdom",
-            countryCode: "GB"
-        },
-        {
-            airportCode: "JFK",
-            airportName: "John F. Kennedy International Airport",
-            city: "New York",
-            state: "New York",
-            country: "USA",
-            countryCode: "US"
-        },
-        {
-            airportCode: "CDG",
-            airportName: "Charles de Gaulle Airport",
-            city: "Paris",
-            state: "Île-de-France",
-            country: "France",
-            countryCode: "FR"
-        },
-        {
-            airportCode: "DXB",
-            airportName: "Dubai International Airport",
-            city: "Dubai",
-            state: "Dubai",
-            country: "UAE",
-            countryCode: "AE"
-        },
-        {
-            airportCode: "SYD",
-            airportName: "Sydney Kingsford Smith Airport",
-            city: "Sydney",
-            state: "New South Wales",
-            country: "Australia",
-            countryCode: "AU"
-        },
-        {
-            airportCode: "HND",
-            airportName: "Tokyo Haneda Airport",
-            city: "Tokyo",
-            state: "Tokyo",
-            country: "Japan",
-            countryCode: "JP"
-        },
-        {
-            airportCode: "FRA",
-            airportName: "Frankfurt am Main Airport",
-            city: "Frankfurt",
-            state: "Hesse",
-            country: "Germany",
-            countryCode: "DE"
-        },
-        {
-            airportCode: "SIN",
-            airportName: "Changi Airport",
-            city: "Singapore",
-            state: "Singapore",
-            country: "Singapore",
-            countryCode: "SG"
-        }
-    ];
+            if (window.scrollY >= triggerPoint && !startAnimation) {
+                setStartAnimation(true);
+                window.removeEventListener('scroll', handleScroll); // stop listening
+            }
+        };
 
-    const CoachOptions = [
-        { value: 0, label: "Economy" },
-        { value: 3, label: "Premium Economy" },
-        { value: 1, label: "Business" },
-        { value: 2, label: "First Class" },
-    ];
+        window.addEventListener('scroll', handleScroll);
+
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
 
     const CustomOption = (props) => (
@@ -396,7 +397,7 @@ function BookingForm() {
 
     return (
         <div
-            className="relative grid grid-cols-12 gap-8 bg-no-repeat bg-cover bg-center rounded-[45px] shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+            className="relative grid grid-cols-12 gap-4 sm:gap-6 md:gap-8 bg-no-repeat bg-cover bg-center rounded-[30px] md:rounded-[45px] shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
             style={{ backgroundImage: `url(${BookingFlightFormBg})` }}
         >
             <img
@@ -405,47 +406,41 @@ function BookingForm() {
                 alt="ribbon side"
             />
 
-            <div className="col-span-12 p-6 sm:p-8 lg:p-10">
-                {/* Tab Navigation */}
-                <div className="flex flex-wrap sm:flex-nowrap items-center space-x-2 sm:space-x-3 mb-4 text-black text-lg font-semibold">
+            <div className="col-span-12 p-4 sm:p-6 lg:pt-10 lg:pb-5 lg:px-10 ">
+                {/* Tabs */}
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 text-black text-base sm:text-lg font-semibold">
                     <button className="secondary-font flex items-center space-x-1 bg-[#D9D9D9] rounded-md px-3 sm:px-4 py-1 cursor-pointer text-black border-2 border-black">
                         <img src={Plane} alt="plane" className="w-5 h-5" />
-                        <span className='ml-1'>Flights</span>
+                        <span>Flights</span>
                     </button>
-
-                    <button className="secondary-font flex items-center space-x-1 rounded-md px-3 sm:px-4 py-1 cursor-pointer border-2 border-transparent hover:bg-[#D9D9D9] hover:border-black hover:text-black">
+                    <button className="secondary-font flex items-center space-x-1 rounded-md px-3 sm:px-4 py-1 cursor-pointer border-2 border-transparent hover:bg-[#D9D9D9] hover:border-black">
                         <img src={Bed} alt="bed" className="w-6 h-6 sm:w-7 sm:h-7" />
-
-                        <span className='ml-1'>Hotels</span>
+                        <span>Hotels</span>
                     </button>
-
-                    <button className="secondary-font flex items-center space-x-1 rounded-md px-3 sm:px-4 py-1 cursor-pointer border-2 border-transparent hover:bg-[#D9D9D9] hover:border-black hover:text-black">
+                    <button className="secondary-font flex items-center space-x-1 rounded-md px-3 sm:px-4 py-1 cursor-pointer border-2 border-transparent hover:bg-[#D9D9D9] hover:border-black">
                         <img src={Car} alt="car" className="w-6 h-6 sm:w-7 sm:h-7" />
-                        <span className='ml-1'>Cabs</span>
+                        <span>Cabs</span>
                     </button>
 
-                    <button className="secondary-font flex items-center text-black font-medium cursor-pointer px-3 sm:px-4 py-2 border-2 border-transparent hover:text-gray-500 ml-auto">
+                    <button className="secondary-font flex items-center text-black font-medium cursor-pointer px-3 sm:px-4 py-2 border-2 border-transparent hover:text-gray-500 ml-auto mt-2 sm:mt-0">
                         <img src={Mic} alt="mic" className="w-5 h-5" />
-                        <span className='ml-1'>Customer Support</span>
+                        <span>Customer Support</span>
                     </button>
                 </div>
 
-                <div className='mb-3 grid grid-cols-12 gap-8 '> <div className="col-span-8 flex items-center relative" style={{ right: "40px" }} >
+                <div className='mb-3 grid grid-cols-12 gap-8 '> <div className="col-span-8 flex items-center relative right-[15px] sm:right-[40px]" >
                     <div className={`h-4 relative ribbon mr-2 ${startAnimation ? 'animate-ribbon' : ''}`}></div> <img src={FlyingPlane} alt="flyingplane" /> </div>
                 </div>
 
                 {/* Trip Type Selection */}
-                <div className="flex filter-section flex-wrap gap-2 sm:gap-4 mb-4 text-lg secondary-font font-semibold">
+                <div className="filter-section flex flex-wrap gap-3 sm:gap-4 mb-4 text-base sm:text-lg secondary-font font-semibold">
                     {[
                         { key: 0, value: 'ONE_WAY', label: 'One Way' },
                         { key: 1, value: 'ROUND_TRIP', label: 'Round Trip' },
                         { key: 3, value: 'MULTI_CITY', label: 'Multi-City' },
                     ].map(({ key, value, label }) => (
                         <label key={key} className="flex items-center cursor-pointer">
-                            <div className={clsx(
-                                'secondary-font px-4 py-2 flex items-center rounded-md',
-                                tripType === value ? 'bg-black text-white' : 'text-black'
-                            )}>
+                            <div className={clsx('secondary-font px-4 py-2 flex items-center rounded-md', tripType === value ? 'bg-black text-white' : 'text-black')}>
                                 <input
                                     type="radio"
                                     name="tripType"
@@ -523,11 +518,11 @@ function BookingForm() {
                 </div>
 
                 {/* Flight Search Form */}
-                <div className="w-full max-w-6xl mx-auto p-2 sm:p-1">
+                <div className="w-full max-w-6xl mx-auto">
                     <div className="grid grid-cols-12 gap-4 sm:gap-6 items-end secondary-font font-semibold">
 
                         {/* From */}
-                        <div className="col-span-12 sm:col-span-2">
+                        <div className="col-span-12 sm:col-span-6 md:col-span-2">
                             <label className="block text-lg text-gray-700">From</label>
                             <Select
                                 options={AirportOptions}
@@ -593,7 +588,7 @@ function BookingForm() {
                         </div>
 
                         {/* Swap */}
-                        <div className="col-span-12 sm:col-span-1 flex justify-center sm:justify-center my-2 sm:my-0">
+                        <div className="col-span-12 sm:col-span-1 flex justify-center">
                             <button
                                 onClick={handleSwap}
                                 className="p-2 cursor-pointer rounded-full transition-all duration-300"
@@ -613,7 +608,7 @@ function BookingForm() {
                         </div>
 
                         {/* To */}
-                        <div className="col-span-12 sm:col-span-2">
+                        <div className="col-span-12 sm:col-span-6 md:col-span-2">
                             <label className="block text-lg text-gray-700">To</label>
                             <Select
                                 options={AirportOptions}
@@ -676,7 +671,7 @@ function BookingForm() {
                         </div>
 
                         {/* Depart */}
-                        <div className="col-span-2 relative" ref={departRef}>
+                        <div className="col-span-12 sm:col-span-6 md:col-span-2 mt-4 sm:mt-0 relative" ref={departRef}>
                             <label className="block text-lg text-gray-700 mb-2 flex items-center gap-2">
                                 Depart
                             </label>
@@ -707,7 +702,7 @@ function BookingForm() {
                         </div>
 
                         {/* Return */}
-                        <div className="col-span-2 relative" ref={returnRef}>
+                        <div className="col-span-12 sm:col-span-6 md:col-span-2 mt-4 sm:mt-0 relative" ref={returnRef}>
                             <div className="flex items-center justify-between mb-2">
                                 <label className="block text-lg text-gray-700 flex items-center gap-2">Return</label>
                                 {flightSearchInfo.return && (
@@ -746,8 +741,8 @@ function BookingForm() {
                         </div>
 
                         {/* Traveler */}
-                        <div className="col-span-12 sm:col-span-2 flex items-center gap-3 relative">
-                            <img src={Person} alt="traveler" className="w-6 h-6" />
+                        <div className="col-span-12 sm:col-span-6 md:col-span-2 mt-4 sm:mt-0 flex items-center relative">
+                            <img src={Person} alt="traveler" className="w-6 h-6 mr-3" />
                             <div className="flex flex-col">
                                 <label className="block text-lg text-gray-700 flex items-center gap-2">Traveler</label>
                                 <input
@@ -866,10 +861,8 @@ function BookingForm() {
                             )}
                         </div>
 
-
-
                         {/* Search Button */}
-                        <div className="col-span-12 sm:col-span-1 flex justify-center">
+                        <div className="col-span-12 sm:col-span-1 flex justify-center mt-4 sm:mt-0">
                             <button className="cursor-pointer bg-black hover:bg-gray-800 text-white p-4 rounded-xl transition flex items-center justify-center" onClick={() => { searchFlightResults() }}>
                                 <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                                     <circle cx="11" cy="11" r="8" />
@@ -881,8 +874,8 @@ function BookingForm() {
                 </div>
 
                 {/* Bottom Row */}
-                <div className="fare-filter-section pt-3 flex flex-wrap sm:flex-nowrap items-center justify-between secondary-font font-semibold gap-4">
-                    <div className="flex items-center space-x-4 sm:space-x-6">
+                <div className="fare-filter-section pt-6 flex flex-wrap items-center justify-between gap-3 sm:gap-4">
+                    <div className="flex flex-wrap items-center gap-4 sm:gap-6 justify-center sm:justify-start w-full sm:w-auto">
                         <label className="flex items-center space-x-2">
                             <input type="radio" name="fareType" value="regular" checked={fareType === 'regular'} onChange={(e) => setFareType(e.target.value)} className="w-4 h-4 cursor-pointer" />
                             <span className="text-gray-700">Regular Fare</span>
@@ -893,7 +886,7 @@ function BookingForm() {
                         </label>
                     </div>
 
-                    <div className="flex items-center space-x-4 sm:space-x-8">
+                    <div className="flex flex-wrap items-center gap-3 justify-center sm:justify-end w-full sm:w-auto">
                         <button className="flex items-center space-x-2 text-gray-600 hover:text-black hover:border-black border-b border-b-2 pb-1 border-gray-300">
                             <Calendar className="w-4 h-4" />
                             <span className="text-sm">My Booking</span>

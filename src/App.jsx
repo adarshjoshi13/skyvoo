@@ -5,6 +5,7 @@ import FlightResults from './pages/FlightResults';
 import CompareFlights from './pages/CompareFlights';
 import ReviewDetails from './pages/ReviewDetails';
 import FlightSeatMap from './pages/FlightSeatMap.jsx';
+import Profile from './pages/Profile.jsx';
 import { FlightFilterProvider } from './contexts/FlightFilterContext.jsx'
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         <Route path="/compare-flights" element={<CompareFlights />} />
         <Route path="/review-details" element={<ReviewDetails />} />
         <Route path="/flight-seat-map" element={<FlightSeatMap />} />
+        <Route path="/my-profile" element={<Profile />} />
       </Routes>
 
     </Router>

@@ -6,10 +6,10 @@ body {
   padding: 0;
   box-sizing: border-box;
   overflow-x: hidden;
-    font-family: "Poppins", sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
-button{
+button {
   cursor: pointer;
 }
 
@@ -112,4 +112,20 @@ button{
 
 .animate-fadeIn {
   animation: fadeIn 0.2s ease-out;
+}
+
+/* @media (max-width: 767px) {
+  .plane {
+    position: relative !important;
+    right: 0 !important;
+    top: 0 !important;
+  }
+} */
+
+@media (max-width: 1280px) {
+  .plane {
+    position: relative !important;
+    right: 0 !important;
+    top: 0 !important;
+  }
 }
