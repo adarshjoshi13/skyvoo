@@ -76,7 +76,10 @@ const FlightResultsHeader = ({ onOpen }) => {
                 {/* Desktop Navigation */}
                 <nav className="hidden md:flex items-center space-x-1 lg:space-x-1 text-black text-base font-semibold" ref={dropdownRef}>
                     {/* My Account */}
-                    <button className="cursor-pointer px-4 py-2 sm:px-3 rounded-full hover:bg-gray-100 transition-colors">
+                    <button
+                        className="cursor-pointer px-4 py-2 sm:px-3 rounded-full hover:bg-gray-100 transition-colors"
+                        onClick={() => navigate('/my-profile')}
+                    >
                         My Account
                     </button>
 

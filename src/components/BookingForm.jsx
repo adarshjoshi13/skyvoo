@@ -423,7 +423,7 @@ function BookingForm() {
                     </button>
 
                     <button className="secondary-font flex items-center text-black font-medium cursor-pointer px-3 sm:px-4 py-2 border-2 border-transparent hover:text-gray-500 ml-auto mt-2 sm:mt-0">
-                        <img src={Mic} alt="mic" className="w-5 h-5" />
+                        <img src={Mic} alt="mic" className="w-5 h-5 mr-2" />
                         <span>Customer Support</span>
                     </button>
                 </div>

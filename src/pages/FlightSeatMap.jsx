@@ -139,8 +139,6 @@ const FlightSeatMap = () => {
 
 
     return (
-
-
         <div className="min-h-screen">
 
             <div className='bg-[#f1f0f29e] shadow-sm'>
