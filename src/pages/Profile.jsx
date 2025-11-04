@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { User, Mail, Phone, MapPin, Calendar, CreditCard, Plane, Award, TrendingUp, Globe, Bell, Shield, Heart, LogOut, Edit2, Save, X, ChevronRight, Star, Clock, CheckCircle, ReceiptIndianRupee } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Calendar, CreditCard, Plane, Award, TrendingUp, Globe, Bell, Shield, Codesandbox, LogOut, Edit2, Save, X, ChevronRight, Star, Clock, CheckCircle, ReceiptIndianRupee } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Cropper from 'react-easy-crop';
 import getCroppedImg from '@/utils/getCroppedImg.jsx';
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
 import SignInModal from '@/components/common/Modals/SignInModal';
+import { useNavigate } from 'react-router-dom';
 
 const stats = [
     { icon: Plane, label: 'Total Flights', value: '47', color: 'from-amber-400 to-orange-500' },
@@ -66,6 +67,7 @@ const achievements = [
 ];
 
 function Profile() {
+    const navigate = useNavigate()
 
     const [userData, setUserData] = useState({
         name: 'Adarsh Joshi',
@@ -105,7 +107,6 @@ function Profile() {
         }
     };
 
-
     const onCropComplete = useCallback((_, croppedAreaPixels) => {
         setCroppedAreaPixels(croppedAreaPixels);
     }, []);
@@ -120,7 +121,6 @@ function Profile() {
             console.error(e);
         }
     };
-
 
     const handleEdit = () => {
         setIsEditing(true);
@@ -198,7 +198,7 @@ function Profile() {
                 {/* <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse"></div>
                 <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-amber-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse delay-1000"></div>
-            </div> */}
+                </div> */}
 
                 {/* Header */}
                 <Header onOpen={() => setIsSignInModal(true)} />
@@ -209,7 +209,7 @@ function Profile() {
                         {stats.map((stat, index) => (
                             <div
                                 key={index}
-                                className="group shadow relative bg-white backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-black hover:border-3 transition-[background,transform,box-shadow] duration-300 cursor-pointer overflow-hidden"
+                                className="group shadow-xl relative bg-white backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/10 border-3 hover:border-black transition-[background,transform,box-shadow] duration-300 cursor-pointer overflow-hidden"
                             >
                                 <div className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-10 transition-opacity duration-300" style={{ backgroundImage: `linear-gradient(to bottom right, var(--tw-gradient-stops))` }}></div>
                                 <div className={`w-12 h-12 bg-[#78080B] rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
@@ -337,7 +337,17 @@ function Profile() {
                                         </button>
 
                                         <button
-                                            className={`group w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 text-gray-400 hover:bg-white/5 hover:text-black`}
+                                            onClick={() => navigate('/coupons-and-offers')}
+                                            className={`group w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 text-gray-400 hover:bg-white/5 hover:text-black`}>
+                                            <div className="flex items-center space-x-3">
+                                                <Codesandbox className="w-5 h-5" />
+                                                <span className="font-medium">Coupons & Offers</span>
+                                            </div>
+                                            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                        </button>
+
+                                        <button
+                                            className={`group w-full flex items-center justify-between px-4 py-3 pt-4 transition-all duration-300 text-gray-400 hover:bg-white/5 hover:text-black border-t border-gray-400`}
                                         >
                                             <div className="flex items-center space-x-3">
                                                 <LogOut className="w-5 h-5" />
@@ -436,6 +446,7 @@ function Profile() {
                                                     className={`group cursor-pointer bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl ${selectedBooking === booking.id ? 'shadow-xl' : ''}`}
                                                 >
                                                     <div className="flex items-center justify-between">
+
                                                         <div className="flex items-center space-x-4 flex-1">
                                                             <div className={`w-16 h-16 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
                                                                 <img src={AirlineLogo} alt="Airline Logo" />
@@ -483,6 +494,26 @@ function Profile() {
                                                     )}
                                                 </div>
                                             ))}
+                                        </div>
+
+                                        <div className='flex justify-end mt-4'>
+                                            <button
+                                                type="button"
+                                                className="cursor-pointer bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white font-medium text-sm px-4 py-2 rounded-full shadow-sm transition-all duration-200 flex items-center justify-center gap-2"
+                                                onClick={() => navigate('/booking-lists')}
+                                            >
+                                                VIEWL ALL
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    strokeWidth={2}
+                                                    stroke="currentColor"
+                                                    className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1"
+                                                >
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
