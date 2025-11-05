@@ -133,9 +133,9 @@ export default function FlightPaymentPage() {
 
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-[#f1f0f29e]">
 
-            <div className="relative bg-white bg-cover bg-center">
+            <div className="relative  bg-cover bg-center">
                 <img
                     className="absolute right-0 z-10 max-w-full h-auto object-cover"
                     src={GrayFadedBg}
@@ -146,7 +146,7 @@ export default function FlightPaymentPage() {
 
             </div>
 
-            <div className="max-w-7xl mx-auto relative z-100">
+            <div className="max-w-7xl  mx-auto relative z-100">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Left Section */}
                     <div className="lg:col-span-2 space-y-6">
