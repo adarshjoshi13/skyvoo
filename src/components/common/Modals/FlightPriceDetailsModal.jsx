@@ -2,7 +2,7 @@ import React from "react";
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
 import Tick from '@/assets/vectors/Tick.svg'
 import Dash from '@/assets/vectors/Dash.svg'
-import Insuarance from '@/assets/vectors/Insuarance.svg'
+import Insurance from '@/assets/vectors/Insurance.svg'
 import { useNavigate } from 'react-router-dom';
 
 import { Splide, SplideSlide } from '@splidejs/react-splide';
@@ -66,23 +66,53 @@ export default function FlightPriceDetailsModal({ onClose }) {
             seatsMeals: ["Free Seats", "Chargeable Meals"],
             buttons: ["LOCK PRICE", "BOOK NOW"],
         },
+        {
+            title: "EXTRA 6E",
+            price: "₹ 5,360",
+            oldPrice: "₹ 5,560",
+            type: "Per adult",
+            baggage: ["7 kgs Cabin Baggage", "15 kgs Check-in Baggage"],
+            flexibility: [
+                "Lower Cancellation fee start at ₹ 2,330 (up to 24 hours before departure)",
+                "Free Date Change fee start at ₹ 1,330 up to 3hrs before departure",
+            ],
+            seatsMeals: ["Free Seats", "Chargeable Meals"],
+            buttons: ["LOCK PRICE", "BOOK NOW"],
+        },
+        {
+            title: "EXTRA 7E",
+            price: "₹ 5,370",
+            oldPrice: "₹ 5,570",
+            type: "Per adult",
+            baggage: ["7 kgs Cabin Baggage", "15 kgs Check-in Baggage"],
+            flexibility: [
+                "Lower Cancellation fee start at ₹ 2,330 (up to 24 hours before departure)",
+                "Free Date Change fee start at ₹ 1,330 up to 3hrs before departure",
+            ],
+            seatsMeals: ["Free Seats", "Chargeable Meals"],
+            buttons: ["LOCK PRICE", "BOOK NOW"],
+        },
     ];
 
     return (
         <div
-            className="fixed inset-0 flex items-center justify-center z-9999 bg-black/30 backdrop-blur-sm secondary-font"
+            className="fixed inset-0 flex items-center justify-center z-9999 "
             onClick={onClose}
-            style={{
-                animation: "fadeIn 0.3s ease-out forwards"
-            }}
         >
+
             <div
-                className=" rounded-2xl bg-white shadow-xl w-[90%] max-w-6xl relative p-6"
                 onClick={(e) => e.stopPropagation()}
-                style={{ animation: "scaleIn 0.3s ease-out forwards" }}>
+                className="rounded-4xl w-full max-w-6xl max-h-[90vh] overflow-y-auto relative mx-4 p-4 sm:p-6 bg-white/30"
+                style={{
+                    animation: "scaleIn 0.3s ease-out forwards",
+                    backdropFilter: "blur(11px)",
+                    border: "2px solid rgb(120, 8, 11)",
+                    boxShadow: "0px 0px 33.8px 10px #00000082",
+                }}
+            >
                 {/* Close button */}
                 <button
-                    className="cursor-pointer absolute top-4 right-4 text-2xl font-black text-[#4A4141] hover:text-black"
+                    className="cursor-pointer absolute top-3 right-3 sm:top-4 sm:right-4 text-xl sm:text-2xl font-black text-[#4A4141] hover:text-black"
                     onClick={onClose}
                 >
                     ✕
@@ -90,50 +120,56 @@ export default function FlightPriceDetailsModal({ onClose }) {
 
                 {/* Header */}
                 <div className="mb-6">
-                    <h2 className="font-semibold text-2xl">
+                    <h2 className="font-semibold text-lg sm:text-2xl">
                         Flights Details and Fare Options Available for you !
                     </h2>
-                    <div className="flex items-center gap-2 font-medium text-base mt-1">
+
+                    <div className=" flex flex-wrap items-center gap-x-2 gap-y-1 font-medium text-sm sm:text-base mt-2 ">
                         <span>New Delhi - Mumbai</span>
                         <span>|</span>
-                        <img src={AirlineLogo} alt="airline logo" className="h-8" />
+                        <img src={AirlineLogo} alt="airline logo" className="h-6 sm:h-8" />
                         <span>Vistara</span>
                         <span>|</span>
                         <span>Wed, 24 Sep 2025</span>
-                        <span>|</span>
-                        <span>Departure at 17:00 – Arrival at 19:25</span>
+                        <span className="hidden sm:inline">|</span>
+                        <span className="text-xs sm:text-base">
+                            Departure at 17:00 – Arrival at 19:25
+                        </span>
                     </div>
-
                 </div>
+
 
                 <div className="my-8">
                     <Splide
+                        className="py-2 sm:py-4"
                         options={{
-                            type: "loop",
+                            type: "slide",
+                            rewind: false,
                             perPage: 3,
                             perMove: 1,
                             gap: "1rem",
                             pagination: false,
                             arrows: true,
+                            drag: true,
                             breakpoints: {
-                                1024: { perPage: 2 },
-                                640: { perPage: 1 },
+                                1280: { perPage: 2 },
+                                768: { perPage: 1 },
                             },
                         }}
                     >
                         {fareCards.map((card, index) => (
                             <SplideSlide key={index}>
                                 <div
-                                    className="border rounded-xl shadow-sm p-6 relative flex flex-col justify-between"
-                                    style={{ height: "-webkit-fill-available" }}
+                                    className=" rounded-xl p-4 sm:p-6 flex flex-col justify-between bg-white h-full"
+                                    style={{ boxShadow: '1px 5px 4px 2px rgba(0, 0, 0, 0.25)' }}
                                 >
                                     <div>
-                                        <div className="flex items-baseline gap-2">
-                                            <span className="text-lg line-through">{card.oldPrice}</span>
-                                            <span className="text-2xl font-bold text-[#78080B]">
+                                        <div className="flex flex-wrap items-baseline gap-2">
+                                            <span className="text-sm sm:text-lg line-through">{card.oldPrice}</span>
+                                            <span className="text-xl sm:text-2xl font-bold text-[#78080B]">
                                                 {card.price}
                                             </span>
-                                            <span className="text-xl font-medium">{card.type}</span>
+                                            <span className="text-sm sm:text-xl font-medium">{card.type}</span>
                                         </div>
 
                                         <p className="text-sm font-medium mb-5">
@@ -197,7 +233,7 @@ export default function FlightPriceDetailsModal({ onClose }) {
                                                         boxShadow: "2px 4px 4px rgba(0, 0, 0, 0.10)",
                                                     }}
                                                 >
-                                                    <img src={Insuarance} alt="insurance" />
+                                                    <img src={Insurance} alt="insurance" />
                                                     <p className="text-sm">{card.insurance}</p>
                                                 </div>
                                             )}
@@ -205,11 +241,11 @@ export default function FlightPriceDetailsModal({ onClose }) {
                                     </div>
 
                                     {/* Buttons */}
-                                    <div className="flex mt-6 justify-between text-sm font-medium gap-4">
+                                    <div className="flex flex-col justify-between sm:flex-row mt-6 gap-3 sm:gap-4">
                                         {card.buttons.map((btn, i) => (
                                             <button
                                                 key={i}
-                                                className={`cursor-pointer py-1 px-3 rounded-full border-2 transition duration-200 shadow-sm ${btn === "BOOK NOW"
+                                                className={`cursor-pointer py-2 px-4 text-sm sm:text-base rounded-full border-2 transition duration-200 shadow-sm ${btn === "BOOK NOW"
                                                     ? "bg-[#78080B] text-white border-transparent hover:bg-white hover:text-[#78080B] hover:border-[#78080B]"
                                                     : "border-[#78080B] text-[#78080B] hover:bg-[#78080B] hover:text-white"
                                                     }`}
@@ -240,6 +276,6 @@ export default function FlightPriceDetailsModal({ onClose }) {
           }
         `}
             </style>
-        </div>
+        </div >
     );
 }

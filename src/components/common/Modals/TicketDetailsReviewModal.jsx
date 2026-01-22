@@ -1,152 +1,155 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function TicketDetailsReviewModal({ onClose }) {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+
     return (
-        <div
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] secondary-font"
-            onClick={onClose}
+        <div className=" fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center px-2 sm:px-4"
             style={{ animation: "fadeIn 0.3s ease-out forwards" }}
+            onClick={onClose}
         >
             <div
-                className="bg-white shadow-2xl p-8 w-[60%] rounded-2xl relative max-h-[80vh] overflow-y-auto scrollbar"
+                className="p-8 bg-white shadow-2xl w-full sm:max-w-2xl lg:max-w-[60%] rounded-2xl max-h-[90vh] xs:max-h-[80vh] overflow-y-auto scrollbar relative animate-scaleIn "
                 onClick={(e) => e.stopPropagation()}
-                style={{ animation: "scaleIn 0.3s ease-out forwards" }}
             >
-                {/* Close button */}
+                {/* Close */}
                 <button
-                    className="absolute cursor-pointer top-4 right-4 text-gray-500 hover:text-black"
+                    className="absolute top-4 right-4 text-gray-500 hover:text-black text-xl"
                     onClick={onClose}
                 >
                     ✕
                 </button>
 
                 {/* Title */}
-                <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 tracking-tight">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-4 sm:mb-6 text-center text-gray-800">
                     ✈️ Flight Ticket Details
                 </h2>
 
-                {/* Passenger Information */}
-                <div className="border border-gray-200 rounded-xl p-4 mb-6">
-                    <h3 className="text-lg font-semibold mb-3 text-gray-800">👤 Passenger Information</h3>
-                    <div className="grid grid-cols-2 gap-y-2 text-sm text-gray-700">
-                        <p><span className="font-medium">Name:</span> Adarsh Joshi</p>
-                        <p><span className="font-medium">Email:</span> adarshjoshi200513@gmail.com</p>
-                        <p><span className="font-medium">Phone:</span> +91 9667576778</p>
-                        <p><span className="font-medium">Gender:</span> Male</p>
-                    </div>
-                </div>
+                {/* Passenger Info */}
+                <Section title="👤 Passenger Information">
+                    <InfoGrid>
+                        <InfoItem label="Name" value="Adarsh Joshi" />
+                        <InfoItem label="Email" value="adarshjoshi200513@gmail.com" />
+                        <InfoItem label="Phone" value="+91 9667576778" />
+                        <InfoItem label="Gender" value="Male" />
+                    </InfoGrid>
+                </Section>
 
-                {/* Flight Information */}
-                <div className="border border-gray-200 rounded-xl p-4 mb-6 bg-gray-50">
-                    <h3 className="text-lg font-semibold mb-3 text-gray-800">🛫 Flight Information</h3>
-                    <div className="grid grid-cols-2 gap-y-2 text-sm text-gray-700">
-                        <p><span className="font-medium">Airline:</span> Qatar Airways</p>
-                        <p><span className="font-medium">Flight No:</span> QR908</p>
-                        <p><span className="font-medium">Departure:</span> Doha (DOH)</p>
-                        <p><span className="font-medium">Arrival:</span> London Heathrow (LHR)</p>
-                        <p><span className="font-medium">Date:</span> 15 Nov 2025</p>
-                        <p><span className="font-medium">Duration:</span> 7h 40m</p>
-                    </div>
-                    <div className="mt-3 flex justify-between text-sm text-gray-600">
+                {/* Flight Info */}
+                <Section title="🛫 Flight Information" gray>
+                    <InfoGrid>
+                        <InfoItem label="Airline" value="Qatar Airways" />
+                        <InfoItem label="Flight No" value="QR908" />
+                        <InfoItem label="Departure" value="Doha (DOH)" />
+                        <InfoItem label="Arrival" value="London Heathrow (LHR)" />
+                        <InfoItem label="Date" value="15 Nov 2025" />
+                        <InfoItem label="Duration" value="7h 40m" />
+                    </InfoGrid>
+
+                    <div className="mt-4 flex items-center justify-between text-xs sm:text-sm text-gray-600">
                         <div>
-                            <p className="font-medium">Departure Time</p>
+                            <p className="font-medium">Departure</p>
                             <p>08:45 AM</p>
                         </div>
-                        <div className="text-center">———— ✈ ————</div>
+                        <div className="hidden sm:block">—— ✈ ——</div>
                         <div className="text-right">
-                            <p className="font-medium">Arrival Time</p>
+                            <p className="font-medium">Arrival</p>
                             <p>01:25 PM</p>
                         </div>
                     </div>
-                </div>
+                </Section>
 
-                {/* Seat and Class */}
-                <div className="border border-gray-200 rounded-xl p-4 mb-6">
-                    <h3 className="text-lg font-semibold mb-3 text-gray-800">💺 Seat & Class</h3>
-                    <div className="grid grid-cols-2 gap-y-2 text-sm text-gray-700">
-                        <p><span className="font-medium">Seat:</span> 14A (Window)</p>
-                        <p><span className="font-medium">Class:</span> Business</p>
-                        <p><span className="font-medium">Meal Preference:</span> Vegetarian</p>
-                        <p><span className="font-medium">Baggage Allowance:</span> 40kg</p>
+                {/* Seat & Class */}
+                <Section title="💺 Seat & Class">
+                    <InfoGrid>
+                        <InfoItem label="Seat" value="14A (Window)" />
+                        <InfoItem label="Class" value="Business" />
+                        <InfoItem label="Meal" value="Vegetarian" />
+                        <InfoItem label="Baggage" value="40kg" />
+                    </InfoGrid>
+                </Section>
+
+                {/* Price */}
+                <Section title="💳 Price Summary" gray>
+                    <div className="space-y-2 text-sm">
+                        <Row label="Base Fare" value="₹9,980.00" />
+                        <Row label="Taxes & Fees" value="₹1,120.00" />
+                        <Row
+                            label="Total Amount"
+                            value="₹11,100.00"
+                            highlight
+                        />
                     </div>
-                </div>
+                </Section>
 
-                {/* Price Summary */}
-                <div className="border border-gray-200 rounded-xl p-4 mb-6 bg-gray-50">
-                    <h3 className="text-lg font-semibold mb-3 text-gray-800">💳 Price Summary</h3>
-                    <div className="space-y-1 text-sm text-gray-700">
-                        <div className="flex justify-between">
-                            <span>Base Fare</span>
-                            <span>₹9980.00</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span>Taxes & Fees</span>
-                            <span>₹1120.00</span>
-                        </div>
-                        <div className="flex justify-between font-bold text-[#78080B] border-t pt-2">
-                            <span>Total Amount</span>
-                            <span>₹11,100.00</span>
-                        </div>
-                    </div>
-                </div>
+                {/* Booking */}
+                <Section title="📄 Booking Details">
+                    <InfoGrid>
+                        <InfoItem label="Booking ID" value="BKTY98234" />
+                        <InfoItem label="Payment" value="Visa **** 4821" />
+                        <InfoItem label="Booking Date" value="20 Oct 2025" />
+                        <InfoItem
+                            label="Status"
+                            value="Confirmed"
+                            valueClass="text-green-600 font-semibold"
+                        />
+                    </InfoGrid>
+                </Section>
 
-                {/* Booking Info */}
-                <div className="border border-gray-200 rounded-xl p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-gray-800">📄 Booking Details</h3>
-                    <div className="grid grid-cols-2 gap-y-2 text-sm text-gray-700">
-                        <p><span className="font-medium">Booking ID:</span> BKTY98234</p>
-                        <p><span className="font-medium">Payment:</span> Visa **** 4821</p>
-                        <p><span className="font-medium">Booking Date:</span> 20 Oct 2025</p>
-                        <p>
-                            <span className="font-medium">Status:</span>{" "}
-                            <span className="text-green-600 font-semibold">Confirmed</span>
-                        </p>
-                    </div>
-                </div>
-
-                <div className='flex mt-4'>
+                {/* CTA */}
+                <div className="flex mt-4">
                     <button
-                        type="button"
-                        className="cursor-pointer bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white font-medium text-base px-6 py-2.5 rounded-full shadow-sm transition-all duration-200 flex items-center justify-center gap-2"
-                        onClick={() => navigate('/flight-seat-map')}
+                        className=" w-full sm:w-auto bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white font-medium px-6 py-2.5 rounded-full flex items-center justify-center gap-2"
+                        onClick={() => navigate("/flight-seat-map")}
                     >
                         CONTINUE
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={2}
-                            stroke="currentColor"
-                            className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1"
-                        >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                        </svg>
+                        <span>→</span>
                     </button>
                 </div>
             </div>
-
-            {/* Inline styles */}
-            <style>
-                {`
-          @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-          }
-          @keyframes scaleIn {
-            from { transform: scale(0.95); }
-            to { transform: scale(1); }
-          }
-          .scrollbar::-webkit-scrollbar {
-            width: 6px;
-          }
-          .scrollbar::-webkit-scrollbar-thumb {
-            background-color: rgba(0,0,0,0.2);
-            border-radius: 3px;
-          }
-        `}
-            </style>
         </div>
-    )
+    );
 }
+
+/* Helpers */
+function Section({ title, children, gray }) {
+    return (
+        <div className={`p-4 mb-6 border border-gray-200 rounded-xl ${gray ? "bg-gray-50" : ""}`}>
+            <h3 className="text-sm sm:text-base font-semibold mb-3">{title}</h3>
+            {children}
+        </div>
+    );
+}
+
+function InfoGrid({ children }) {
+    return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 text-sm text-gray-700 gap-6">
+            {children}
+        </div>
+    );
+}
+
+function InfoItem({ label, value, valueClass }) {
+    return (
+        <div className="flex flex-row justify-between">
+            <p className="font-medium"> {label}: </p>
+            <p> {value} </p>
+        </div>
+
+    );
+}
+
+function Row({ label, value, highlight }) {
+    return (
+        <div
+            className={`flex justify-between ${highlight ? "font-bold text-[#78080B] border-t pt-2" : ""
+                }`}
+        >
+            <span>{label}</span>
+            <span>{value}</span>
+        </div>
+    );
+}
+
+
